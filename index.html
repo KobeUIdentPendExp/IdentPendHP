@@ -264,12 +264,16 @@
         </div>
       </div>
       
-<!-- 第6回 - 简化版 -->
+<!-- 第6回 - 内联块并排显示 -->
 <div class="session-card">
-  <div class="session-image" style="background-color: #f0f0f0; text-align: center; padding: 10px;">
-    <!-- 直接放置图片 -->
-    <img src="episode180.gif" alt="episode=10" style="height: 180px; margin-right: 10px;">
-    <img src="episode180.gif" alt="episode=180" style="height: 180px;">
+  <div class="session-image" style="background-color: #f0f0f0; text-align: center; padding: 10px; font-size: 0;">
+    <!-- 使用内联块元素并消除间距 -->
+    <div style="display: inline-block; width: 48%; vertical-align: middle; font-size: 16px;">
+      <img src="episode180.gif" alt="倒立振子実験1" style="max-width: 100%; max-height: 180px;">
+    </div>
+    <div style="display: inline-block; width: 48%; vertical-align: middle; font-size: 16px;">
+      <img src="episode180.gif" alt="倒立振子実験2" style="max-width: 100%; max-height: 180px;">
+    </div>
   </div>
   <div class="session-content">
     <h3>第6回: まとめと倒立振子実験</h3>
