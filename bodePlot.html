@@ -2,160 +2,402 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>交互式控制系统仿真</title>
+  <title>交互式控制系统仿真（完整实现）</title>
   <!-- 引入 Plotly 用于绘图 -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-  <!-- 引入 math.js 用于数学计算（可选） -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.js"></script>
+  <!-- 引入 math.js 用于数学和复数运算 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"></script>
+  <!-- 引入 numeric.js 用于矩阵特征值计算 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
   <style>
+    body { font-family: Arial, sans-serif; margin:20px; }
     .slider-container { margin: 10px 0; }
+    label { margin-right: 5px; }
+    #plots { display: flex; flex-wrap: wrap; }
+    .plot { margin: 10px; }
   </style>
 </head>
 <body>
-  <h1>交互式控制系统仿真</h1>
-  
-  <!-- 内环参数滑块 -->
+  <h1>交互式控制系统仿真（完整实现）</h1>
+
+  <!-- 滑块控件 -->
   <div class="slider-container">
-    <label for="Kp">Kp (内环)：</label>
+    <label for="Kp">内环 Kp:</label>
     <input type="range" id="Kp" min="0.1" max="10" step="0.1" value="1.0">
     <span id="Kp_val">1.0</span>
   </div>
   <div class="slider-container">
-    <label for="Ki">Ki (内环)：</label>
+    <label for="Ki">内环 Ki:</label>
     <input type="range" id="Ki" min="0.1" max="10" step="0.1" value="1.0">
     <span id="Ki_val">1.0</span>
   </div>
-  
-  <!-- 外环参数滑块 -->
   <div class="slider-container">
-    <label for="Kp_theta">Kp (外环)：</label>
+    <label for="Kp_theta">外环 Kp:</label>
     <input type="range" id="Kp_theta" min="0.1" max="10" step="0.1" value="1.0">
     <span id="Kp_theta_val">1.0</span>
   </div>
   <div class="slider-container">
-    <label for="Ki_theta">Ki (外环)：</label>
+    <label for="Ki_theta">外环 Ki:</label>
     <input type="range" id="Ki_theta" min="0" max="5" step="0.1" value="0.5">
     <span id="Ki_theta_val">0.5</span>
   </div>
   <div class="slider-container">
-    <label for="Kd_theta">Kd (外环)：</label>
+    <label for="Kd_theta">外环 Kd:</label>
     <input type="range" id="Kd_theta" min="0" max="5" step="0.1" value="0.2">
     <span id="Kd_theta_val">0.2</span>
   </div>
-  
+
   <!-- 绘图区 -->
-  <div id="bodePlot" style="width: 600px; height: 400px;"></div>
-  <div id="rlocusPlot" style="width: 600px; height: 400px; margin-top:20px;"></div>
-  <div id="stepResponsePlot" style="width: 600px; height: 400px; margin-top:20px;"></div>
-  
+  <div id="bodePlot" class="plot" style="width:600px; height:400px;"></div>
+  <div id="rlocusPlot" class="plot" style="width:600px; height:400px;"></div>
+  <div id="stepResponsePlot" class="plot" style="width:600px; height:400px;"></div>
+
   <script>
-    // 固定系统参数
-    const L = 0.1;      // 电感 (H)
-    const R = 1.0;      // 电阻 (Ohm)
-    const k_T = 0.5;    // 转矩常数 (N·m/A)
-    const J = 0.2;      // 转动惯量 (kg·m²)
-    const B = 0.1;      // 摩擦系数 (N·m·s/rad)
+    /************ 数学工具函数 ************/
+    // 多项式乘法（卷积）：多项式系数按降幂排列
+    function polyMul(p, q) {
+      let result = Array(p.length + q.length - 1).fill(0);
+      for (let i = 0; i < p.length; i++) {
+        for (let j = 0; j < q.length; j++) {
+          result[i+j] += p[i]*q[j];
+        }
+      }
+      return result;
+    }
+    // 多项式相加（自动补零）
+    function polyAdd(p, q) {
+      let diff = p.length - q.length;
+      if(diff > 0) { q = Array(diff).fill(0).concat(q); }
+      else if(diff < 0) { p = Array(-diff).fill(0).concat(p); }
+      let result = [];
+      for(let i=0; i<p.length; i++){
+        result.push(p[i] + q[i]);
+      }
+      return result;
+    }
+    // 多项式数乘
+    function polyScale(p, k) {
+      return p.map(c => c*k);
+    }
+    // 计算多项式在复数 s 处的值（p 为降幂系数数组）
+    function polyEval(poly, s) {
+      let result = math.complex(0,0);
+      for (let i = 0; i < poly.length; i++) {
+        let power = poly.length - i - 1;
+        let term = math.multiply(poly[i], math.pow(s, power));
+        result = math.add(result, term);
+      }
+      return result;
+    }
+
+    /************ 传递函数对象 ************/
+    function TransferFunction(num, den) {
+      // num、den均为降幂排列的系数数组
+      this.num = num;
+      this.den = den;
+    }
+    TransferFunction.prototype.eval = function(s) {
+      let numVal = polyEval(this.num, s);
+      let denVal = polyEval(this.den, s);
+      return math.divide(numVal, denVal);
+    };
+
+    // 级联系统：tf_series = tf1 * tf2
+    function series(tf1, tf2) {
+      let num = polyMul(tf1.num, tf2.num);
+      let den = polyMul(tf1.den, tf2.den);
+      return new TransferFunction(num, den);
+    }
+
+    /************ 系统参数 ************/
+    const L = 0.1, R = 1.0, k_T = 0.5, J = 0.2, B = 0.1;
     const tau_m = L / R;
     const K_m = 1 / R;
-    
-    // 获取滑块 DOM 元素
-    const sliders = {
-      Kp: document.getElementById("Kp"),
-      Ki: document.getElementById("Ki"),
-      Kp_theta: document.getElementById("Kp_theta"),
-      Ki_theta: document.getElementById("Ki_theta"),
-      Kd_theta: document.getElementById("Kd_theta")
-    };
-    const sliderVals = {
-      Kp: document.getElementById("Kp_val"),
-      Ki: document.getElementById("Ki_val"),
-      Kp_theta: document.getElementById("Kp_theta_val"),
-      Ki_theta: document.getElementById("Ki_theta_val"),
-      Kd_theta: document.getElementById("Kd_theta_val")
-    };
 
-    // 更新显示的滑块数值
-    function updateSliderDisplay() {
-      for (let key in sliders) {
-        sliderVals[key].innerText = sliders[key].value;
-      }
+    /************ 系统计算 ************/
+    // 根据滑块参数构造整个开环传递函数 G_open(s)
+    function computeSystem() {
+      // 读取滑块数值
+      let Kp = parseFloat(document.getElementById("Kp").value);
+      let Ki = parseFloat(document.getElementById("Ki").value);
+      let Kp_theta = parseFloat(document.getElementById("Kp_theta").value);
+      let Ki_theta = parseFloat(document.getElementById("Ki_theta").value);
+      let Kd_theta = parseFloat(document.getElementById("Kd_theta").value);
+      
+      // 内环： G1(s) = K_m*(Kp*s + Ki) / (tau_m*s^2 + (1+K_m*Kp)*s + K_m*Ki)
+      let num_inner = [K_m*Kp, K_m*Ki];      // 一阶
+      let den_inner = [tau_m, 1 + K_m*Kp, K_m*Ki]; // 二阶
+      let G1 = new TransferFunction(num_inner, den_inner);
+      
+      // PID 控制器： C_theta(s) = (Kd_theta*s^2 + Kp_theta*s + Ki_theta) / s
+      let num_PID = [Kd_theta, Kp_theta, Ki_theta]; // 二阶
+      let den_PID = [1, 0]; // 一阶
+      let C_theta = new TransferFunction(num_PID, den_PID);
+      
+      // 机械系统： G_mech(s) = k_T / (J*s^2 + B*s)
+      let num_mech = [k_T];
+      let den_mech = [J, B, 0]; // 二阶（常数项为 0）
+      let G_mech = new TransferFunction(num_mech, den_mech);
+      
+      // 开环传递函数： G_open(s) = C_theta * G1 * G_mech
+      let G_open = series(series(C_theta, G1), G_mech);
+      return {G_open: G_open, parameters: {Kp, Ki, Kp_theta, Ki_theta, Kd_theta}};
     }
 
-    // 简单计算一个传递函数在频域的响应（示例：仅针对内环传递函数）
-    // 假设 G_inner(s) = K_m*(Kp*s + Ki) / (tau_m*s^2 + (1 + K_m*Kp)*s + K_m*Ki)
-    // 为了生成 Bode 图，我们对一组频率（omega）计算 G_inner(j*omega)
-    function computeBodeData(Kp, Ki) {
-      const omega = math.range(0.01, 100, true).toArray();
+    /************ Bode 图计算 ************/
+    // 对一组频率 omegaArray 计算传递函数 G(s) 在 s=jω 处的幅值（dB）和相位（deg）
+    function computeBode(G, omegaArray) {
       let mag = [];
       let phase = [];
-      omega.forEach(w => {
-        // s = j*w
-        const s = math.complex(0, w);
-        const num = math.add(math.multiply(Kp, s), Ki);
-        const den = math.add(
-          math.multiply(tau_m, math.pow(s, 2)),
-          math.add(math.multiply(1 + K_m*Kp, s), K_m*Ki)
-        );
-        const G = math.divide(math.multiply(K_m, num), den);
-        mag.push(20 * Math.log10(math.abs(G)));
-        phase.push(math.arg(G) * 180 / Math.PI);
+      omegaArray.forEach(function(w) {
+         let s = math.complex(0, w);
+         let val = G.eval(s);
+         mag.push(20 * Math.log10(math.abs(val)));
+         phase.push(math.arg(val) * 180 / Math.PI);
       });
-      return { omega, mag, phase };
+      return {mag: mag, phase: phase};
     }
 
-    // 更新图形：Bode 图、根轨迹、阶跃响应
+    /************ 根轨迹计算 ************/
+    // 对于给定的增益 K，计算闭环特征多项式 den(s) + K*num(s) 的根
+    function computeRootLocus(G, K_array) {
+      let locus = [];
+      K_array.forEach(function(K) {
+          let num = G.num;
+          let den = G.den;
+          // 补零使得 num 与 den 长度相同
+          let diff = den.length - num.length;
+          let num_padded = Array(diff).fill(0).concat(num);
+          let Knum = polyScale(num_padded, K);
+          let polyCL = polyAdd(den, Knum);
+          let roots = polyRoots(polyCL);
+          locus.push({K: K, roots: roots});
+      });
+      return locus;
+    }
+
+    // 利用伴随矩阵法求多项式根（poly 为降幂排列系数数组）
+    function polyRoots(poly) {
+      // 去除前导0
+      while(poly.length > 0 && Math.abs(poly[0]) < 1e-12) {
+         poly.shift();
+      }
+      let n = poly.length - 1;
+      if(n < 1) return [];
+      // 归一化：令首项为1
+      let a = poly.map(c => c/ poly[0]);
+      // 构造伴随矩阵（n×n）
+      let companion = [];
+      for(let i=0; i<n; i++){
+         companion[i] = Array(n).fill(0);
+      }
+      for(let j=0; j<n; j++){
+         companion[0][j] = -a[j+1];
+      }
+      for(let i=1; i<n; i++){
+         companion[i][i-1] = 1;
+      }
+      // 计算特征值
+      let eigRes = numeric.eig(companion);
+      let roots = [];
+      for(let i=0; i<eigRes.lambda.x.length; i++){
+         roots.push(math.complex(eigRes.lambda.x[i], eigRes.lambda.y[i]));
+      }
+      return roots;
+    }
+
+    /************ 阶跃响应仿真 ************/
+    // 闭环传递函数 T(s) = G(s) / (1+G(s)) ：分子不变，分母为 den + num（补零后相加）
+    function computeClosedLoopTF(G) {
+      let num_cl = G.num;
+      let diff = G.den.length - G.num.length;
+      let num_padded = Array(diff).fill(0).concat(G.num);
+      let den_cl = polyAdd(G.den, num_padded);
+      return new TransferFunction(num_cl, den_cl);
+    }
+
+    // 利用可控规范型（Controllable Canonical Form）将严格传递函数转换为状态空间模型
+    // 这里假设 den 为齐次多项式（首项非0），且 num 的阶数小于 den 的阶数
+    function tf2ss(num, den) {
+      let n = den.length - 1; // 系统阶数
+      let a0 = den[0];
+      // 归一化
+      den = den.map(c => c/a0);
+      num = num.map(c => c/a0);
+      // 补齐 numerator
+      let diff = n - num.length;
+      let num_padded = Array(diff).fill(0).concat(num);
+      // 构造伴随矩阵 A（n×n）
+      let A = [];
+      for(let i=0; i<n; i++){
+         A[i] = Array(n).fill(0);
+      }
+      for(let j=0; j<n; j++){
+         A[0][j] = -den[j+1];
+      }
+      for(let i=1; i<n; i++){
+         A[i][i-1] = 1;
+      }
+      // 输入向量 B
+      let B = Array(n).fill(0);
+      B[0] = 1;
+      // 输出向量 C：直接使用补零后的 numerator 系数
+      let C = num_padded;
+      let D = 0;
+      return {A: A, B: B, C: C, D: D};
+    }
+
+    // 使用欧拉法仿真状态空间系统对阶跃输入（u=1）的响应
+    function simulateStepResponse(ss, T, dt) {
+      let steps = Math.floor(T/dt);
+      let n = ss.A.length;
+      let x = Array(n).fill(0);
+      let tArray = [];
+      let yArray = [];
+      for(let i=0; i<=steps; i++){
+         let t = i*dt;
+         tArray.push(t);
+         // 计算 y = C*x + D*u，其中 u = 1
+         let y = 0;
+         for(let j=0; j<n; j++){
+             y += ss.C[j]*x[j];
+         }
+         y += ss.D*1;
+         yArray.push(y);
+         // 计算 x_dot = A*x + B*u
+         let x_dot = [];
+         for(let j=0; j<n; j++){
+             let sum = 0;
+             for(let k=0; k<n; k++){
+                 sum += ss.A[j][k]*x[k];
+             }
+             sum += ss.B[j]*1;
+             x_dot.push(sum);
+         }
+         // 欧拉积分
+         for(let j=0; j<n; j++){
+             x[j] = x[j] + dt*x_dot[j];
+         }
+      }
+      return {t: tArray, y: yArray};
+    }
+
+    /************ 数组生成工具 ************/
+    // 对数间隔数组：从 a 到 b，共 n 个点
+    function logspace(a, b, n) {
+      let arr = [];
+      let logA = Math.log10(a);
+      let logB = Math.log10(b);
+      let step = (logB - logA)/(n-1);
+      for(let i=0; i<n; i++){
+         arr.push(Math.pow(10, logA+step*i));
+      }
+      return arr;
+    }
+    // 线性间隔数组
+    function linspace(a, b, n) {
+      let arr = [];
+      let step = (b - a)/(n-1);
+      for(let i=0; i<n; i++){
+         arr.push(a+step*i);
+      }
+      return arr;
+    }
+
+    /************ 主更新函数 ************/
     function updatePlots() {
-      updateSliderDisplay();
-      const Kp = parseFloat(sliders.Kp.value);
-      const Ki = parseFloat(sliders.Ki.value);
-      // 外环参数在此示例中未用于计算（留作扩展），这里仅展示内环传递函数的 Bode 图
+      let sys = computeSystem();
+      let G_open = sys.G_open;
       
-      // Bode 图数据
-      const bodeData = computeBodeData(Kp, Ki);
-      
-      // 绘制 Bode 幅频响应曲线
-      const bodeTrace = {
-        x: bodeData.omega,
-        y: bodeData.mag,
-        type: 'scatter',
-        mode: 'lines',
-        name: 'Magnitude [dB]'
+      // Bode 图
+      let omegaArray = logspace(0.01, 1e3, 300);
+      let bodeData = computeBode(G_open, omegaArray);
+      let bodeTraceMag = {
+         x: omegaArray,
+         y: bodeData.mag,
+         type: 'scatter',
+         mode: 'lines',
+         name: 'Magnitude (dB)'
       };
-      const bodeLayout = {
-        title: 'Bode Plot (幅频响应)',
-        xaxis: { type: 'log', title: 'Frequency (rad/s)' },
-        yaxis: { title: 'Magnitude (dB)' }
+      let bodeTracePhase = {
+         x: omegaArray,
+         y: bodeData.phase,
+         type: 'scatter',
+         mode: 'lines',
+         name: 'Phase (deg)',
+         yaxis: 'y2'
       };
-      Plotly.newPlot('bodePlot', [bodeTrace], bodeLayout);
+      let bodeLayout = {
+         title: 'Bode Plot',
+         xaxis: { type: 'log', title: 'Frequency (rad/s)' },
+         yaxis: { title: 'Magnitude (dB)' },
+         yaxis2: {
+             title: 'Phase (deg)',
+             overlaying: 'y',
+             side: 'right'
+         }
+      };
+      Plotly.newPlot('bodePlot', [bodeTraceMag, bodeTracePhase], bodeLayout);
       
-      // 根轨迹和阶跃响应部分仅作示例占位（实际计算需要更复杂的实现）
-      // 例如：你可以利用数值方法计算闭环系统极点，并绘制极点轨迹
-      Plotly.newPlot('rlocusPlot', [{
-        x: [ -1, -2, -3 ], y: [0, 0.5, -0.5],
-        mode: 'markers',
-        type: 'scatter'
-      }], { title: 'Root Locus (示例数据)' });
-      
-      // 阶跃响应示例：这里使用简单的一阶系统响应模拟
-      const t = math.range(0, 5, 0.05).toArray();
-      const y = t.map(time => 1 - Math.exp(-time)); // 一阶系统阶跃响应
-      Plotly.newPlot('stepResponsePlot', [{
-        x: t, y: y,
-        mode: 'lines',
-        type: 'scatter'
-      }], {
-        title: 'Step Response (示例数据)',
-        xaxis: { title: 'Time (s)' },
-        yaxis: { title: 'Amplitude' }
+      // 根轨迹：令增益 K 为 0.01~100 的对数空间，共 100 个点
+      let K_array = logspace(0.01, 100, 100);
+      let rlocusData = computeRootLocus(G_open, K_array);
+      let rlocusReal = [], rlocusImag = [];
+      rlocusData.forEach(function(point) {
+         point.roots.forEach(function(root) {
+            rlocusReal.push(root.re);
+            rlocusImag.push(root.im);
+         });
       });
+      let rlocusTrace = {
+         x: rlocusReal,
+         y: rlocusImag,
+         mode: 'markers',
+         type: 'scatter',
+         name: 'Poles'
+      };
+      let rlocusLayout = {
+         title: 'Root Locus',
+         xaxis: { title: 'Real Axis' },
+         yaxis: { title: 'Imaginary Axis' }
+      };
+      Plotly.newPlot('rlocusPlot', [rlocusTrace], rlocusLayout);
+      
+      // 阶跃响应：构造闭环传递函数 T(s)=G(s)/(1+G(s))
+      let T_tf = computeClosedLoopTF(G_open);
+      // 转换为状态空间（注意：必须严格传递，即分子阶数小于分母阶数）
+      let ss = tf2ss(T_tf.num, T_tf.den);
+      let simData = simulateStepResponse(ss, 5, 0.001);
+      let stepTrace = {
+         x: simData.t,
+         y: simData.y,
+         mode: 'lines',
+         type: 'scatter',
+         name: 'Step Response'
+      };
+      let stepLayout = {
+         title: 'Step Response',
+         xaxis: { title: 'Time (s)' },
+         yaxis: { title: 'Response' }
+      };
+      Plotly.newPlot('stepResponsePlot', [stepTrace], stepLayout);
     }
 
-    // 为每个滑块添加事件监听
-    for (let key in sliders) {
-      sliders[key].addEventListener('input', updatePlots);
+    /************ 滑块事件及显示更新 ************/
+    function updateSliderDisplays() {
+      document.getElementById("Kp_val").innerText = document.getElementById("Kp").value;
+      document.getElementById("Ki_val").innerText = document.getElementById("Ki").value;
+      document.getElementById("Kp_theta_val").innerText = document.getElementById("Kp_theta").value;
+      document.getElementById("Ki_theta_val").innerText = document.getElementById("Ki_theta").value;
+      document.getElementById("Kd_theta_val").innerText = document.getElementById("Kd_theta").value;
     }
-    
-    // 初始绘制
+    ["Kp", "Ki", "Kp_theta", "Ki_theta", "Kd_theta"].forEach(function(id) {
+      document.getElementById(id).addEventListener("input", function(){
+          updateSliderDisplays();
+          updatePlots();
+      });
+    });
+    updateSliderDisplays();
     updatePlots();
   </script>
 </body>
