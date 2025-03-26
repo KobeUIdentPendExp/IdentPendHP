@@ -1,0 +1,297 @@
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter } from 'recharts';
+import * as math from 'mathjs';
+
+const MotorControlSimulation = () => {
+  // 系统固定参数
+  const L = 0.1;      // 电感 (H)
+  const R = 1.0;      // 电阻 (Ohm)
+  const k_T = 0.5;    // 转矩常数 (N·m/A)
+  const J = 0.2;      // 转动惯量 (kg·m²)
+  const B = 0.1;      // 摩擦系数 (N·m·s/rad)
+
+  // 计算中间参数
+  const tau_m = L/R;
+  const K_m = 1/R;
+
+  // 控制参数状态
+  const [Kp, setKp] = useState(1.0);
+  const [Ki, setKi] = useState(1.0);
+  const [KpTheta, setKpTheta] = useState(1.0);
+  const [KiTheta, setKiTheta] = useState(0.5);
+  const [KdTheta, setKdTheta] = useState(0.2);
+
+  // 图表数据状态
+  const [bodeData, setBodeData] = useState([]);
+  const [rootLocusData, setRootLocusData] = useState([]);
+  const [stepResponseData, setStepResponseData] = useState([]);
+
+  // 计算Bode图数据
+  const calculateBodeData = () => {
+    // 简化计算，生成示例数据
+    const data = [];
+    for (let i = 0; i < 100; i++) {
+      const frequency = 0.01 * Math.pow(10, i/20);
+      
+      // 简化的幅频特性计算
+      const dampingEffect = 1 / Math.sqrt(1 + Math.pow(frequency / (Kp/2), 2));
+      const cutoffEffect = 1 / Math.sqrt(1 + Math.pow(frequency / (Ki * KpTheta), 2));
+      const magnitude = 20 * Math.log10(K_m * k_T * Kp * KpTheta * dampingEffect * cutoffEffect);
+      
+      data.push({
+        frequency: frequency,
+        magnitude: magnitude
+      });
+    }
+    return data;
+  };
+
+  // 计算根轨迹数据
+  const calculateRootLocusData = () => {
+    // 生成简化的根轨迹数据
+    const data = [];
+    
+    // 零点位置
+    const zeroX = -Ki/Kp;
+    
+    // 生成根轨迹数据点
+    for (let k = 0.1; k <= 10; k += 0.2) {
+      // 简化的根轨迹模型，随着增益变化
+      const realPart = -1 - 0.2 * k;
+      const imagPart = 1 * k * (KdTheta + 0.2);
+      
+      data.push({
+        x: realPart,
+        y: imagPart,
+        k: k
+      });
+      
+      // 对称点
+      data.push({
+        x: realPart,
+        y: -imagPart,
+        k: k
+      });
+    }
+    
+    // 添加零点标记
+    data.push({
+      x: zeroX,
+      y: 0,
+      k: 20  // 使其在散点图中显示更大
+    });
+    
+    return data;
+  };
+
+  // 计算阶跃响应
+  const calculateStepResponse = () => {
+    const data = [];
+    const timePoints = 100;
+    const tMax = 5;
+    
+    // 计算系统参数
+    const dampingRatio = 0.5 + 0.1 * KdTheta;
+    const naturalFreq = 1.0 + 0.5 * KpTheta;
+    
+    for (let i = 0; i < timePoints; i++) {
+      const t = (i / (timePoints - 1)) * tMax;
+      
+      // 简化的二阶系统阶跃响应
+      let response;
+      if (dampingRatio < 1) {
+        // 欠阻尼情况
+        const wd = naturalFreq * Math.sqrt(1 - dampingRatio * dampingRatio);
+        response = 1 - Math.exp(-dampingRatio * naturalFreq * t) * 
+                    (Math.cos(wd * t) + (dampingRatio * naturalFreq / wd) * Math.sin(wd * t));
+      } else {
+        // 过阻尼情况
+        response = 1 - Math.exp(-dampingRatio * naturalFreq * t);
+      }
+      
+      // 调整响应以反映控制参数变化
+      response = response * (1 + 0.05 * Ki / Kp);
+      if (KiTheta > 0) {
+        // 在响应中添加一些积分效应
+        response += KiTheta * 0.05 * t * Math.exp(-t);
+      }
+      
+      // 限制在合理范围内
+      response = Math.max(0, Math.min(1.5, response));
+      
+      data.push({
+        time: t,
+        response: response
+      });
+    }
+    
+    return data;
+  };
+
+  // 当参数变化时更新图表
+  useEffect(() => {
+    // 计算并更新数据
+    setBodeData(calculateBodeData());
+    setRootLocusData(calculateRootLocusData());
+    setStepResponseData(calculateStepResponse());
+  }, [Kp, Ki, KpTheta, KiTheta, KdTheta]);
+
+  return (
+    <div className="flex flex-col p-4 bg-gray-50 rounded-lg">
+      <h1 className="text-xl font-bold text-center mb-4">PI控制器与马达系统交互仿真</h1>
+      
+      {/* 滑块控制区 */}
+      <div className="bg-white p-4 rounded shadow mb-4">
+        <h2 className="text-lg font-semibold mb-2">控制参数</h2>
+        
+        <div className="mb-2">
+          <p className="text-sm font-medium">内环 Kp: {Kp.toFixed(2)}</p>
+          <input 
+            type="range" 
+            min="0.1" 
+            max="10" 
+            step="0.1" 
+            value={Kp} 
+            onChange={(e) => setKp(Number(e.target.value))} 
+            className="w-full"
+          />
+        </div>
+        
+        <div className="mb-2">
+          <p className="text-sm font-medium">内环 Ki: {Ki.toFixed(2)}</p>
+          <input 
+            type="range" 
+            min="0.1" 
+            max="10" 
+            step="0.1" 
+            value={Ki} 
+            onChange={(e) => setKi(Number(e.target.value))} 
+            className="w-full"
+          />
+        </div>
+        
+        <div className="mb-2">
+          <p className="text-sm font-medium">外环 Kp_theta: {KpTheta.toFixed(2)}</p>
+          <input 
+            type="range" 
+            min="0.1" 
+            max="10" 
+            step="0.1" 
+            value={KpTheta} 
+            onChange={(e) => setKpTheta(Number(e.target.value))} 
+            className="w-full"
+          />
+        </div>
+        
+        <div className="mb-2">
+          <p className="text-sm font-medium">外环 Ki_theta: {KiTheta.toFixed(2)}</p>
+          <input 
+            type="range" 
+            min="0" 
+            max="5" 
+            step="0.1" 
+            value={KiTheta} 
+            onChange={(e) => setKiTheta(Number(e.target.value))} 
+            className="w-full"
+          />
+        </div>
+        
+        <div className="mb-2">
+          <p className="text-sm font-medium">外环 Kd_theta: {KdTheta.toFixed(2)}</p>
+          <input 
+            type="range" 
+            min="0" 
+            max="5" 
+            step="0.1" 
+            value={KdTheta} 
+            onChange={(e) => setKdTheta(Number(e.target.value))} 
+            className="w-full"
+          />
+        </div>
+      </div>
+      
+      {/* 图表显示区 */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="text-lg font-semibold mb-2">Bode图</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={bodeData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                dataKey="frequency" 
+                type="number" 
+                scale="log" 
+                domain={[0.01, 100]}
+                label={{ value: '频率 (rad/s)', position: 'insideBottom', offset: -5 }}
+              />
+              <YAxis 
+                domain={[-40, 40]}
+                label={{ value: '幅值 (dB)', angle: -90, position: 'insideLeft' }}
+              />
+              <Tooltip formatter={(value) => value.toFixed(2) + ' dB'} labelFormatter={(label) => `${label.toFixed(2)} rad/s`} />
+              <Line type="monotone" dataKey="magnitude" stroke="#8884d8" dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        
+        <div className="bg-white p-4 rounded shadow">
+          <h2 className="text-lg font-semibold mb-2">根轨迹</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <ScatterChart margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis 
+                type="number" 
+                dataKey="x" 
+                name="实部" 
+                domain={[-10, 2]}
+                label={{ value: '实部', position: 'insideBottom', offset: -5 }}
+              />
+              <YAxis 
+                type="number" 
+                dataKey="y" 
+                name="虚部" 
+                domain={[-10, 10]}
+                label={{ value: '虚部', angle: -90, position: 'insideLeft' }}
+              />
+              <Tooltip cursor={{ strokeDasharray: '3 3' }} />
+              <Scatter name="根轨迹" data={rootLocusData} fill="#82ca9d" />
+            </ScatterChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      
+      <div className="bg-white p-4 rounded shadow mb-4">
+        <h2 className="text-lg font-semibold mb-2">阶跃响应</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={stepResponseData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="time" 
+              label={{ value: '时间 (s)', position: 'insideBottom', offset: -5 }}
+            />
+            <YAxis 
+              domain={[0, 1.5]} 
+              label={{ value: '响应', angle: -90, position: 'insideLeft' }}
+            />
+            <Tooltip formatter={(value) => value.toFixed(3)} />
+            <Line type="monotone" dataKey="response" stroke="#ff7300" dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      
+      <div className="bg-white p-4 rounded shadow">
+        <h2 className="text-lg font-semibold mb-2">参数关系说明</h2>
+        <ul className="list-disc pl-6 text-sm">
+          <li>增大内环 <strong>Kp</strong> 将提高系统响应速度，但过高可能导致振荡</li>
+          <li>增大内环 <strong>Ki</strong> 有助于消除稳态误差，但会引入相位滞后</li>
+          <li>外环 <strong>Kp_theta</strong> 影响系统响应速度和超调量</li>
+          <li>外环 <strong>Ki_theta</strong> 用于消除位置稳态误差</li>
+          <li>外环 <strong>Kd_theta</strong> 增加系统阻尼，抑制振荡</li>
+          <li>理想内环零点位置: <strong>s = -Ki/Kp</strong></li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default MotorControlSimulation;
