@@ -1,0 +1,237 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ロボット制御実験 環境構築ガイド</title>
+    <style>
+        /* Reusing styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .guide-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .section { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .section h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6fff2; border: 1px solid #b3ffcc; color: #00642e; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Verification green */
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Warning yellow */
+        .step ul, .step ol { margin-top: 5px; margin-bottom: 5px; padding-left: 25px; }
+        .step li { margin-bottom: 5px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; font-size: 0.95em; }
+        .command { font-family: 'Courier New', Courier, monospace; background-color: #212529; color: #f8f9fa; padding: 10px 15px; margin: 10px 0; border-radius: 4px; display: block; white-space: pre; } /* Command style */
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+    <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<div class="guide-container">
+    <h2>ロボット制御実験 環境構築ガイド</h2>
+    <p class="note">このガイドは、システム同定から強化学習までの全実験に必要なソフトウェア環境を、皆さんの PC に構築するための手順を説明します。主な構成要素は Webots シミュレータと Anaconda (Python) です。</p>
+
+    <div class="section" id="webots-install">
+        <h3>1. Webots シミュレータのインストール</h3>
+        <p>強化学習の実験 (第6回) で使用するロボットシミュレータ Webots をインストールします。</p>
+        <div class="step">
+            <strong>ダウンロード:</strong>
+            <ul>
+                <li><a href="https://cyberbotics.com/" target="_blank" rel="noopener noreferrer">Webots 公式サイト</a>にアクセスし、「Download」セクションへ進みます。</li>
+                <li>お使いの OS (Windows, macOS, Linux) に対応した最新の安定版 (Stable Release) をダウンロードします。</li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>インストール:</strong>
+            <ul>
+                <li>ダウンロードしたインストーラーを実行し、画面の指示に従ってインストールを進めます。（通常はデフォルト設定のままで問題ありません）</li>
+            </ul>
+        </div>
+        <div class="confirmation">
+            <strong>確認:</strong> インストール後、Webots アプリケーションを起動し、サンプルワールドなどが開けることを確認してください。
+        </div>
+    </div>
+
+    <div class="section" id="anaconda-install">
+        <h3>2. Anaconda (Python 環境) のインストール</h3>
+        <p>全ての実験で使用する Python スクリプトを実行するために、Anaconda または Miniconda を使用して Python 環境を管理します。（すでにインストール済みの場合はこのセクションをスキップし、セクション3に進んでください）</p>
+        <div class="step">
+            <strong>ダウンロード (未インストールの場合):</strong>
+            <ul>
+                <li>**Anaconda (推奨):** データサイエンス関連のライブラリが多く含まれます。<a href="https://www.anaconda.com/download" target="_blank" rel="noopener noreferrer">Anaconda Distribution</a> からダウンロード。</li>
+                <li>**Miniconda:** より軽量なインストーラー。必要なライブラリは後で追加します。<a href="https://docs.conda.io/projects/miniconda/en/latest/" target="_blank" rel="noopener noreferrer">Miniconda Documentation</a> からダウンロード。</li>
+                <!-- <li>Python 3.8 ～ 3.11 程度のバージョンを含むインストーラーを選択してください。</li> -->
+            </ul>
+        </div>
+        <div class="step">
+            <strong>インストール (未インストールの場合):</strong>
+            <ul>
+                <li>ダウンロードしたインストーラーを実行し、指示に従います。</li>
+                <li>「Add Anaconda to my PATH environment variable」のオプションは、公式では非推奨ですが、チェックするとコマンドプロンプト/ターミナルで `conda` コマンドが直接使えるようになり便利な場合があります。（チェックしない場合は Anaconda Prompt を使うのが基本です）</li>
+            </ul>
+        </div>
+        <div class="step task">
+            <strong>【推奨】専用 Conda 環境の作成:</strong>
+            <p>実験に必要なライブラリを他の Python プロジェクトと分離し、バージョンの衝突を防ぐために、専用の環境を作成することを強く推奨します。</p>
+            <ol>
+                <li>**Anaconda Prompt** (Windows) または**ターミナル** (macOS/Linux) を開きます。</li>
+                <li>以下のコマンドを実行して、`control_lab` という名前で Python 3.9 (推奨例) の環境を作成します:
+                    <code class="command">conda create --name control_lab python=3.9</code>
+                    (作成を確認するプロンプトが出たら `y` を入力して Enter)
+                </li>
+                <li>作成した環境を有効化（アクティベート）します:
+                    <code class="command">conda activate control_lab</code>
+                    (プロンプトの先頭に `(control_lab)` と表示されれば成功です)
+                </li>
+            </ol>
+             <p class="note">以降の Python パッケージのインストールは、必ずこの `control_lab` 環境が**アクティブな状態**で行ってください。</p>
+       </div>
+    </div>
+
+    <div class="section" id="pip-install">
+        <h3>3. 必要な Python パッケージのインストール</h3>
+        <p>実験で使用するライブラリをインストールします。</p>
+        <div class="step task">
+            <strong>【パッケージのインストール】</strong>
+            <ol>
+                <li>**Anaconda Prompt** または **ターミナル** を開き、**必ず `control_lab` 環境を有効化**してください:
+                    <code class="command">conda activate control_lab</code>
+                </li>
+                <li>以下のコマンドを実行して、基本的な科学計算ライブラリをインストールします (Anaconda を使っていれば既に一部入っている可能性もあります):
+                    <code class="command">conda install numpy scipy matplotlib</code>
+                    (インストールを確認されたら `y` を入力)
+                </li>
+                 <li>次に、強化学習とハードウェア通信に必要なライブラリを `pip` を使ってインストールします:
+                     <!-- <p class="warning">【注意】`hidapi` のインストールは OS によって事前準備が必要な場合があります。下の「OS固有設定」を先に確認してください。</p> -->
+                    <!-- <code class="command">pip install hidapi</code> -->
+                    <code class="command">pip install gymnasium stable-baselines3[extra] torch torchvision torchaudio</code>
+                    <span class="note">(<span class="code">stable-baselines3[extra]</span> は PyTorch など追加の依存関係も含めてインストールします。もし PyTorch のインストールで問題が出る場合は、<a href="https://pytorch.org/" target="_blank" rel="noopener noreferrer">PyTorch 公式サイト</a> の指示に従って別途インストールを試みてください。)</span>
+                 </li>
+            </ol>
+        </div>
+    </div>
+
+     <!-- <div class="section" id="os-specific">
+        <h3>4. OS 固有の追加設定 (特に Windows/Linux で HID 通信する場合)</h3>
+        <div class="step warning">
+            <strong>【`hidapi` ライブラリの注意点】</strong> Python の `hidapi` パッケージは、システムレベルの `hidapi` ライブラリに依存しています。これは OS ごとにインストール方法が異なります。
+             <ul>
+                <li><strong>Windows:</strong>
+                    <ul>
+                        <li>多くの場合 `pip install hidapi` だけで動作しますが、**WSL (Windows Subsystem for Linux)** を使用する場合、WSL から USB デバイス（モータードライバ）にアクセスするための追加設定が必要になることがあります。</li>
+                        <li>WSL を使う場合は、Microsoft の <a href="https://learn.microsoft.com/ja-jp/windows/wsl/connect-usb" target="_blank" rel="noopener noreferrer">USB デバイスを接続する</a> ガイドを参照し、`usbipd-win` の設定が必要か確認してください。</li>
+                        <li>もし WSL での USB 通信がうまくいかない場合は、ハードウェアと通信するスクリプト（第2, 4, 5回）は Windows ネイティブの Anaconda 環境で実行し、Webots を使う強化学習（第6回）のみ WSL または Windows ネイティブで行う、といった使い分けも検討してください。</li>
+                    </ul>
+                </li>
+                <li><strong>macOS:</strong>
+                    <ul>
+                        <li>まず <a href="https://brew.sh/" target="_blank" rel="noopener noreferrer">Homebrew</a> (パッケージマネージャ) をインストールしておくことを推奨します。</li>
+                        <li>ターミナルで `brew install hidapi` を実行してシステムライブラリをインストールします。</li>
+                        <li>その後、アクティブな conda 環境で `pip install hidapi` を実行します。</li>
+                    </ul>
+                </li>
+                <li><strong>Linux (Debian/Ubuntu系):</strong>
+                    <ul>
+                        <li>ターミナルで `sudo apt-get update && sudo apt-get install libhidapi-dev` を実行して開発用ライブラリをインストールします。</li>
+                        <li>その後、アクティブな conda 環境で `pip install hidapi` を実行します。</li>
+                        <li>USB デバイスへのアクセス権限が必要な場合があります。もし接続エラーが出る場合は、`udev` ルールの設定が必要かもしれません（詳細は省略しますが、教員/TAに相談してください）。</li>
+                    </ul>
+                </li>
+            </ul>
+             <p><strong>HID 通信で問題が発生した場合は、早めに教員または TA に相談してください。</strong></p>
+        </div>
+    </div> -->
+
+     <div class="section" id="verification">
+        <h3>5. 環境構築の最終確認</h3>
+        <div class="step">
+             <ol>
+                <li>**Anaconda Prompt** または **ターミナル** で、`control_lab` 環境がアクティブなことを確認します (<span class="code">(control_lab)</span> が先頭に表示)。</li>
+                <li>Python のバージョンを確認します: <code class="command">python --version</code></li>
+                <li>インストールされた主要なパッケージを確認します:
+                    <code class="command">conda list numpy matplotlib scipy gymnasium stable-baselines3 torch hidapi</code>
+                    (リストに表示され、バージョン情報が出ていれば OK)
+                </li>
+                <li>Python インタプリタを起動し (<span class="code">python</span> と入力)、ライブラリが import できるか試します:
+                    <code class="command">import numpy as np
+import matplotlib.pyplot as plt
+import scipy
+import gymnasium as gym
+import stable_baselines3
+import torch
+exit()</code>
+                    (エラーなくプロンプトに戻れば成功)
+                </li>
+                 <li>Webots アプリケーションを起動できることを確認します。</li>
+            </ol>
+        </div>
+         <div class="confirmation">
+             <strong>【完了】</strong> 上記の確認が全て問題なければ、実験に必要な環境の準備は完了です！
+        </div>
+    </div>
+    <div class="section" id="webots-python-config">
+        <h3>6. Webots と Anaconda Python 環境の連携設定</h3>
+        <p class="warning">【重要】この設定を行わないと、Webots は正しい Python 環境（<span class="code">control_lab</span>）を見つけられず、コントローラースクリプトがライブラリ不足でエラーになります。</p>
+
+        <div class="step task">
+            <strong>Step 1: <span class="code">control_lab</span> 環境の Python パスを確認する</strong>
+            <ol>
+                <li>**Anaconda Prompt** (Windows) または **ターミナル** (macOS/Linux) を開きます。</li>
+                <li>まず、作成した Conda 環境を有効化します:
+                    <code class="command">conda activate control_lab</code>
+                    (プロンプト先頭に <span class="code">(control_lab)</span> が表示されることを確認)
+                </li>
+                <li>次に、現在アクティブな環境の Python 実行ファイルのフルパスを調べるコマンドを実行します:
+                    <ul>
+                        <li>**Windows の場合:**
+                            <code class="command">where python</code>
+                            <p>または</p>
+                            <code class="command">python -c "import sys; print(sys.executable)"</code>
+                        </li>
+
+
+                        <li>**macOS / Linux の場合:**
+                            <code class="command">which python</code>
+                            <p>または</p>
+                            <code class="command">python -c "import sys; print(sys.executable)"</code>
+                        </li>
+                    </ul>
+                </li>
+                <li class="confirmation">コマンドは、以下のようなパスを出力します（表示はあなたの環境によって異なります）:
+                    <br><span class="code">C:\Users\YourName\anaconda3\envs\control_lab\python.exe</span> (Windows 例)
+                    <br>または
+                    <br><span class="code">/home/yourname/anaconda3/envs/control_lab/bin/python</span> (Linux/macOS 例)
+                    <br>この**フルパス**（ファイルの場所全体）を**コピー**しておきます。最初のパス（もし複数表示された場合）が通常正しいものです。
+                </li>
+            </ol>
+        </div>
+
+        <div class="step task">
+            <strong>Step 2: Webots の設定を変更する</strong>
+            <ol>
+                <li>Webots アプリケーションを起動します。</li>
+                <li>メニューバーから <span class="code">Tools</span> (ツール) -> <span class="code">Preferences...</span> (設定...) を選択します。</li>
+                <li>表示された Preferences ウィンドウで、<span class="code">General</span> (一般) タブを選択します。</li>
+                <li><span class="code">Python command</span> (Python コマンド) という名前の入力フィールドを探します。</li>
+                <li class="confirmation">【設定】このフィールドに、**Step 1 でコピーした Python 実行ファイルのフルパスを貼り付けます**。パスが正しく、ファイル名 (<span class="code">python.exe</span> または <span class="code">python</span>) まで含まれていることを確認してください。</li>
+                <li><span class="code">OK</span> または <span class="code">Apply</span> ボタンをクリックして設定を保存し、Preferences ウィンドウを閉じます。</li>
+            </ol>
+            <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+                <img src="WebotsPythonPathSetting.gif" 
+                     alt="Webots PreferencesでPythonコマンドのパスを設定する手順のGIFアニメーション" 
+                     style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+                <p class="note" style="margin-top: 5px;">(図：Webots 設定画面での Python パス設定手順)</p>
+            </div>
+        </div>
+        <div class="confirmation">
+             <strong>【設定完了】</strong> これで、Webots はロボットのコントローラとして Python スクリプトが指定された際に、<span class="code">control_lab</span> 環境の Python を使用して実行するようになります。
+        </div>
+         <p class="note">もし設定後も Python ライブラリが見つからないエラーが出る場合は、パスが正しいか、Conda 環境が壊れていないかなどを再確認してください。</p>
+    </div>
+    <!-- <div class="section">
+        <h3>7. 次のステップ</h3>
+        <p>環境構築が完了したら、教員の指示に従い、指定された実験用プロジェクトファイル（Webots ワールドファイル、Python スクリプト等）をダウンロードし、各回の実験手順に進んでください。</p>
+        <p class="warning">もし環境構築で問題が発生した場合は、遠慮なく教員またはティーチングアシスタント (TA) に質問してください。</p>
+    </div> -->
+
+</div> </body>
+</html>
