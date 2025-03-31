@@ -203,67 +203,53 @@
       <li><a href="6kaime/index.html">第6回</a></li>
     </ul>
   </nav>
+
   
-  <div class="container">
+<div class="container">
   <section class="intro-section">
     <h2>コース概要</h2>
     <p>この総合実験では、二輪型倒立振子の制御をテーマに、ロボットの組み立てから環境構築、モーターの同定、Pythonを用いたシミュレーションによる制御器設計（P/PD/PID）、実機でのPID制御と電流PI制御の統合、方向制御、そして最終的にはWebotsシミュレータを用いた強化学習による倒立制御までを段階的に学びます。</p>
   </section>
-  
-  <div class="sessions-grid">
-    <div class="session-card">
-      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-      <div class="session-content">
-        <h3>第1回: ガイダンスと環境設定</h3>
-        <p>ロボットの組み立てとPC開発環境のセットアップ（Docker、WSL、Python等）を行います。Webots等のインストールも時間があれば実施します。</p>
-        <a href="1kaime/index.html" class="session-button">詳細を見る</a>
-      </div>
-    </div>
-    
-    <div class="session-card">
-      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-      <div class="session-content">
-        <h3>第2回: モーターの同定実験</h3>
-        <p>モーターを実際に動かしてデータを記録し、その特性パラメータを同定する実験を行います。</p>
-        <a href="2kaime/index.html" class="session-button">詳細を見る</a>
-      </div>
-    </div>
-    
-    <div class="session-card">
-      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-      <div class="session-content">
-        <h3>第3回: P/PD/PID制御 (シミュレーション)</h3>
-        <p>Pythonシミュレーションを用いてP, PD, PID, I-PD制御の動作確認とゲイン調整、モデルマッチング法を学びます。中間レポート課題。</p>
-        <a href="3kaime/index.html" class="session-button">詳細を見る</a>
-      </div>
-    </div>
-    
-    <div class="session-card">
-      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-      <div class="session-content">
-        <h3>第4回: PID制御と電流PI制御の統合 (実機)</h3>
-        <p>実機を用いてPID制御とモーター電流PI制御を統合し、理論的理解とゲイン調整の効果を検証します。</p>
-        <a href="4kaime/index.html" class="session-button">詳細を見る</a>
-      </div>
-    </div>
-    
-    <div class="session-card">
-      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-      <div class="session-content">
-        <h3>第5回: 二輪型倒立振子の方向移動制御</h3>
-        <p>左右輪の差分制御による旋回と、バランス制御と移動制御の両立について、ゲイン調整と実験を通じて探求します。</p>
-        <a href="5kaime/index.html" class="session-button">詳細を見る</a>
-      </div>
-    </div>
-    
-    <div class="session-card">
-      <div class="session-image" style="background-image: url('images/pendulum.gif'); background-size: contain; background-repeat: no-repeat; background-color: #f0f0f0;"></div>
-      <div class="session-content">
-        <h3>第6回: 強化学習(SAC)による倒立制御体験</h3>
-        <p>Webotsシミュレータ上で強化学習(SAC)を用い、倒立制御を実現します。事前学習済みモデルの利用や学習過程を体験します。最終レポート課題。</p>
-        <a href="6kaime/index.html" class="session-button">詳細を見る</a>
-      </div>
-    </div>
+
+  <div class="sessions-list">
+    <h2>各回の内容</h2>
+
+    <section class="session-item">
+      <h3>第1回: ガイダンスと環境設定</h3>
+      <p>ロボットの組み立てとPC開発環境のセットアップ（Docker、WSL、Python等）を行います。Webots等のインストールも時間があれば実施します。</p>
+      <p><a href="1kaime/index.html" class="session-link-button">詳細を見る</a></p>
+    </section>
+
+    <section class="session-item">
+      <h3>第2回: モーターの同定実験</h3>
+      <p>モーターを実際に動かしてデータを記録し、その特性パラメータを同定する実験を行います。</p>
+      <p><a href="2kaime/index.html" class="session-link-button">詳細を見る</a></p>
+    </section>
+
+    <section class="session-item">
+      <h3>第3回: P/PD/PID制御 (シミュレーション)</h3>
+      <p>Pythonシミュレーションを用いてP, PD, PID, I-PD制御の動作確認とゲイン調整、モデルマッチング法を学びます。中間レポート課題。</p>
+      <p><a href="3kaime/index.html" class="session-link-button">詳細を見る</a></p>
+    </section>
+
+    <section class="session-item">
+      <h3>第4回: PID制御と電流PI制御の統合 (実機)</h3>
+      <p>実機を用いてPID制御とモーター電流PI制御を統合し、理論的理解とゲイン調整の効果を検証します。</p>
+      <p><a href="4kaime/index.html" class="session-link-button">詳細を見る</a></p>
+    </section>
+
+    <section class="session-item">
+      <h3>第5回: 二輪型倒立振子の方向移動制御</h3>
+      <p>左右輪の差分制御による旋回と、バランス制御と移動制御の両立について、ゲイン調整と実験を通じて探求します。</p>
+      <p><a href="5kaime/index.html" class="session-link-button">詳細を見る</a></p>
+    </section>
+
+    <section class="session-item">
+      <h3>第6回: 強化学習(SAC)による倒立制御体験</h3>
+      <p>Webotsシミュレータ上で強化学習(SAC)を用い、倒立制御を実現します。事前学習済みモデルの利用や学習過程を体験します。最終レポート課題。</p>
+      <p><a href="6kaime/index.html" class="session-link-button">詳細を見る</a></p>
+    </section>
+
   </div> <section class="references">
     <h2>参考書</h2>
     <ul>
@@ -272,7 +258,34 @@
       <li>現代制御理論入門</li>
     </ul>
   </section>
-</div> 
+</div> <style>
+  .sessions-list h2 {
+    margin-bottom: 1.5em;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5em;
+  }
+  .session-item {
+    margin-bottom: 2em;
+    padding-left: 1em;
+    border-left: 4px solid #007bff; /* 左側にアクセント */
+  }
+  .session-item h3 {
+    margin-bottom: 0.5em;
+  }
+  .session-link-button { /* ボタン風のスタイル */
+    display: inline-block;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 0.5em;
+    transition: background-color 0.2s ease;
+  }
+  .session-link-button:hover {
+    background-color: #0056b3;
+  }
+</style>
   <!-- フッター -->
   <footer>
     <p>&copy; <script>document.write(new Date().getFullYear());</script> 総合実験1 回転型倒立振子のモデリングと制御 All Rights Reserved.</p>
