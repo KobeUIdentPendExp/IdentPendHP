@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>DCモーター システム同定 実験手順</title>
+        <style>
+            /* 您可以继续使用之前的样式 */
+            body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+            .workflow-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+            .phase { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+            .phase h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+            .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+            .confirmation { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+            .confirmation ul, .step ul { margin-top: 5px; margin-bottom: 5px; padding-left: 20px; }
+            .confirmation li, .step li { margin-bottom: 3px; }
+            .arrow { text-align: center; font-size: 1.8em; color: #888; margin: 15px 0; }
+            .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+            .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px;}
+    
+            /* MathJax 默认是 inline-block，有时会导致行内公式轻微错位，可以微调 */
+            mjx-container[display="inline"] {
+                 vertical-align: baseline; /* 尝试基线对齐 */
+                 margin: 0 0.15em; /* 稍微调整左右边距 */
+            }
+        </style>
+    
+        <script>
+            // MathJax 配置，告诉它识别 $...$ 作为行内公式
+            MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']], // 使用 $...$ 和 \(...\)
+                displayMath: [['$$', '$$'], ['\\[', '\\]']] // 使用 $$...$$ 和 \[...\]
+              },
+              svg: {
+                fontCache: 'global' // 使用 SVG 输出，并缓存字体
+              }
+            };
+        </script>
+        <script type="text/javascript" id="MathJax-script" async
+                src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+                // 从 CDN 加载 MathJax 库
+        </script>
+        </head>
+<body>
+
+<div class="workflow-container">
+    <h2>DCモーター システム同定：実験操作フロー</h2>
+    <p class="note">この手順に従って、DCモーターのパラメータ同定実験を進めてください。</p>
+
+    <div class="phase" id="exp-prep">
+        <h3>1. 実験準備と環境確認</h3>
+        <div class="step"><strong>目的の再確認:</strong> この実験を通じて、DCモーターの主要なパラメータ ($a=k_T/J$, $b=-B/J$) を実験データから推定することを理解する。</div>
+        <div class="step"><strong>ハードウェア接続チェック:</strong>
+            <ul>
+                <li>ロボットとPCがUSBケーブルで確実に接続されているか確認する。</li>
+            </ul>
+        </div>
+        <div class="step"><strong>PCソフトウェア環境チェック:</strong>
+            <ul>
+                <li>指示された方法（WSL, Docker等）でPython環境を起動する。</li>
+                <li>必要なライブラリ（例: <span class="code">hid</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span>, <span class="code">scipy</span>）が環境にインストールされているか確認する（必要であればインストール）。</li>
+            </ul>
+        </div>
+        <div class="step"><strong>実験プログラムの準備:</strong>
+            <ul>
+                <li>データ収集用スクリプト（例: <span class="code">collect_data.py</span>）とデータ解析用スクリプト（例: <span class="code">identify_motor.py</span>）をPC上の作業フォルダに用意する。</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="phase" id="exp-run">
+        <h3>2. データ収集実験の実施 (<span class="code">collect_data.py</span> 実行)</h3>
+        <div class="step">データ収集用スクリプト (<span class="code">collect_data.py</span>) をコードエディタ (VS Code 等) で開く。</div>
+        <div class="confirmation"><strong>【実行直前確認】</strong> モーター初期化されているかどうかを確認。</div>
+        <div class="step">ターミナル（またはエディタの実行機能）でデータ収集スクリプトを実行する。</div>
+        <div class="confirmation"><strong>【実行中の監視・確認】</strong>
+            <ul>
+                <li>**接続:** ターミナルに「Successfully connected to HID device」のような接続成功メッセージが表示されるか確認。（Simモードの場合はその旨が表示されるか確認）</li>
+                <li>**動作:** モーターが予期した通りに（例: 指令が正弦波なら往復振動）スムーズに動作を開始するか目視で確認。異音や異常な振動がないか注意する。</li>
+                <li>**エラー:** ターミナルに通信エラー等が表示されていないか監視する。</li>
+            </ul>
+        </div>
+        <div class="step">プログラムが規定時間（10秒）動作し、自動的に終了するのを待つ。</div>
+        <div class="confirmation"><strong>【実験終了確認】</strong>
+            <ul>
+                <li>モーターが完全に停止したことを確認。</li>
+                <li>ターミナルに「Setting final current command to zero」「Disconnected」等の正常終了メッセージが表示されたか確認。</li>
+                <!-- <li>スクリプトが最終的なプロット（例: 角度と電流の時間応答）を生成した場合、そのグラフがおおよそ予期した形になっているか確認。</li> -->
+            </ul>
+        </div>
+        <div class="confirmation"><strong>【生成ファイルの確認】</strong>
+            <ul>
+                <li>指定されたCSVファイル（例: <span class="code">identification_data_hid.csv</span>）が作業フォルダに生成されているか確認。</li>
+                <li>ファイルサイズがゼロでなく、開いてみてデータ（数値の列）が記録されていることを確認する。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="arrow">⬇️</div> <div class="phase" id="exp-analysis">
+        <h3>3. データ解析とパラメータ同定 (<span class="code">identify_motor.py</span> 実行)</h3>
+        <div class="step">データ解析用スクリプト (<span class="code">identify_motor.py</span>) をコードエディタで開く。</div>
+        <div class="step">スクリプト内の設定項目（特に**フィルタのカットオフ周波数 <span class="code">filter_cutoff_hz</span>**）を確認・修正する。最初はデフォルト値で試す。</div>
+        <div class="step">ターミナル等でデータ解析スクリプトを実行する。</div>
+        <div class="confirmation"><strong>【結果の確認と考察】</strong> スクリプトの実行が完了し、複数のグラフが表示されたら、以下の点を確認・考察する。
+            <ul>
+                <li>**ターミナル出力:**
+                    <ul>
+                        <li>CSVデータは正常に読み込めたか？</li>
+                        <li>推定されたパラメータ $\hat{a}, \hat{b}$ の値はいくつか？ 符号は物理的に妥当か？</li>
+                        <li>モデルの適合度 $R^2$ (1に近いほど良い) と RMSE (小さいほど良い) の値は？</li>
+                    </ul>
+                </li>
+                <li>**グラフ分析:**
+                    <ul>
+                        <li><span class="code">生データ vs フィルタ後データ:</span> 微分でノイズが増幅されているか？フィルタはノイズを効果的に除去できているか？信号の主要な波形を歪めていないか？ <span class="note">(→ もし不適切なら、カットオフ周波数を変更して再実行を検討)</span></li>
+                        <li><span class="code">実測 vs 推定 加速度:</span> 推定モデルによる加速度のグラフ（破線）が、フィルタリングされた実測加速度（実線）にどれだけ良く一致しているか？</li>
+                        <!-- <li><span class="code">寄与度:</span> 電流に比例する項 ($aI$) と速度に比例する項 ($b\omega$) が、全体の加速度に対してどのように寄与しているか？</li> -->
+                        <!-- <li><span class="code">残差:</span> 誤差（残差）は時間に対してランダムに分布しているか？ 特定のパターン（例：周期的な変動）が見られないか？ 残差のヒストグラムはゼロ付近を中心とした分布になっているか？</li> -->
+                        <li><span class="code">シミュレーション比較:</span> 推定パラメータを使ったシミュレーション結果（角度、速度、加速度）は、実験データ（フィルタ後）とどの程度一致しているか？ RMSE値は小さいか？</li>
+                        <li><span class="code">誤差プロット:</span> シミュレーションと実験結果の差は、どの時間帯やどの状態で大きいか？</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="phase" id="exp-report">
+        <h3>4. 結果の整理とレポート作成</h3>
+        <div class="step">得られた推定パラメータ $\hat{a}, \hat{b}$ の値を記録する。</div>
+        <div class="step">実験結果、特にグラフ分析から読み取れることを基に考察をまとめる。
+            <ul>
+                <li>構築したモデルの精度はどの程度と言えるか？</li>
+                <li>フィルタリングは適切に行えたか？ カットオフ周波数の選択理由は？</li>
+                <li>残差分析から、モデルの仮定（例: 線形摩擦のみ）に問題はありそうか？</li>
+                <li>シミュレーションとの比較から何が言えるか？</li>
+                <li>実験の限界や誤差の要因は何か？</li>
+                <!-- <li>(可能であれば) $J$ の値を用いて、$k_T$ と $B$ の物理的な値を推定する。</li> -->
+            </ul>
+        </div>
+        <div class="step">以上の内容を基に、実験レポートを作成する。</div>
+    </div>
+</div>
+
+</body>
+</html>
