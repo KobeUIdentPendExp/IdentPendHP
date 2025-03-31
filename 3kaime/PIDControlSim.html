@@ -1,0 +1,269 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Updated Title -->
+    <title>PID制御シミュレーション 操作手順</title>
+    <style>
+        /* Reusing styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .workflow-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .phase { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .phase h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        /* Changed confirmation style to blue */
+        .confirmation { background-color: #e6f7ff; border: 1px solid #b3e0ff; color: #004085; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation ul, .step ul, .step ol { margin-top: 5px; margin-bottom: 5px; padding-left: 20px; }
+        .confirmation li, .step li { margin-bottom: 3px; }
+        .arrow { text-align: center; font-size: 1.8em; color: #888; margin: 15px 0; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; }
+        .param { font-weight: bold; color: #c7254e; } /* Changed param color slightly */
+        /* MathJax alignment helper */
+        mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
+    </style>
+    <!-- Include MathJax for formula rendering -->
+    <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<div class="workflow-container">
+    <!-- Updated Heading -->
+    <h2>PID制御シミュレーション：実験操作フロー</h2>
+    <p class="note">前の実験で同定したモーターパラメータ ($\hat{a}, \hat{b}$) を用いて、P, PD, PID 制御のシミュレーションを行います。</p>
+
+    <!-- Phase 1: Preparation -->
+    <div class="phase" id="sim-prep">
+        <h3>1. シミュレーション準備</h3>
+        <div class="step"><strong>目的の理解:</strong> 同定したモデルに基づき、P, I, D 各ゲインがモーターの角度制御性能（応答速度、オーバーシュート、定常偏差、外乱抑制など）にどのような影響を与えるかをシミュレーションで確認・比較する。</div>
+        <div class="step"><strong>必要なもの:</strong>
+            <ul>
+                <li>前のシステム同定実験で得られた推定パラメータ <span class="param">$\hat{a}$</span> (<span class="code">a_est</span>) と <span class="param">$\hat{b}$</span> (<span class="code">b_est</span>) の値。</li>
+                <li>Python実行環境 (<span class="code">numpy</span>, <span class="code">matplotlib</span> が必要)。</li>
+                <li>提供されたPID制御シミュレーション用スクリプト（例: <span class="code">pid_simulation.py</span>）。</li>
+            </ul>
+        </div>
+        <div class="step"><strong>コードの準備とパラメータ入力:</strong>
+            <ul>
+                <li>シミュレーション用スクリプトをコードエディタ (VS Code 等) で開く。</li>
+                <li>スクリプト内で <span class="param">`a_est = ...`</span> と <span class="param">`b_est = ...`</span> の値を設定している箇所を探す。</li>
+                <li class="confirmation">【重要】これらの値を、**あなたがシステム同定で得た実際の $\hat{a}, \hat{b}$ の値に正確に書き換える**。</li>
+                <li>シミュレーション設定（<span class="code">T_end</span>, <span class="code">dt</span>）と目標角度（<span class="code">target_deg</span>）を確認する（通常は変更不要）。</li>
+                <li>外乱設定（<span class="code">add_constant_disturbance</span>, <span class="code">constant_disturbance_accel</span>, <span class="code">add_gaussian_noise</span>, <span class="code">noise_std_dev</span> など）を確認・設定する。<strong>（最初は一定外乱 <span class="code">add_constant_disturbance = True</span> を設定することを推奨）</strong></li>
+                <li>PIDゲイン（<span class="param">`Kp`</span>, <span class="param">`Ki`</span>, <span class="param">`Kd`</span>）の初期値を設定する。（次のステップでP制御から始めるため、<span class="param">Ki=0</span>, <span class="param">Kd=0</span> に設定）</li>
+             </ul>
+        </div>
+    </div>
+
+    <!-- Phase 2: Simulation Execution and Tuning (NEW CONTENT) -->
+    <div class="phase" id="sim-run-analyze">
+        <h3>2. シミュレーション実行とゲイン調整 (P, PD, PID比較)</h3>
+        <p class="note">このフェーズでは、Kp, Ki, Kd の値を変更しながら複数回シミュレーションを実行し、各制御方式の特性を比較・理解します。<strong>毎回、ゲイン値と得られた応答（グラフ形状、主要な性能指標）を記録してください。</strong></p>
+
+        <div class="step"><strong>【実験 1: P 制御】</strong> (比例制御)
+            <ol>
+                <li><strong>ゲイン設定:</strong> スクリプト内のコントローラパラメータ部分で、積分ゲイン <span class="param">Ki = 0</span>、微分ゲイン <span class="param">Kd = 0</span> に設定します。</li>
+                <li>比例ゲイン <span class="param">Kp</span> の値を設定します。まずは小さい値（例: 50）から始めます。</li>
+                <li>（オプション）外乱設定を確認します (<span class="code">add_constant_disturbance</span> や <span class="code">add_gaussian_noise</span>)。一定外乱を有効にすると定常偏差が見やすくなります。</li>
+                <li>シミュレーションスクリプトを実行します。</li>
+                <li class="confirmation"><strong>結果の観察・記録 (P制御):</strong>
+                    <ul>
+                        <li>角度応答は目標値に到達しますか？ 応答速度は？</li>
+                        <li>オーバーシュートはありますか？</li>
+                        <li>**定常偏差:** 特に一定外乱がある場合、目標値との間に定常的なズレ（定常偏差）が残りますか？ P制御の限界を確認します。</li>
+                        <li>制御入力（電流）の大きさや形は？</li>
+                        <li><span class="param">Kp</span> の値を徐々に大きくしていくと、応答速度、オーバーシュート、定常偏差（外乱ありの場合）はどう変化しますか？ 安定性は保たれますか？ 最適と思われる <span class="param">Kp</span> の範囲を探します。</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="step"><strong>【実験 2: PD 制御】</strong> (比例・微分制御)
+            <ol>
+                <li><strong>ゲイン設定:</strong> <span class="param">Ki = 0</span> のままにします。実験1で見つけた適切な範囲の <span class="param">Kp</span> を設定します。</li>
+                <li>微分ゲイン <span class="param">Kd</span> に正の値を設定します（例: 1.0 から始めて調整）。</li>
+                <li>スクリプトを実行します。</li>
+                <li class="confirmation"><strong>結果の観察・記録 (PD制御):</strong>
+                    <ul>
+                        <li><span class="param">Kd</span> の効果：P制御の結果と比較して、応答はどう変化しましたか？（オーバーシュート抑制効果、振動抑制効果、応答速度への影響など）</li>
+                        <li>制御入力（電流）の初期の挙動は P 制御と比べてどう変化しましたか？（スパイク状になりやすい）</li>
+                        <li>定常偏差（外乱ありの場合）は P 制御と比べて変化しましたか？ （理論上、PD 制御だけでは一定外乱による定常偏差は解消されません）</li>
+                        <li><span class="param">Kd</span> の値を変更すると応答はどう変化しますか？ 大きすぎるとノイズの影響を受けやすくなる場合があります。</li>
+                        <li><span class="param">Kp</span> と <span class="param">Kd</span> を様々に組み合わせて調整し、速応性と安定性（オーバーシュート抑制）のバランスが良い組み合わせを探します。結果を記録します。</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="step"><strong>【実験 3: PID 制御】</strong> (比例・積分・微分制御)
+            <ol>
+                <li><strong>ゲイン設定:</strong> 実験2で見つけた良好な応答を示す <span class="param">Kp</span> と <span class="param">Kd</span> の値を設定します。</li>
+                <li>積分ゲイン <span class="param">Ki</span> に小さい正の値（例: 10.0 から始めて調整）を設定します。</li>
+                <li><strong>（重要）一定外乱 (<span class="code">add_constant_disturbance = True</span>) を有効にして**、積分項の効果である定常偏差抑制を確認します。</li>
+                <li>スクリプトを実行します。</li>
+                <li class="confirmation"><strong>結果の観察・記録 (PID制御):</strong>
+                    <ul>
+                        <li><span class="param">Ki</span> を加えたことで、PD制御と比べて応答はどう変化しましたか？</li>
+                        <li>**定常偏差の解消:** 一定外乱がある設定で、**定常偏差が解消されましたか？** これが積分項の主な役割です。解消されるまでの時間はどのくらいですか？</li>
+                        <li>副作用: 積分項の導入により、オーバーシュートが増加したり、応答が少し遅くなったり、振動的になったりしませんでしたか？</li>
+                        <li>制御入力（電流）の定常値（外乱がある場合）はどう変化しましたか？（外乱を打ち消すための一定値が出力されているはず）</li>
+                        <li><span class="param">Ki</span> の値を変更すると、定常偏差の解消速度や応答の振動特性はどう変わりますか？</li>
+                        <li><span class="param">Kp</span>, <span class="param">Ki</span>, <span class="param">Kd</span> の3つのゲインを調整（PIDチューニング）し、総合的に良好な性能（例：速い応答、少ないオーバーシュート、外乱下の定常偏差ゼロ）を目指します。結果を記録します。</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        <!-- <div class="step"><strong>【実験 4: I-PD 制御 (コード修正後)】</strong>
+            <ol>
+                <li><strong>コード修正:</strong> スクリプト内の制御入力 <span class="code">u</span> を計算する行を、以下の I-PD 制御法則に従って修正します。
+                    <br>
+                    目標角度を $\theta_d(t)$、モーターの角度（測定値）を $\theta(t)$、誤差を $e(t) = \theta_d(t) - \theta(t)$ とすると、I-PD 制御入力 $u(t)$ は次のように計算されます：
+                    $$
+                    u(t) = K_i \int_{0}^{t} e(\tau) d\tau \underbrace{- K_p \theta(t)}_{\text{P on Measurement}} \underbrace{- K_d \frac{d\theta(t)}{dt}}_{\text{D on Measurement}}
+                    $$
+                    -- <span class="note">（実装例: <br>
+                    <span class="code">error = target_rad - theta_sim[i]</span> <br>
+                    <span class="code">integral_error += error * dt</span> <br>
+                    <span class="code">derivative_term = - Kd * omega_sim[i]</span>  # 角速度 omega = d(theta)/dt を利用 <br>
+                    <span class="code">proportional_term = - Kp * theta_sim[i]</span> <br>
+                    <span class="code">u = Ki * integral_error + proportional_term + derivative_term</span> <br>
+                    ※ 符号に注意。ここでは測定値 $\theta$ と $\omega$ を直接使っています。）</span> --
+                </li>
+                <li><strong>ゲイン設定:</strong> I-PD 用に <span class="param">Kp</span>, <span class="param">Ki</span>, <span class="param">Kd</span> を設定・調整。</li>
+                <li>スクリプトを実行する。</li>
+                <li class="confirmation"><strong>結果の観察・記録 (I-PD制御):</strong>
+                    <ul>
+                        <li>**PIDとの比較 (目標値応答):** シミュレーション開始時のステップ応答において、標準PIDと比較してオーバーシュートが低減されているか？ 立ち上がり時間に影響はあるか？</li>
+                        <li>**PIDとの比較 (外乱応答):** 一定外乱やノイズ外乱に対する応答（定常偏差の有無、変動抑制）は、標準PIDと比較してどうか？</li>
+                        <li>ゲインを再調整</li>
+                    </ul>
+                </li>
+            </ol>
+        </div> -->
+    </div>
+    <div class="step"><strong>【方法 1: モデルマッチング / 極配置法 (計算による設計)】</strong>
+        <p>この方法は、同定したモーターモデルと目標応答特性に基づき、PIDゲインを計算します。</p>
+        <ol>
+            <li><strong>システムの伝達関数表現:</strong>
+                <ul>
+                    <li>システム同定により得られたモデル $\alpha(t) = \hat{a} I(t) + \hat{b} \omega(t)$ を考えます。ここで $\omega = \dot{\theta}, \alpha = \ddot{\theta}$ です。</li>
+                    <li>ラプラス変換を用いると（初期値ゼロと仮定）、$s\Theta(s) = \Omega(s)$, $s^2\Theta(s) = A(s)$ となります。</li>
+                    <li>上記の関係から、モーターの入力電流 $I(s)$ から出力角度 $\Theta(s)$ までの**プラント伝達関数 $G_p(s)$** は次のように求められます：
+                        $$ s^2\Theta(s) = \hat{a} I(s) + \hat{b} (s\Theta(s)) $$
+                        $$ (s^2 - \hat{b}s)\Theta(s) = \hat{a} I(s) $$
+                        $$ G_p(s) = \frac{\Theta(s)}{I(s)} = \frac{\hat{a}}{s(s-\hat{b})} $$
+                        <span class="note">($\hat{a}, \hat{b}$ は同定されたパラメータ値)</span>
+                    </li>
+                    <li>PID制御器の**コントローラ伝達関数 $G_c(s)$** は：
+                        $$ G_c(s) = \frac{U(s)}{E(s)} = K_p + \frac{K_i}{s} + K_d s = \frac{K_d s^2 + K_p s + K_i}{s} $$
+                        ($E(s) = \Theta_d(s) - \Theta(s)$ は誤差、 $U(s)$ は制御入力=電流 $I(s)$)
+                    </li>
+                </ul>
+            </li>
+
+            <li><strong>閉ループ特性方程式の導出:</strong>
+                <ul>
+                    <li>標準的なフィードバック制御系の**閉ループ伝達関数 $G_{cl}(s)$** は $\frac{G_c(s)G_p(s)}{1 + G_c(s)G_p(s)}$ で与えられます。</li>
+                    <li>システムの応答特性（安定性、速さ、振動など）は、閉ループの**極（特性方程式の根）**によって決まります。</li>
+                    <li>**特性方程式**は $1 + G_c(s)G_p(s) = 0$ で与えられます。代入して整理すると：
+                        $$ 1 + \left( \frac{K_d s^2 + K_p s + K_i}{s} \right) \left( \frac{\hat{a}}{s(s-\hat{b})} \right) = 0 $$
+                        <span class="note">(両辺に $s^2(s-\hat{b})$ を掛けて分母を払う)</span>
+                        $$ s^2(s-\hat{b}) + \hat{a}(K_d s^2 + K_p s + K_i) = 0 $$
+                        $$ s^3 - \hat{b}s^2 + \hat{a}K_d s^2 + \hat{a}K_p s + \hat{a}K_i = 0 $$
+                        $$ \boxed{ s^3 + (-\hat{b} + \hat{a} K_d) s^2 + (\hat{a} K_p) s + (\hat{a} K_i) = 0 } $$
+                        これを $P_{actual}(s) = 0$ とします。
+                    </li>
+                </ul>
+            </li>
+
+            <li><strong>目標応答と極配置:</strong>
+                <ul>
+                    <li>目標とする応答特性を**望ましい極配置 $p_1, p_2, p_3$** で指定します。</li>
+                    <li>多くの場合、二つの共役複素極（主極 $p_{1,2}$）と、それより速い（実部がより負の）一つの実数極 $p_3$ を選びます。主極は望ましい応答速度（自然周波数 $\omega_n$）と減衰比（$\zeta$）で決まります。
+                        <br>$p_{1,2} = -\zeta\omega_n \pm j\omega_n\sqrt{1-\zeta^2}$ (if $\zeta < 1$), $p_3 = -k \zeta \omega_n$ ($k \ge 3$程度)
+                    </li>
+                    <li>これにより、**望ましい特性方程式 $P_{desired}(s)$** が決まります：
+                        $$ P_{desired}(s) = (s-p_1)(s-p_2)(s-p_3) = s^3 + C_2 s^2 + C_1 s + C_0 = 0 $$
+                        ($C_2, C_1, C_0$ は $p_1, p_2, p_3$ または $\omega_n, \zeta, p_3$ から計算される係数)
+                    </li>
+                </ul>
+            </li>
+
+            <li><strong>係数比較によるゲイン計算:</strong>
+                <ul>
+                    <li>$P_{actual}(s)$ と $P_{desired}(s)$ の $s$ の**同次項の係数が等しくなるように** $K_p, K_i, K_d$ を決定します。
+                        <ul>
+                            <li>$s^2$ の係数比較: $-\hat{b} + \hat{a} K_d = C_2 \implies K_d = (C_2 + \hat{b}) / \hat{a}$</li>
+                            <li>$s^1$ の係数比較: $\hat{a} K_p = C_1 \implies K_p = C_1 / \hat{a}$</li>
+                            <li>$s^0$ の係数比較: $\hat{a} K_i = C_0 \implies K_i = C_0 / \hat{a}$</li>
+                        </ul>
+                    </li>
+                    <li><span class="note">($C_2, C_1, C_0$ を $\omega_n, \zeta, p_3$ で表す具体的な式は、提供されたPythonコード内の `calculate_pid_gains_pole_placement` 関数に実装されています。)</span></li>
+                </ul>
+            </li>
+
+            <li class="confirmation"><strong>【コード利用と検証】</strong>
+                <ul>
+                    <li>Pythonコード内で目標性能 (<span class="param">`desired_omega_n`</span>, <span class="param">`desired_zeta`</span>, <span class="param">`third_pole_factor`</span>) を設定します。</li>
+                    <li>スクリプトを実行し、コンソールに出力される計算されたゲイン <span class="param">Kp</span>, <span class="param">Ki</span>, <span class="param">Kd</span> を確認します。</li>
+                    <li>コードが自動的にこれらのゲインを使ってシミュレーションを実行し、結果グラフを表示します。</li>
+                    <li>表示された応答が、設定した目標性能に近いか（応答速度、オーバーシュートなど）を確認します。</li>
+                </ul>
+            </li>
+            <!-- <li><span class="note">注：モデルの不確かさ等により微調整が必要な場合もあります。その際は次の試行錯誤法に進みます。</span></li> -->
+        </ol>
+    </div>
+<!-- 
+        <div class="step"><strong>【方法 2: 試行錯誤による調整 (チューニング)】</strong>
+            <p>計算で求めたゲインを初期値とするか、ゼロから始めて、シミュレーションを繰り返しながらゲインを調整し、望ましい応答を目指します。（手順は前述の P → PD → PID 実験と同様）</p>
+            <ol>
+                 <li>P制御 (<span class="param">Ki=0, Kd=0</span>) で <span class="param">Kp</span> を調整。</li>
+                 <li>PD制御 (<span class="param">Ki=0</span>) で <span class="param">Kp</span> と <span class="param">Kd</span> を調整。</li>
+                 <li>PID制御で <span class="param">Kp</span>, <span class="param">Ki</span>, <span class="param">Kd</span> を総合的に調整。（特に <span class="param">Ki</span> で定常偏差をなくす）</li>
+                 <li class="confirmation"><strong>【観察と比較】</strong> 各ステップでゲイン値と応答特性（立ち上がり時間、オーバーシュート、定常誤差、外乱応答など）を記録し、比較検討する。</li>
+            </ol>
+        </div>
+         <div class="step note"><strong>【I-PD制御への応用】</strong> これらのゲイン設計・調整方法は I-PD 制御にも応用できますが、特にモデルマッチング/極配置を行う場合は、P項が誤差でなく測定値に作用することを考慮して閉ループ特性を立てる必要があります。試行錯誤法は同様に適用可能です。（詳細は次のセクション）</div>
+    </div> -->
+
+    <!-- <div class="phase" id="sim-ipd">
+      <h3>4. I-PD 制御シミュレーション (発展)</h3>
+      </div> -->
+
+
+    <div class="phase" id="sim-discuss">
+        <h3>5. 全体の考察と比較、レポート作成</h3>
+        <div class="step"><strong>結果の整理と比較考察:</strong>
+            <ul>
+                <li>モデルマッチング/極配置法で設計したゲインによる応答と、試行錯誤で調整したゲインによる応答を比較する。</li>
+                <li>各実験（P, PD, PID, I-PD(実施した場合)）で得られた応答グラフと性能を横断的に比較・整理する。</li>
+                </ul>
+        </div>
+        </div>
+    <!-- Phase 3: Discussion -->
+    <!-- <div class="phase" id="sim-discuss">
+        <h3>3. 考察とレポート作成</h3>
+        <div class="step"><strong>結果の整理と考察:</strong>
+            <ul>
+                <li>各実験（P, PD, PID）で得られた代表的な応答グラフと性能（立ち上がり時間、オーバーシュート、整定時間、定常偏差、外乱応答など）を比較・整理する。</li>
+                <li>P, I, D 各ゲインがシステムの応答に与える具体的な影響について考察する。</li>
+                <li>なぜ PID 制御（特に積分項 I）が定常偏差や一定外乱に対して有効なのかを説明する。</li>
+                <li>ゲインチューニングの難しさやトレードオフ（例：速応性と安定性）について触れる。</li>
+            </ul>
+        </div>
+        <div class="step"><strong>シミュレーションの限界について:</strong>
+             <ul>
+                <li>このシミュレーションは、同定された**線形モデル**に基づいているため、実際のモーターの非線形性（摩擦、バックラッシ、飽和等）は考慮されていないことを再認識する。</li>
+                <li>シミュレーションで用いた外乱モデル（一定加速度やガウスノイズ）が、現実のすべての外乱を代表するわけではないことを理解する。</li>
+                <li>センサーノイズや測定誤差の影響も、今回のシミュレーションでは限定的（または未考慮）である点に注意する。</li>
+            </ul>
+        </div>
+        <div class="step">以上の結果と考察を基に、実験レポートを作成する。次のステップ（実機実験など）への展望を考察する。</div>
+    </div> -->
+
+</div>
+
+</body>
+</html>
