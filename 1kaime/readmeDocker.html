@@ -45,10 +45,10 @@
         // 3. DOMの読み込み完了後にスクリプトを実行
         document.addEventListener('DOMContentLoaded', async () => {
             const contentElement = document.getElementById('readme-content');
-            const readmePath = 'README.md'; // HTMLファイルからの相対パス
+            const readmePath = 'README.Docker.md'; // HTMLファイルからの相対パス
 
             try {
-                // 4. fetch を使用して README.md ファイルの内容を取得
+                // 4. fetch を使用して README.Docker.md ファイルの内容を取得
                 const response = await fetch(readmePath);
 
                 // リクエストが成功したかチェック
@@ -68,9 +68,9 @@
                 contentElement.innerHTML = htmlContent;
 
             } catch (error) {
-                console.error('README.md の読み込みまたはレンダリング中にエラーが発生しました:', error);
+                console.error('README.Docker.md の読み込みまたはレンダリング中にエラーが発生しました:', error);
                 // エラーメッセージを表示
-                contentElement.innerHTML = `<p class="error-message">README.md の読み込みまたはレンダリング中にエラーが発生しました: ${error.message}</p>`;
+                contentElement.innerHTML = `<p class="error-message">README.Docker.md の読み込みまたはレンダリング中にエラーが発生しました: ${error.message}</p>`;
             }
         });
     </script>
