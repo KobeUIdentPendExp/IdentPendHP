@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1回: ガイダンスと環境設定 - 総合実験1</title>
+    <style>
+        /* --- START: ホームページのスタイルをベースに統合・調整 --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            background-color: #f0f2f5; /* 背景色 */
+            color: #333;
+            line-height: 1.6;
+        }
+        a {
+            text-decoration: none;
+            color: #0066cc;
+        }
+        a:hover {
+            color: #004999;
+        }
+        /* ヘッダー (ホームページからコピー) */
+        header {
+            background: linear-gradient(120deg, #4c8bf5, #367aec);
+            color: #fff;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        header h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        /* ナビゲーション (ホームページからコピー) */
+        nav {
+            /* margin-top: 20px; はヘッダー直下なので不要かも */
+            background-color: #333;
+            padding: 10px 0;
+        }
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            list-style: none;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: #fff;
+            font-size: 1.05em;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        nav ul li a:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+        /* メインコンテンツのコンテナ */
+        .lesson-container { /* ホームページの .container とは別に定義 */
+            max-width: 900px; /* レッスン内容に合わせて幅調整 */
+            margin: 30px auto;
+            padding: 30px; /* 内側の余白 */
+            background-color: #fff; /* コンテンツエリアの背景色 */
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        /* --- END: ホームページのスタイル --- */
+
+        /* --- START: レッスンページ固有のスタイル調整 --- */
+        /* レッスンページのメインタイトル (元のH1スタイルを調整) */
+        .lesson-title {
+            font-size: 1.8em; /* サイズ調整 */
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-left: 5px solid #007bff;
+            margin-bottom: 2em;
+        }
+        /* 各セクション */
+        section {
+            margin-bottom: 2.5em;
+            padding-bottom: 1.5em;
+            border-bottom: 1px dashed #ccc;
+        }
+        section:last-child {
+            border-bottom: none;
+        }
+        /* セクション見出し (H2) */
+        section h2 {
+            font-size: 1.5em; /* サイズ調整 */
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.3em;
+            margin-bottom: 1em;
+        }
+        /* ファイルリスト (#files) */
+        #files ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        #files li {
+            margin-bottom: 0.8em;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        #files a {
+            text-decoration: none;
+            color: #0056b3;
+            font-weight: bold;
+        }
+        #files a:hover {
+            text-decoration: underline;
+        }
+        /* 工事中表示 */
+        .construction-notice {
+            color: #888;
+            font-style: italic;
+        }
+        /* --- END: レッスンページ固有のスタイル --- */
+
+        /* フッター (ホームページからコピー) */
+        footer {
+            text-align: center;
+            font-size: 0.9em;
+            background: #333;
+            color: #bbb;
+            padding: 20px;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>2025年度総合実験1</h1>
+        <h2>二輪型倒立振子のモデリングと制御</h2>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="../index.html">ホーム</a></li>
+            <li><a href="../1kaime/index.html">第1回</a></li>
+            <li><a href="../2kaime/index.html">第2回</a></li>
+            <li><a href="../3kaime/index.html">第3回</a></li>
+            <li><a href="../4kaime/index.html">第4回</a></li>
+            <li><a href="../5kaime/index.html">第5回</a></li>
+            <li><a href="../6kaime/index.html">第6回</a></li>
+            </ul>
+    </nav>
+
+    <div class="lesson-container">
+
+        <h1 class="lesson-title">第1回: ガイダンスと環境設定</h1>
+
+        <section id="explanation">
+            <h2>説明資料</h2>
+            <p class="construction-notice">
+                工事中
+            </p>
+        </section>
+
+        <section id="workflow">
+            <h2>作業流れ</h2>
+            <p>
+                <a href="#" target="_blank" rel="noopener noreferrer">作業の流れはこちらのリンクを確認してください</a>
+            </p>
+        </section>
+
+        <section id="files">
+            <h2>今回利用するファイル</h2>
+            <ul>
+                <li>
+                    <a href="【ここにfile1のダウンロードURLを入力】" download="file1.zip">
+                        file1 をダウンロード
+                    </a>
+                </li>
+                <li>
+                    <a href="【ここにfile2のダウンロードURLを入力】" download="file2.pdf">
+                        file2 をダウンロード
+                    </a>
+                </li>
+                </ul>
+        </section>
+
+    </div> <footer>
+        <p>&copy; <script>document.write(new Date().getFullYear());</script> 総合実験1 回転型倒立振子のモデリングと制御 All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
