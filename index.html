@@ -204,88 +204,75 @@
     </ul>
   </nav>
   
-  <!-- メインコンテンツ -->
   <div class="container">
-    <!-- 紹介セクション -->
-    <section class="intro-section">
-      <h2>コース概要</h2>
-      <p>この総合実験では、回転型倒立振子のモデリングと制御について学びます。LEGO EV3を使用して倒立振子を製作し、Simulinkでモーターの動作確認を行い、振子部分とアーム部分の運動方程式を導出します。P制御、PD制御、PID制御を実装し、最終的に倒立振子の実験を行います。</p>
-    </section>
-    
-    <!-- 回数ごとのカード -->
-    <div class="sessions-grid">
-      <!-- 第1回 -->
-      <div class="session-card">
-        <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-        <div class="session-content">
-          <h3>第1回: LEGO EV3による倒立振子製作</h3>
-          <p>LEGO EV3を使用して回転型倒立振子を製作し、Simulinkによるモーター等の動作確認を行います。</p>
-          <a href="1kaime/index.html" class="session-button">詳細を見る</a>
-        </div>
-      </div>
-      
-      <!-- 第2回 -->
-      <div class="session-card">
-        <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-        <div class="session-content">
-          <h3>第2回: 振子部の運動方程式</h3>
-          <p>振子部の運動方程式の導出と振子部未知パラメータの同定を行います。</p>
-          <a href="2kaime/index.html" class="session-button">詳細を見る</a>
-        </div>
-      </div>
-      
-      <!-- 第3回 -->
-      <div class="session-card">
-        <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-        <div class="session-content">
-          <h3>第3回: アーム部の運動方程式</h3>
-          <p>アーム部の運動方程式の導出とアーム部のパラメータ同定を行います。</p>
-          <a href="3kaime/index.html" class="session-button">詳細を見る</a>
-        </div>
-      </div>
-      
-      <!-- 第4回 -->
-      <div class="session-card">
-        <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-        <div class="session-content">
-          <h3>第4回: P制御とPD制御</h3>
-          <p>アーム部のP制御とPD制御の実装と動作確認を行います。</p>
-          <a href="4kaime/index.html" class="session-button">詳細を見る</a>
-        </div>
-      </div>
-      
-      <!-- 第5回 -->
-      <div class="session-card">
-        <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
-        <div class="session-content">
-          <h3>第5回: PID制御</h3>
-          <p>アーム部のPID制御の実装と動作確認を行います。</p>
-          <a href="5kaime/index.html" class="session-button">詳細を見る</a>
-        </div>
-      </div>
-      
-      <!-- 第6回 -->
-      <div class="session-card">
-        <div class="session-image" style="background-image: url('images/pendulum.gif'); background-size: contain; background-repeat: no-repeat; background-color: #f0f0f0;"></div>
-        <div class="session-content">
-          <h3>第6回: まとめと倒立振子実験</h3>
-          <p>これまでの学習内容のまとめと考察、および倒立振子の実験を行います。</p>
-          <a href="6kaime/index.html" class="session-button">詳細を見る</a>
-        </div>
-      </div>
-    </div> <!-- 这里加上了sessions-grid的闭合标签 -->
-    
-    <!-- 参考書セクション -->
-    <section class="references">
-      <h2>参考書</h2>
-      <ul>
-        <li>MATLAB/Simulinkと実機で学ぶ制御工学</li>
-        <li>倒立振子制御の理論と実践</li>
-        <li>現代制御理論入門</li>
-      </ul>
-    </section>
-  </div>
+  <section class="intro-section">
+    <h2>コース概要</h2>
+    <p>この総合実験では、二輪型倒立振子の制御をテーマに、ロボットの組み立てから環境構築、モーターの同定、Pythonを用いたシミュレーションによる制御器設計（P/PD/PID）、実機でのPID制御と電流PI制御の統合、方向制御、そして最終的にはWebotsシミュレータを用いた強化学習による倒立制御までを段階的に学びます。</p>
+  </section>
   
+  <div class="sessions-grid">
+    <div class="session-card">
+      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
+      <div class="session-content">
+        <h3>第1回: ガイダンスと環境設定</h3>
+        <p>ロボットの組み立てとPC開発環境のセットアップ（Docker、WSL、Python等）を行います。Webots等のインストールも時間があれば実施します。</p>
+        <a href="1kaime/index.html" class="session-button">詳細を見る</a>
+      </div>
+    </div>
+    
+    <div class="session-card">
+      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
+      <div class="session-content">
+        <h3>第2回: モーターの同定実験</h3>
+        <p>モーターを実際に動かしてデータを記録し、その特性パラメータを同定する実験を行います。</p>
+        <a href="2kaime/index.html" class="session-button">詳細を見る</a>
+      </div>
+    </div>
+    
+    <div class="session-card">
+      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
+      <div class="session-content">
+        <h3>第3回: P/PD/PID制御 (シミュレーション)</h3>
+        <p>Pythonシミュレーションを用いてP, PD, PID, I-PD制御の動作確認とゲイン調整、モデルマッチング法を学びます。中間レポート課題。</p>
+        <a href="3kaime/index.html" class="session-button">詳細を見る</a>
+      </div>
+    </div>
+    
+    <div class="session-card">
+      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
+      <div class="session-content">
+        <h3>第4回: PID制御と電流PI制御の統合 (実機)</h3>
+        <p>実機を用いてPID制御とモーター電流PI制御を統合し、理論的理解とゲイン調整の効果を検証します。</p>
+        <a href="4kaime/index.html" class="session-button">詳細を見る</a>
+      </div>
+    </div>
+    
+    <div class="session-card">
+      <div class="session-image" style="background-image: url('/api/placeholder/400/320');"></div>
+      <div class="session-content">
+        <h3>第5回: 二輪型倒立振子の方向移動制御</h3>
+        <p>左右輪の差分制御による旋回と、バランス制御と移動制御の両立について、ゲイン調整と実験を通じて探求します。</p>
+        <a href="5kaime/index.html" class="session-button">詳細を見る</a>
+      </div>
+    </div>
+    
+    <div class="session-card">
+      <div class="session-image" style="background-image: url('images/pendulum.gif'); background-size: contain; background-repeat: no-repeat; background-color: #f0f0f0;"></div>
+      <div class="session-content">
+        <h3>第6回: 強化学習(SAC)による倒立制御体験</h3>
+        <p>Webotsシミュレータ上で強化学習(SAC)を用い、倒立制御を実現します。事前学習済みモデルの利用や学習過程を体験します。最終レポート課題。</p>
+        <a href="6kaime/index.html" class="session-button">詳細を見る</a>
+      </div>
+    </div>
+  </div> <section class="references">
+    <h2>参考書</h2>
+    <ul>
+      <li>MATLAB/Simulinkと実機で学ぶ制御工学</li>
+      <li>倒立振子制御の理論と実践</li>
+      <li>現代制御理論入門</li>
+    </ul>
+  </section>
+</div> 
   <!-- フッター -->
   <footer>
     <p>&copy; <script>document.write(new Date().getFullYear());</script> 総合実験1 回転型倒立振子のモデリングと制御 All Rights Reserved.</p>
