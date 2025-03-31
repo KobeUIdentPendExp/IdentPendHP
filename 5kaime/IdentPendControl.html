@@ -1,0 +1,175 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒立振子 方向移動制御 実験手順</title>
+    <style>
+        /* Reusing styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .workflow-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .phase { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .phase h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6f7ff; border: 1px solid #b3e0ff; color: #004085; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Analysis blue */
+        .task { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px;} /* Task green */
+        .confirmation ul, .step ul, .step ol, .task ul, .task ol { margin-top: 5px; margin-bottom: 5px; padding-left: 20px; }
+        .confirmation li, .step li, .task li { margin-bottom: 3px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; }
+        .param { font-weight: bold; color: #c7254e; }
+        /* MathJax alignment helper */
+        mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
+    </style>
+    <!-- Include MathJax if needed -->
+    <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<div class="workflow-container">
+    <h2>第5回：二輪型倒立振子の方向移動制御 実験手順</h2>
+    <p class="note">この実験では、提供された倒立振子の制御コードを基に、ロボットの旋回（方向転換）や移動とバランス制御の組み合わせについて調査・実験します。</p>
+
+    <!-- Phase 1: Preparation -->
+    <div class="phase" id="invp-prep">
+        <h3>1. 準備とコード理解</h3>
+        <div class="step"><strong>目的:</strong> 倒立振子ロボットの基本的なバランス制御に加え、左右の車輪差動（差分制御）を利用した旋回方法、および前進・後退移動とバランス維持の協調について理解を深める。</div>
+        <div class="step"><strong>ハードウェア接続・安全確認:</strong>
+            <ul>
+                <li>倒立振子ロボット、PC間の接続を確認。</li>
+                <li class="confirmation">【最重要】ロボットの動作エリアを確保し、障害物がないことを確認。転倒しても安全な場所で実験する。</li>
+            </ul>
+        </div>
+        <div class="step"><strong>PC環境確認:</strong> Python環境、必要ライブラリ(<span class="code">hid</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span>)を確認。</div>
+        <div class="step"><strong>プログラム準備:</strong> 倒立振子制御用Pythonスクリプト（例: <span class="code">inverted_pendulum_control.py</span>）を用意し、エディタで開く。</div>
+        <div class="step confirmation"><strong>【コード理解】</strong> スクリプト内のメインループ (<span class="code">while True:</span>) を読み、以下の点を理解する:
+            <ul>
+                <li>読み取っているセンサー値 (<span class="code">memmap.*</span>) の種類とその意味（<span class="code">BODY_ANGLE</span>: 胴体角度, <span class="code">WHEEL_ANGLE_L/R</span>: 車輪角度, etc.）。</li>
+                <li>制御出力 <span class="code">out_L</span>, <span class="code">out_R</span> の計算式。</li>
+                <li>計算式の中で、どの項が主に**バランス維持**（胴体角度・角速度に基づく項）に寄与しているか？</li>
+                <li>どの項が主に**位置・速度制御**（車輪角度・角速度に基づく項）に寄与しているか？</li>
+                <li>どの項が**左右差分制御**（左右の車輪角度差・角速度差に基づく項）であり、**旋回**を引き起こすと考えられるか？</li>
+                <li>制御ゲイン（<span class="code">-5460.0</span>, <span class="code">-36400.0</span> など）が現在**固定値**としてコードに書かれていることを確認する。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Phase 2: Baseline Run -->
+    <div class="phase" id="invp-baseline">
+        <h3>2. ベースライン実験：現状コードの動作確認</h3>
+        <div class="step">提供された**変更前の Python スクリプト** をそのまま実行します。</div>
+        <div class="step confirmation"><strong>【制御則の確認】</strong>
+            <p>このベースラインコードで実装されている左右輪への指令電流 $u_L, u_R$ は、以下の状態フィードバック形式です。ここで、$\psi$ は胴体角度（目標値 $\psi_d = 0$）、$\dot{\psi}$ は胴体角速度、$\theta_L, \theta_R$ は左右輪角度、$\dot{\theta}_L, \dot{\theta}_R$ は左右輪角速度です。</p>
+            <p class="note">以下の式で使われているゲイン $K_1$ から $K_6$ は、コード内で特定の値に固定されています。（例: $K_1=-5460.0$, $K_2=-36400.0$, $K_3=396.0$, $K_4=1320.0$, $K_5=-360.0$, $K_6=-2400.0$）</p>
+
+            <p style="margin-bottom: 0.5em;">左輪への指令値 $u_L(t)$:</p>
+            $$
+            \begin{aligned}
+            u_L(t) = 0.5 \times \Big[ & \underbrace{K_1 \dot{\psi}(t) + K_2 \psi(t)}_{\text{バランス維持 (胴体)}} \\\\
+                                     & \underbrace{+ K_3 \dot{\theta}_L(t) + K_4 \theta_L(t)}_{\text{位置/速度 (左輪)}} \\\\
+                                     & \underbrace{+ K_5 (\dot{\theta}_L(t) - \dot{\theta}_R(t)) + K_6 (\theta_L(t) - \theta_R(t))}_{\text{差分制御 (旋回)}} \Big]
+            \end{aligned}
+            $$
+
+            <p style="margin-top: 1em; margin-bottom: 0.5em;">右輪への指令値 $u_R(t)$:</p>
+            $$
+            \begin{aligned}
+            u_R(t) = 0.5 \times \Big[ & \underbrace{K_1 \dot{\psi}(t) + K_2 \psi(t)}_{\text{バランス維持 (胴体)}} \\\\
+                                     & \underbrace{+ K_3 \dot{\theta}_R(t) + K_4 \theta_R(t)}_{\text{位置/速度 (右輪)}} \\\\
+                                     & \underbrace{+ K_5 (\dot{\theta}_R(t) - \dot{\theta}_L(t)) + K_6 (\theta_R(t) - \theta_L(t))}_{\text{差分制御 (旋回)}} \Big]
+                                     % --- Removed complex \substack here ---
+            \end{aligned}
+            $$
+            <p class="note" style="margin-top: 1em;"><strong>注意:</strong> $u_R(t)$ の式中の $K_5, K_6$ を含む差分項 $(\dot{\theta}_R - \dot{\theta}_L)$ と $(\theta_R - \theta_L)$ は、$u_L(t)$ の式中の差分項とは**符号が逆**になっています。これが旋回を生み出す差動効果となります。</p>
+            <p class="note" style="margin-top: 0.5em;">各項がロボットのどの動きに主に寄与しているかを理解しましょう。</p>
+        </div>
+        <div class="confirmation"><strong>【動作観察】</strong>
+            <ul>
+                <li>ロボットはこの制御則でうまくバランスを取って自立できますか？</li>
+                <li>その場で静止しますか？ それとも、わずかに動いたり旋回したりしますか？</li>
+            </ul>
+        </div>
+        <div class="step">規定時間（例: 10秒）経過後、スクリプトが終了し、結果グラフ (<span class="code">control.png</span>) が生成されることを確認します。</div>
+        <div class="confirmation"><strong>【データ分析】</strong>
+             <ul>
+                <li>生成されたグラフ (<span class="code">control.png</span>) を開き、各状態変数（特に $\psi$ = <span class="code">body_angle</span>）の時間変化を確認します。$\psi$ は 0 付近で安定していますか？</li>
+                <li>制御出力 $u_L, u_R$ (<span class="code">out_L, out_R</span> のログ値) や左右輪の角速度 (<span class="code">wheel_angular_spd_L/R</span>) のグラフを見て、左右で差があるかを確認します。</li>
+            </ul>
+        </div>
+        <div class="step note">このベースライン実験でのロボットの挙動が、後の実験での比較の基準となります。</div>
+    </div>
+
+     <div class="arrow">⬇️</div>
+
+    <!-- Phase 3: Turning Control Experiment -->
+    <div class="phase" id="invp-tuning-turn">
+        <h3>3. 旋回制御の実験 (左右輪の差分制御)</h3>
+        <p class="note">左右の車輪への指令値に差を与えることで旋回を実現します。ここでは、差分制御に関連するゲインを調整する（または導入する）ことを試みます。</p>
+        <div class="task"><strong>【課題①】左右輪の電流差をどのように調整して、旋回角度を適切にし、かつ車体のバランスを損なわないようにするか？</strong></div>
+        <div class="step"><strong>実験方法（例）:</strong>
+            <ol>
+                <li>**コード修正:** スクリプト内の <span class="code">out_L</span>, <span class="code">out_R</span> の計算式を修正します。例えば：
+                    <ul>
+                        <li>既存の差分項（<span class="code">(WHEEL_ANGULAR_SPD_L - WHEEL_ANGULAR_SPD_R)</span> や <span class="code">(WHEEL_ANGLE_L - WHEEL_ANGLE_R)</span> に掛かっている係数 (<span class="param">-360.0</span>, <span class="param">-2400.0</span>) を調整可能な**パラメータ**（変数）にする。</li>
+                        <li>あるいは、外部からの旋回指令値（例: 変数 <span class="code">turn_command</span>）を導入し、それを <span class="code">out_L</span> には足し、<span class="code">out_R</span> からは引く、などの項を追加する。（例: <span class="code">out_L += K_turn * turn_command</span>, <span class="code">out_R -= K_turn * turn_command</span>）</li>
+                    </ul>
+                </li>
+                <li><strong>パラメータ/指令値設定:** 修正したコードで、導入した旋回ゲインや旋回指令値を設定します。（最初は小さい値から）</li>
+                <li><span class="confirmation">【安全確認】</span> 再度安全を確認し、修正したスクリプトを実行します。</li>
+                <li class="confirmation"><strong>【動作観察と比較】</strong>
+                    <ul>
+                        <li>ロボットは旋回を始めますか？ その場で旋回しますか、移動しながら旋回しますか？</li>
+                        <li>旋回中にバランスは維持できていますか？ 胴体角度 (<span class="code">BODY_ANGLE</span>) の変動は大きくなっていませんか？</li>
+                        <li>ベースライン（ステップ2）と比較して、左右の出力差 (<span class="code">out_L - out_R</span>) や車輪速度差 (<span class="code">WHEEL_ANGULAR_SPD_L - WHEEL_ANGULAR_SPD_R</span>) はどう変化しましたか？</li>
+                    </ul>
+                </li>
+                <li>ステップ1に戻り、旋回ゲインや指令値を変更して再実験・観察を繰り返し、安定して旋回できる条件を探ります。</li>
+            </ol>
+        </div>
+        <div class="confirmation"><strong>【記録・考察】</strong> どのようなパラメータ/指令値の時に、どの程度の旋回が、どの程度の安定性で実現できたかを記録し、課題①について考察します。</div>
+    </div>
+
+    <!-- Phase 4: Combined Control Experiment -->
+    <div class="phase" id="invp-tuning-combined">
+        <h3>4. バランス・移動・旋回の統合制御実験 (発展)</h3>
+        <p class="note">次に、前進・後退移動と旋回を同時に行いながらバランスを維持することを考えます。</p>
+         <div class="task"><strong>【課題②】バランス制御と移動/旋回制御が同時に作用する場合、双方が干渉しないようにするにはどうすればよいか？</strong></div>
+        <div class="step"><strong>実験方法（例）:</strong>
+             <ol>
+                <li>**コード修正:** ステップ3の修正に加え、ロボットを前進・後退させるための指令（例: 変数 <span class="code">move_command</span>）を導入し、それを <span class="code">out_L</span> と <span class="code">out_R</span> の**両方**に共通して加える（または関連する項のゲインを調整する）ように計算式を修正します。</li>
+                <li><strong>パラメータ/指令値設定:** 移動指令と旋回指令を同時に与えます。（例: <span class="code">move_command = 100</span>, <span class="code">turn_command = 50</span>）</li>
+                <li><span class="confirmation">【安全確認】</span> 再度安全を確認し、修正したスクリプトを実行します。</li>
+                <li class="confirmation"><strong>【動作観察と比較】</strong>
+                    <ul>
+                        <li>ロボットは指定された方向に移動しながら旋回しますか？</li>
+                        <li>移動・旋回中にバランスは安定していますか？ 胴体角度の変動はどの程度ですか？</li>
+                        <li>移動速度や旋回速度は指令値に合っていますか？</li>
+                        <li>移動指令や旋回指令の大きさを変えると、バランス維持にどのような影響がありますか？ 各ゲインの再調整が必要になりますか？</li>
+                    </ul>
+                </li>
+                <li>移動指令、旋回指令、および関連するゲインを様々に変更して再実験・観察を繰り返し、安定して複合動作ができる条件を探ります。</li>
+            </ol>
+        </div>
+        <div class="confirmation"><strong>【記録・考察】</strong> どのようなパラメータ/指令値/ゲインの時に、どの程度の複合動作が、どの程度の安定性で実現できたかを記録し、課題②について考察します。制御項間の干渉をどのように調整・抑制できるか考えます。</div>
+    </div>
+
+    <!-- Phase 5: Final Discussion -->
+    <div class="phase" id="invp-report">
+        <h3>5. 考察とレポート作成</h3>
+        <div class="step"><strong>結果の整理:</strong> 実験で得られた結果（ベースライン動作、旋回制御実験、複合動作実験の観察記録、グラフ、調整したゲイン値など）を整理する。</div>
+        <div class="step"><strong>考察:</strong>
+            <ul>
+                <li>どのように左右の車輪差を制御すれば、安定した旋回が実現できるか？</li>
+                <li>バランス維持と移動・旋回動作を両立させる上での難しさや課題は何か？ 制御ゲインの調整はどのように影響したか？</li>
+                <li>提供されたコードの制御構造（状態フィードバック）の利点や限界について考察する。</li>
+                <li>実験を通じて学んだこと、さらに改善できる点をまとめる。</li>
+            </ul>
+        </div>
+        <div class="step">実験結果と考察をレポートにまとめる。</div>
+    </div>
+
+</div>
+
+</body>
+</html>
