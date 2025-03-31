@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>強化学習による倒立振子制御 実験手順</title>
+    <style>
+        /* Reusing styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .workflow-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .phase { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .phase h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6f7ff; border: 1px solid #b3e0ff; color: #004085; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .task { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px;}
+        .confirmation ul, .step ul, .step ol, .task ul, .task ol { margin-top: 5px; margin-bottom: 5px; padding-left: 20px; }
+        .confirmation li, .step li, .task li { margin-bottom: 3px; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; }
+        .param { font-weight: bold; color: #c7254e; }
+        mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
+    </style>
+    <!-- Include MathJax if needed -->
+    <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<div class="workflow-container">
+    <h2>第6回：強化学習(RL)による倒立振子制御 体験</h2>
+    <p class="note">この実験では、Webots シミュレータ上で強化学習アルゴリズム SAC (Soft Actor-Critic) を用い、ロボット自身が試行錯誤を通じて倒立バランス制御を学習するプロセスを体験します。</p>
+
+    <!-- Phase 1: Preparation -->
+    <div class="phase" id="rl-prep">
+        <h3>1. 準備と Webots 環境設定</h3>
+        <div class="step"><strong>目的:</strong> 強化学習の基本概念（エージェント、環境、状態、行動、報酬）を理解し、シミュレーション環境で RL エージェントの学習プロセスを観察・実行する。SAC アルゴリズムの特徴を把握する。</div>
+        <div class="step"><strong>ソフトウェア・ファイルの準備:</strong>
+            <ul>
+                <li>Webots シミュレータがインストールされていることを確認。</li>
+                <li>強化学習用の Python 環境（<span class="code">gymnasium</span>, <span class="code">stable-baselines3</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span> 等）がセットアップされていることを確認。</li>
+                <li>提供された Webots プロジェクトファイル（<span class="code">your_project.wbt</span> 等）、コントローラスクリプト (<span class="code">rl_controller.py</span>, <span class="code">rl_retrain.py</span>)、および事前学習済みモデル (<span class="code">checkpoint_episode_150.zip</span> 等) を含むフォルダをダウンロードし、解凍する。</li>
+            </ul>
+        </div>
+        <div class="step task"><strong>【Webots コントローラ設定】</strong> このステップは Webots でシミュレーションを実行するために不可欠です。
+            <ol>
+                <li>Webots を起動し、「ファイル」メニューから「ワールドファイルを開く...」を選択し、ダウンロードしたプロジェクトフォルダ内の <span class="code">.wbt</span> ファイルを開きます。</li>
+                <li>Webots 画面左側の「シーンツリー」から、ロボットのノード（例: <span class="code">DEF MyRobot Robot</span>）を見つけて選択します。</li>
+                <li>シーンツリーの下部（または選択したノードの詳細表示部分）で、<span class="code">controller</span> というフィールドを探します。</li>
+                <li><span class="code">controller</span> フィールドの値（例: <span class="code">&lt;extern&gt;</span> や現在のコントローラ名）をクリックし、<span class="code">&lt;select&gt;</span> または「選択...」を選びます。</li>
+                <!-- <li>ファイル選択ダイアログが表示されたら、**プロジェクトフォルダ内の <span class="code">controllers</span> サブフォルダ**に移動します。</li> -->
+                <li>実行したい Python スクリプトを選択します:
+                    <ul>
+                        <li><strong>ゼロから学習する場合:** <span class="code">rl_controller</span> (または関連する <span class="code">.py</span> ファイル) を選択します。</li>
+                        <li><strong>途中から学習する場合:** <span class="code">rl_retrain</span> (または関連する <span class="code">.py</span> ファイル) を選択します。</li>
+                        <li>（もし必要なら「新規コントローラ...」を選び、生成されたファイルに提供されたコードを貼り付けて保存することも可能です。）</li>
+                    </ul>
+                </li>
+                <li class="confirmation">ロボットの <span class="code">controller</span> フィールドに、選択した正しいコントローラ名が表示されていることを確認します。</li>
+                <li><strong>【重要】Webots の「ファイル」メニューから「ワールドを保存」を選び、設定を保存します。</strong></li>
+            </ol>
+            <span class="note">参考: Webots ドキュメントの <a href="https://cyberbotics.com/doc/guide/controller-programming#controller-selection" target="_blank" rel="noopener noreferrer">Controller Selection</a> セクションも参照してください。</span>
+        </div>
+    </div>
+    <div class="phase reward-focus" id="rl-reward">
+        <h3>2. 報酬設計の理解</h3>
+        <div class="step"><strong>目的:</strong> 強化学習において、エージェント（ロボット）が良い行動（バランスを取る）を学習するように導く「報酬信号」がどのように設計されているかを理解する。</div>
+        <div class="step"><strong>今回の実験で使用される報酬関数 (<span class="code">WebotsEnv</span>内の<span class="code">step</span>メソッド参照):</strong>
+            <p>各時間ステップで得られる報酬 `reward` は、主に以下の要素で構成されています:</p>
+            <ul>
+                <li><strong>基本報酬 (バランス維持):</strong>
+                    <br> $r_{balance} = \exp(-C_{error} \times |\psi|)$
+                    <br> $\psi$ は胴体の傾斜角度(rad)。$\exp$関数により、角度がゼロに近いほど高い報酬が得られ、傾きが大きくなると報酬が急激に減少します。$C_{error}$ (<span class="param">`self.error_coeff`</span>) はこの減少の鋭敏さを調整する係数です。
+                    <br><span class="note">→ ロボットに「できるだけ直立しろ」と教えています。</span>
+                </li>
+                <li><strong>安定ボーナス:</strong>
+                    <br> もし $|\psi|$ が非常に小さい閾値 (<span class="param">`self.stable_threshold`</span>) 未満なら、追加のボーナス報酬 (<span class="param">`self.stable_bonus`</span>) が与えられます。
+                    <br><span class="note">→ ロボットに「正確に直立状態を維持しろ」と、さらなるインセンティブを与えています。</span>
+                </li>
+                <li><strong>行動差ペナルティ:</strong>
+                    <br> $p_{action} = C_{wheel} \times (|\text{action}_L - \text{action}_R|)^2$
+                    <br> 左右のモーターへの指令値（速度、`action[0]` と `action[1]`）の差の二乗に比例したペナルティを報酬から引きます。$C_{wheel}$ (<span class="param">`self.wheel_penalty_coeff`</span>) はペナルティの重みです。
+                    <br><span class="note">→ ロボットに「無駄に左右の動きをばたつかせるな」（直進または滑らかな旋回を促す）と教えています。</span>
+                </li>
+                 <li><strong>転倒ペナルティ (現状ほぼ無効):</strong>
+                    <br> もし $|\psi|$ が大きな閾値 (<span class="param">`self.fall_threshold`</span>) を超えたら転倒とみなし、エピソードを終了させます。ペナルティ (<span class="param">`self.fall_penalty`</span>) を与えることもできますが、現在のコードでは 0 に設定されています。
+                </li>
+            </ul>
+            <p><strong>全体の報酬:</strong> $reward = r_{balance} + (\text{if stable then } \text{stable_bonus else } 0) - p_{action}$</p>
+        </div>
+        <div class="confirmation"><strong>【考察点】</strong> なぜこのような報酬設計になっているか？ 各項がロボットにどのような行動を学習させようとしているか？ もし報酬設計を変えたら（例：安定ボーナスをなくす、行動差ペナルティを強くする）、学習結果はどう変わると予想されるか？</div>
+    </div>
+     <!-- Phase 3: Continue Training -->
+     <div class="phase" id="rl-train-continue">
+        <h3>3. 実験1：事前学習済みモデルからの継続学習</h3>
+        <div class="step"><strong>目的:</strong> 事前に訓練されたモデルを読み込み、より良い初期状態から学習を再開または性能を確認する。</div>
+        <div class="task"><strong>事前準備:</strong>
+            <ul>
+                <li>提供された事前学習済みモデルファイル（例: <span class="code">checkpoint_episode_150.zip</span>）を、プロジェクトフォルダ内（または <span class="code">rl_retrain.py</span> が読み込める場所）に配置します。</li>
+                <li><span class="code">rl_retrain.py</span> スクリプトを開き、ロードするチェックポイントのパス（<span class="code">checkpoint_path = "..."</span>）が正しいか確認・修正します。</li>
+            </ul>
+        </div>
+        <div class="task"><strong>Webots 設定確認:</strong> ロボットの <span class="code">controller</span> が、**継続学習用**のスクリプト（例: <span class="code">rl_retrain</span>）に設定されていることを確認し、ワールドファイルを**保存**します。</div>
+        <div class="step"><strong>シミュレーションの実行:</strong> Webots のシミュレーションをリセットし、開始（実行 ▶️）します。</div>
+        <div class="confirmation"><strong>【動作と学習の観察】</strong>
+             <ul>
+                <li>**Webots 画面:** ロボットは最初から比較的うまくバランスを取るはずです（ゼロから学習した場合との違いを観察）。</li>
+                <li>**コンソール出力:**
+                     <ul>
+                        <li>「Loading model from checkpoint...」のようなメッセージが表示されるか確認。</li>
+                        <li>学習ログの Reward が最初から比較的高めの値で始まるか確認。</li>
+                        <li>チェックポイントファイル名が異なること（例: <span class="code">checkpoint_continue_episode_X.zip</span>）を確認。</li>
+                    </ul>
+                 </li>
+            </ul>
+        </div>
+        <div class="step"><strong>学習の実行と停止:</strong> 指定された時間またはエピソード数を目標に学習を実行し、停止（⏸️ または 🔄）します。</div>
+         <div class="confirmation"><strong>【結果ファイルの確認】</strong>
+             <ul>
+                 <li>新しいログファイル（例: <span class="code">episode_logs_continued.csv</span>）が生成されているか確認。</li>
+                 <li>（オプション）このログの学習曲線と、ゼロから学習した場合の曲線を比較します。</li>
+                 <li>最終的なモデル（例: <span class="code">sac_webots_model_continued.zip</span>）が保存されているか確認。</li>
+             </ul>
+         </div>
+    </div>
+    <!-- Phase 2: Train from Scratch -->
+    <div class="phase" id="rl-train-scratch">
+        <h3>4. 実験2：ゼロからの強化学習 (余裕があれば)</h3>
+        <div class="step"><strong>目的:</strong> 全く学習していない状態から、ロボットが試行錯誤を通じてバランス能力を獲得していく様子を観察する。</div>
+        <div class="task"><strong>Webots 設定確認:</strong> ロボットの <span class="code">controller</span> が、ゼロから学習するスクリプト（例: <span class="code">rl_controller</span>）に設定されていることを確認します。（必要ならステップ1.3に戻って設定・保存）</div>
+        <div class="step"><strong>シミュレーションの実行:</strong>
+            <ol>
+                <!-- Replaced SVG with Emojis -->
+                <li>Webots のシミュレーションをリセットします（ツールバーのリセットボタン 🔄）。</li>
+                <li>Webots のシミュレーションを開始（実行）します（ツールバーの実行ボタン ▶️）。Webots が自動的に設定された Python コントローラースクリプトを実行します。</li>
+            </ol>
+        </div>
+        <div class="confirmation"><strong>【学習プロセスの観察】</strong>
+            <ul>
+                <li><strong>Webots 画面:** 最初はロボットがすぐに転倒するはずです。学習が進むにつれて（多数のエピソードを経て）、徐々にバランスを取る時間が長くなっていく様子を観察します。転倒すると自動的にリセットされ、次のエピソードが始まります。</li>
+                <li><strong>コンソール出力:** Webots のコンソールウィンドウ（またはスクリプトを実行しているターミナル）に出力されるログメッセージを注意深く見ます。
+                    <ul>
+                        <li>Stable Baselines3 の学習ログが表示されます（例: <span class="code">Episode X, Total Reward: Y, Steps: Z</span>）。Reward が全体的に増加傾向にあるか確認します。</li>
+                        <li>「Resetting environment...」のメッセージが定期的に表示されます。</li>
+                        <li>約10エピソードごとに「Checkpoint saved...」のメッセージが表示されることを確認します。</li>
+                    </ul>
+                 </li>
+            </ul>
+        </div>
+        <div class="step"><strong>学習の実行と停止:</strong>
+            <ul>
+                 <li>学習には時間がかかります。指定された時間（例: 10分、30分）またはエピソード数（例: 50-100 episodes）を目安に学習を実行します。</li>
+                 <!-- Replaced SVG with Emojis -->
+                 <li>学習を途中で止める場合は、Webots のシミュレーションを停止（一時停止 ⏸️ またはリセット 🔄）します。</li>
+             </ul>
+         </div>
+         <div class="confirmation"><strong>【結果ファイルの確認】</strong>
+             <ul>
+                 <li>プロジェクトフォルダ内に <span class="code">episode_logs.csv</span> ファイルが生成されていることを確認します。</li>
+                 <li>（オプション）CSVファイルを Excel や Python (pandas) で開き、Episode と Total_Reward の関係をプロットして学習曲線を確認します。</li>
+                 <li>プロジェクトフォルダ内に <span class="code">checkpoint_episode_X.zip</span> という名前のモデルファイルや、最終的な <span class="code">sac_webots_model.zip</span> が保存されていることを確認します。</li>
+             </ul>
+         </div>
+    </div>
+
+    <!-- Removed the lone arrow emoji for testing -->
+    <!-- <div class="arrow">🔄</div> -->
+
+
+    <!-- Phase 4: Discussion -->
+    <div class="phase" id="rl-discuss">
+        <h3>5. 考察とまとめ（モデルベース制御との比較）</h3>
+       <div class="step"><strong>結果の整理:</strong>
+            <ul>
+                <!-- <li>ゼロから学習した場合と継続学習した場合の学習曲線（Episode vs Reward）を比較しプロットする。</li> -->
+                <li>各実験で達成された最終的なバランス性能（例：安定時間、定常時の角度変動の大きさ）を記録・比較する。</li>
+                <!-- <li>（可能であれば）以前の実験で調整した最良の PID 制御の結果（応答グラフ等）を再掲示する。</li> -->
+            </ul>
+       </div>
+       <div class="step"><strong>考察:</strong>
+           <ul>
+               <li>強化学習における「試行錯誤による学習」プロセスと「報酬設計」の重要性について具体的に述べる。</li>
+               <!-- <li>シミュレータ（Webots）が強化学習の研究開発において果たす役割は何か？</li> -->
+               <!-- <li>SACアルゴリズムの主な特徴（Actor-Critic, Entropy Max, Off-Policy）が、今回の学習にどのように寄与していると考えられるか？（概要レベルでOK）</li> -->
+               <!-- <li>ゼロから学習 vs 継続学習の利点・欠点を比較する。</li> -->
+               <li class="comparison-focus"><strong>【モデルベース制御 (PID等) との比較考察】</strong>
+                   <!-- <ul>
+                       <li>**設計アプローチの違い:** モデルベース制御（システム同定→モデル構築→制御器設計/調整）と、強化学習（環境との相互作用→試行錯誤→方策学習）のプロセスや必要となる事前知識（モデル要不要など）の違いは何か？</li>
+                       <li>**性能の比較:** チューニングされた PID 制御と、学習された RL 制御の性能（安定性、応答特性、外乱への頑健性(※外乱は今回未評価)など）を比較してどう考えられるか？</li>
+                       <li>**調整の容易さ/難しさ:** PID ゲイン調整と、RL の報酬設計やハイパーパラメータ調整では、どちらがどのように難しい（または容易）と感じたか？</li>
+                       <li>**適用範囲:** それぞれの手法がどのような問題に適していると考えられるか？</li>
+                   </ul> -->
+               </li>
+               <!-- <li>この RL 実験の限界（例: Sim-to-Realギャップ、報酬設計の難しさ、ハイパーパラメータ感度）や改善点について考察する。</li> -->
+           </ul>
+       </div>
+       <!-- <div class="step">実験結果と考察をレポートにまとめる。</div> -->
+   </div>
+
+</div> <!-- Closing tag for workflow-container -->
+
+</body>
+</html>
