@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【レッスン名を入力】 - レッスンテンプレート</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px; /* コンテンツの最大幅 */
+            margin: 0 auto; /* 中央揃え */
+        }
+        h1 {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-left: 5px solid #007bff; /* 左側のアクセントボーダー */
+            margin-bottom: 2em; /* タイトル下のマージン */
+        }
+        section {
+            margin-bottom: 2.5em; /* 各セクション間のマージン */
+            padding-bottom: 1.5em; /* セクション内の下部パディング */
+            border-bottom: 1px dashed #ccc; /* セクション区切り線 */
+        }
+        section:last-child {
+            border-bottom: none; /* 最後のセクションの区切り線は不要 */
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff; /* 見出しの下線 */
+            padding-bottom: 0.3em; /* 見出しと下線の間のスペース */
+            margin-bottom: 1em; /* 見出しとコンテンツ間のマージン */
+        }
+        #files ul {
+            list-style: none; /* リストマーカーを非表示 */
+            padding-left: 0;
+        }
+        #files li {
+            margin-bottom: 0.8em; /* ファイルリスト項目間のマージン */
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #eee;
+        }
+        #files a {
+            text-decoration: none;
+            color: #0056b3;
+            font-weight: bold;
+        }
+        #files a:hover {
+            text-decoration: underline;
+        }
+        .construction-notice {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>1回目：ガイダンス（二輪型ロボットの組み立てとPCの環境構築）</h1>
+
+    <section id="explanation">
+        <h2>説明資料</h2>
+        <p class="construction-notice">
+            工事中
+        </p>
+    </section>
+
+    <section id="workflow">
+        <h2>作業流れ</h2>
+        <p>
+            <a href="#" target="_blank" rel="noopener noreferrer">作業の流れはこちらのリンクを確認してください</a>
+            </p>
+    </section>
+
+    <section id="files">
+        <h2>今回利用するファイル</h2>
+        <ul>
+            <li>
+                <a href="【ここにfile1のダウンロードURLを入力】" download="file1.zip">
+                    file1 をダウンロード
+                </a>
+                </li>
+            <li>
+                <a href="【ここにfile2のダウンロードURLを入力】" download="file2.pdf">
+                    file2 をダウンロード
+                </a>
+            </li>
+            </ul>
+    </section>
+
+</body>
+</html>
