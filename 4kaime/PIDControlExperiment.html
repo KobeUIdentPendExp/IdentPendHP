@@ -21,6 +21,12 @@
         .param { font-weight: bold; color: #c7254e; }
         /* MathJax alignment helper */
         mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
+        /* Style for nested list in confirmation */
+        .confirmation ul ul { margin-top: 8px; padding-left: 15px; }
+        .confirmation ul ul li { margin-bottom: 5px; }
+        .confirmation ul ul ol { list-style-type: lower-roman; padding-left: 25px; margin-top: 5px;}
+        .confirmation ul ul ol li { margin-bottom: 5px; }
+
     </style>
     <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -48,7 +54,7 @@
                      <ul>
                          <li>**内側ループ（電流PI）ゲイン(HW設定用):** <span class="param">`desired_current_Kp`</span>, <span class="param">`desired_current_Ki`</span>。**最初は試行錯誤用の初期値**（例：推奨値または小さな値）を使用する。（後のステップで設計値に置き換える）</li>
                          <li>**外側ループ（角度PID）ゲイン(調整対象):** <span class="param">`angle_kp`</span>, <span class="param">`angle_ki`</span>, <span class="param">`angle_kd`</span>。**初期値**（例: Kp=低～中, Ki=0, Kd=0）を設定する。</li>
-                         <li>制御目標角度: <span class="code">target_angle_rad</span>。</li>
+                         <li>制御目標角度: <span class="code">target_angle_rad</span>。（角度制御テスト用）</li>
                          <li>制御周期: <span class="code">dt</span>。</li>
                      </ul>
                  </li>
@@ -69,10 +75,26 @@
         <div class="step"><strong>調整・実行手順:</strong>
             <ol>
                 <li>Pythonスクリプト内の初期 <span class="param">`desired_current_Kp`</span> と <span class="param">`desired_current_Ki`</span> の値を確認します（試行錯誤用の値）。</li>
-                <li><span class="confirmation">【安全確認】</span> モーター周囲の安全を確認し、スクリプトを実行します（**この段階では外ループゲイン <span class="param">`angle_kp, ki, kd`</span> はゼロまたは非常に小さくしておくこと**）。</li>
+                <li><span class="confirmation">【安全確認】</span> モーター周囲の安全を確認し、スクリプトを実行します（**この段階では外ループゲイン <span class="param">`angle_kp, ki, kd`</span> はゼロまたは非常に小さくしておくこと**）。スクリプト内で電流指令値が生成され、モーターが駆動されます。</li>
                 <li>スクリプトは一定時間動作し、電流指令値 (<span class="code">I_ref</span>) と実測電流値 (<span class="code">I_meas</span>) を記録します。</li>
                 <li>実験終了後、スクリプトは**自動的にシステム同定を実行**し、結果をターミナルに出力します。同時に**電流追従グラフ (<span class="code">final_current_tracking.png</span>)** が生成されます。</li>
-                <li><span class="confirmation"><strong>【性能観察＆同定結果確認】</strong> グラフで追従性、振動・異音を確認。ターミナル出力の「=== System Identification Results ===」セクションを確認し、**推定された <span class="param">$\hat{\tau}_m$ (`Estimated tau_m`)</span> と <span class="param">$\hat{K}$ (`Estimated K`)</span> の値** を見つけます。</span></li>
+                <li class="confirmation"><strong>【性能観察＆同定結果確認】</strong>
+                    <ul>
+                        <li>グラフで追従性、振動・異音を確認します。</li>
+                        <li>ターミナル出力の「=== System Identification Results ===」セクションを確認し、**推定された <span class="param">$\hat{\tau}_m$ (`Estimated tau_m`)</span> と <span class="param">$\hat{K}$ (`Estimated K`)</span> の値** を見つけます。</li>
+                        <li>
+                            <strong>同定の原理（再掲）:</strong>
+                            <ol>
+                                <li>スクリプトは記録された $I_{ref}(t)$ と $I_{meas}(t)$ を使います。</li>
+                                <li>一次遅れモデル $\tau_m \frac{di_{meas}}{dt} + i_{meas} = K i_{ref}$ を仮定します。</li>
+                                <li>これを線形回帰形式 $\frac{di_{meas}}{dt} = a \cdot i_{meas} + b \cdot i_{ref}$ （ただし $a = -1/\tau_m, b = K/\tau_m$）に変形します。
+                                    <br> $$ \underbrace{\frac{d i_{meas}}{dt}[k]}_{\substack{\boldsymbol{y}[k]\\\text{(計算済・既知)}}} \approx \underbrace{a}_{\text{未知}} \cdot \underbrace{i_{meas}[k]}_{\substack{\boldsymbol{x}_1[k]\\\text{(測定済・既知)}}} + \underbrace{b}_{\text{未知}} \cdot \underbrace{i_{ref}[k]}_{\substack{\boldsymbol{x}_2[k]\\\text{(指令済・既知)}}} $$
+                                </li>
+                                <li>最小二乗法で係数 $\hat{a}, \hat{b}$ を推定し、それらからパラメータ $\boldsymbol{\hat{\tau}_m = -1/\hat{a}}$ と $\boldsymbol{\hat{K} = \hat{b} \hat{\tau}_m}$ を計算します。</li>
+                            </ol>
+                        </li>
+                    </ul>
+                </li>
                 <li>【任意】もし応答が極端に悪い（振動、発散など）場合は、ゲインを下げて再実行し、安定してデータが取れる状態にします。このステップの主目的はゲイン調整ではなく、安定したデータ取得と同定です。</li>
             </ol>
         </div>
@@ -83,12 +105,11 @@
 
     <div class="phase" id="hw-design-current-zp">
         <h3>3. 内側ループ（電流PI）ゲインの設計（零点配置法）</h3>
-        <p class="note">試行錯誤による調整の後、より体系的なアプローチである**零点配置（極・零相殺）法**を用いて PI ゲインを設計します。この方法では、PI制御器の零点を、同定されたプラント（一次遅れ系）の極に合わせることで、閉ループ系の特性を単純化し、設計しやすくします。</p>
+        <p class="note">ステップ２で同定されたパラメータに基づき、**零点配置（極・零相殺）法**を用いて PI ゲインを設計します。この方法では、PI制御器の零点を、同定されたプラント（一次遅れ系）の極に合わせることで、閉ループ系の特性を単純化し、設計しやすくします。</p>
 
         <div class="step"><strong>【Step 3.1: 電流ループのシステム同定結果の再確認】</strong>
             <ul>
-                <li>前のステップ（試行錯誤調整とシステム同定）で実行した実験の最後に、自動的に電流ループのシステム同定が行われ、その結果（推定された時定数 $\hat{\tau}_m$ とゲイン $\hat{K}$）がターミナルに出力されました。</li>
-                <li class="confirmation"><strong>【必要データの取得】</strong> 前のステップで記録した**推定された時定数 <span class="param">$\hat{\tau}_m$</span>** と**ゲイン <span class="param">$\hat{K}$</span>** の値を**正確に用意してください。** これらが設計の基礎となります。</li>
+                <li>前のステップ（ステップ２）で記録した**推定された時定数 <span class="param">$\hat{\tau}_m$</span>** と**ゲイン <span class="param">$\hat{K}$</span>** の値を**正確に用意してください。** これらが設計の基礎となります。</li>
                 <li>これにより、電流ループのプラント（モーター＋ドライバ）は一次遅れ系 $G(s) = \frac{\hat{K}}{\hat{\tau}_m s + 1}$ としてモデル化されます。この系の極は $s = -1/\hat{\tau}_m$ にあります。</li>
             </ul>
         </div>
@@ -157,7 +178,7 @@
         <div class="step"><strong>調整手順:</strong> (P->PD->PID の順で試すのが基本)
             <ol>
                 <li>Pythonスクリプト内の <span class="param">`angle_kp`</span>, <span class="param">`angle_ki`</span>, <span class="param">`angle_kd`</span> の値を変更します。（最初は P制御: Ki=0, Kd=0 から始める）</li>
-                <li><span class="confirmation">【安全確認】</span> モーター周囲の安全を確認し、スクリプトを実行します（**今度は角度制御が有効になります**）。</li>
+                <li><span class="confirmation">【安全確認】</span> モーター周囲の安全を確認し、スクリプトを実行します（**今度は角度制御が有効になります**）。スクリプトは指定された目標角度 <span class="code">target_angle_rad</span> に追従しようとします。</li>
                 <li>実験終了後、**角度追従グラフ (<span class="code">final_angle_tracking.png</span> など)** と、必要であれば電流指令値や実測電流値のグラフを確認します。</li>
                 <li><span class="confirmation"><strong>【性能観察】</strong> 目標角度への追従性（速応性、オーバーシュート、整定時間、定常偏差）、振動・異音を確認します。**【危険！】振動発生時や不安定な場合はゲインを下げる！**</span></li>
                 <li>ステップ1に戻り、ゲインを変更して再実験を繰り返します。
