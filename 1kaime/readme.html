@@ -17,6 +17,10 @@
             background-color: #f9f9f9;
             border-radius: 5px;
             margin-top: 15px;
+            /* コンテナ自体の最大幅を設定すると、中の画像もそれに制限されます */
+            /* max-width: 800px; */ /* 必要に応じてコメント解除 */
+            /* margin-left: auto; */ /* 中央揃えにする場合 */
+            /* margin-right: auto; */ /* 中央揃えにする場合 */
         }
         #readme-content pre {
             background-color: #eee;
@@ -31,6 +35,17 @@
             color: red;
             font-weight: bold;
         }
+
+        /* === ここから追加したCSS === */
+        #readme-content img {
+          max-width: 100%; /* 画像の最大幅をコンテナの100%に制限 */
+          height: auto;   /* 幅に合わせて高さを自動調整（アスペクト比維持） */
+          display: block; /* 画像をブロック要素として扱い、前後に改行が入るようにする */
+                          /* display: inline-block; など他の値も可能です */
+          margin: 15px 0; /* 画像の上下に少し余白を追加 */
+        }
+        /* === ここまで追加したCSS === */
+
     </style>
 </head>
 <body>
