@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>macOS Anaconda 環境構築ガイド (2): hidapi パッケージのインストールと動作確認</title> <style>
+        /* Provided CSS Styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .guide-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .section { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .section h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6fff2; border: 1px solid #b3ffcc; color: #00642e; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Verification green */
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Warning yellow */
+        .step ul, .step ol { margin-top: 5px; margin-bottom: 5px; padding-left: 25px; }
+        .step li { margin-bottom: 5px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; font-size: 0.95em; }
+        .command { font-family: 'Courier New', Courier, monospace; background-color: #212529; color: #f8f9fa; padding: 10px 15px; margin: 10px 0; border-radius: 4px; display: block; white-space: pre; } /* Command style */
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="guide-container">
+    <h2>macOS Anaconda 環境構築ガイド (2): <span class="code">hidapi</span> パッケージのインストールと動作確認</h2> <p class="note">このガイドは、<a href="page1.html">ガイドページ 1</a> で作成した <span class="code">control_lab</span> 環境に、USB HID デバイス通信用ライブラリ <span class="code">hidapi</span> をインストールし、正しくインストールされたかを確認し、最後に実機で簡単な動作テストを行う手順を説明します。</p> <div class="section" id="prerequisites">
+        <h3>1. 前提条件</h3>
+         <div class="step">
+             <ul>
+                 <li>macOS に Anaconda がインストール済みであること。（<a href="page1.html">ガイドページ 1</a> 参照）</li>
+                 <li><span class="code">control_lab</span> という名前の Conda 環境が Python 3.9 で作成済みであること。（<a href="page1.html">ガイドページ 1</a> 参照）</li>
+             </ul>
+         </div>
+    </div>
+
+    <div class="section" id="hidapi-install">
+        <h3>2. <span class="code">hidapi</span> パッケージのインストール</h3>
+        <p>実験に必要な <span class="code">hidapi</span> ライブラリをインストールします。</p>
+        <div class="step task">
+            <strong>Step 2.1: <span class="code">control_lab</span> 環境の有効化</strong>
+             <ol>
+                 <li>ターミナルを開き、以下のコマンドで <span class="code">control_lab</span> 環境を有効化します（まだ有効でない場合）:
+                    <code class="command">conda activate control_lab</code>
+                 </li>
+                 <li class="confirmation">プロンプトの先頭が <span class="code">(control_lab)</span> になっていることを確認してください。</li>
+            </ol>
+         </div>
+        <div class="step task">
+            <strong>Step 2.2: <span class="code">pip</span> で <span class="code">hidapi</span> をインストール</strong>
+            <ol>
+                <li><span class="code">control_lab</span> 環境が有効な状態で、以下の <span class="code">pip</span> コマンドを実行します:
+                    <code class="command">pip install hidapi</code>
+                </li>
+                <li class="confirmation">通常、<code class="code">Successfully installed hidapi-...</code> のようなメッセージが表示されれば成功です。ステップ3に進んで確認してください。</li>
+                 <li class="note">もしこのコマンドがエラーになる場合は、環境設定に他の要因が影響している可能性があります。エラーメッセージを記録して、教員またはTAに相談してください。</li>
+            </ol>
+        </div>
+    </div>
+
+     <div class="section" id="verification">
+        <h3>3. インストールの確認 (ターミナル)</h3>
+        <p>インストールされた <span class="code">hidapi</span> パッケージが Python から正しく利用できるかを確認します。</p>
+        <div class="step task">
+             <ol>
+                <li>ターミナルで、<span class="code">control_lab</span> 環境が有効 (<span class="code">(control_lab)</span> が先頭に表示) になっていることを確認します。（もし有効でなければ <code class="command">conda activate control_lab</code> を実行）</li>
+                <li>Python の対話モードを開始します:
+                    <code class="command">python</code>
+                    <span class="note">プロンプトが <code class="code">>>></code> に変わります。</span>
+                </li>
+                 <li>Python の対話モード内で、<span class="code">hidapi</span> ライブラリをインポートしてみます:
+                    <code class="command">import hid</code>
+                 </li>
+                 <li class="confirmation">この <code class="code">import hid</code> コマンドを実行した後に、**何もエラーメッセージが表示されなければ**、ライブラリは正しく認識されています。</li>
+                <li>Python の対話モードを終了します:
+                    <code class="command">exit()</code>
+                </li>
+            </ol>
+        </div>
+         <div class="confirmation">
+             <strong>【確認完了】</strong> <code class="code">import hid</code> がエラーなく実行できれば、<span class="code">hidapi</span> パッケージのインストールと基本的な確認は完了です！
+        </div>
+    </div>
+
+    <div class="section" id="hardware-test">
+        <h3>4. 実機での動作テスト (<span class="code">wheel.py</span>)</h3>
+        <p>最後に、実際に機器を接続し、サンプルスクリプトを実行してモーターが動作するかを確認します。</p>
+        <div class="step task">
+             <ol>
+                 <li>
+                     <strong>ハードウェアの準備:</strong>
+                     <ul>
+                         <li>実験機器と Mac を USB ケーブルで接続します。</li>
+                         <li>機器本体にある2つの開始ボタンを押して電源を入れます。</li>
+                         <li class="confirmation">機器の**黄色いランプが点滅**していることを確認してください。これが準備完了の状態です。</li>
+                         <li class="warning">【安全注意】モーターが回転します。機器の周りに障害物がないか確認し、安全な場所でテストを行ってください。</li>
+                     </ul>
+                 </li>
+                 <li>
+                     <strong>ターミナルの準備:</strong>
+                     <ul>
+                         <li>ターミナルを開き、<span class="code">control_lab</span> 環境が有効になっていることを確認します (<span class="code">(control_lab)</span> 表示)。(もし有効でなければ <code class="command">conda activate control_lab</code> を実行)</li>
+                         <li><span class="code">wheel.py</span> スクリプトが保存されているフォルダ（ディレクトリ）に <code class="code">cd</code> コマンドで移動します:
+                             <code class="command">cd /path/to/your/project/folder</code>
+                             <span class="note">(<code class="code">/path/to/your/project/folder</code> は実際のフォルダパスに置き換えてください)</span>
+                         </li>
+                     </ul>
+                 </li>
+                 <li>
+                     <strong>スクリプトの実行:</strong>
+                     <ul>
+                        <li>以下のコマンドを実行します:
+                             <code class="command">python wheel.py</code>
+                         </li>
+                     </ul>
+                 </li>
+                 <li>
+                     <strong>動作確認:</strong>
+                     <ul>
+                         <li class="confirmation">コマンド実行後、**機器のモーターが回転し始めれば成功です！**</li>
+                         <li>スクリプトや機器によっては、一定時間後に自動で停止するか、Ctrl+C を押して停止する必要があるかもしれません（担当者の指示に従ってください）。</li>
+                     </ul>
+                 </li>
+             </ol>
+             <div class="warning">
+                <strong>【モーターが回転しない場合】</strong>
+                 <ul>
+                     <li>USBケーブルの接続を確認してください。</li>
+                     <li>機器の電源（黄色ランプ点滅）を確認してください。</li>
+                     <li>ターミナルで正しいフォルダに移動しているか (<code class="code">cd</code> コマンド) を確認してください。</li>
+                     <li><span class="code">hidapi</span> が正しくインストールされているか（ステップ3の確認）を再確認してください。</li>
+                     <li>上記を確認しても動作しない場合は、エラーメッセージなどを記録し、教員またはTAに相談してください。</li>
+                 </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>5. 完了</h3>
+        <p>以上で、<span class="code">control_lab</span> 環境への <span class="code">hidapi</span> パッケージのインストールから、実機での簡単な動作確認までの手順は完了です。</p>
+        <p>実験の次のステップに進んでください。</p>
+    </div>
+
+</div>
+</body>
+</html>

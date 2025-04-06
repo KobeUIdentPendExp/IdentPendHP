@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>macOS Anaconda 環境構築ガイド (1): インストールと環境作成</title>
+    <style>
+        /* Provided CSS Styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .guide-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .section { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .section h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6fff2; border: 1px solid #b3ffcc; color: #00642e; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Verification green */
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Warning yellow */
+        .step ul, .step ol { margin-top: 5px; margin-bottom: 5px; padding-left: 25px; }
+        .step li { margin-bottom: 5px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; font-size: 0.95em; }
+        .command { font-family: 'Courier New', Courier, monospace; background-color: #212529; color: #f8f9fa; padding: 10px 15px; margin: 10px 0; border-radius: 4px; display: block; white-space: pre; } /* Command style */
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="guide-container">
+    <h2>macOS Anaconda 環境構築ガイド (1): インストールと環境作成</h2>
+    <p class="note">このガイドは、macOS に Anaconda (Python 環境) をインストールし、実験用の専用環境を作成する手順を説明します。</p>
+
+    <div class="section" id="anaconda-install">
+        <h3>1. Anaconda のインストール (未インストールの場合)</h3>
+        <p>Python スクリプトを実行するために Anaconda を使用します。（すでにインストール済みの場合はセクション2に進んでください）</p>
+        <div class="step">
+            <strong>ダウンロード:</strong>
+            <ul>
+                <li><a href="https://www.anaconda.com/download/success" target="_blank" rel="noopener noreferrer">Anaconda Distribution 公式サイト</a>にアクセスします。</li>
+                <li>ご自身のMacがAppleシリコン (M1/M2/M3など) かIntelかを確認し、対応するインストーラー（例: 64-Bit Apple silicon Graphical Installer）を選択してください。</li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>インストール:</strong>
+            <ul>
+                <li>ダウンロードした <span class="code">.pkg</span> ファイルをダブルクリックしてインストーラーを起動します。</li>
+                <li>画面の指示に従ってインストールを進めます。（通常はデフォルト設定のままで、「続ける」「同意する」「インストール」をクリックしていけば大丈夫です）</li>
+                <li>途中で Mac のログインパスワードの入力を求められる場合があります。</li>
+            </ul>
+        </div>
+         <div class="note">
+             インストール完了後、ターミナルで <span class="code">conda</span> コマンドが使えるように設定されます。変更を反映させるために、一度ターミナルを再起動する必要がある場合があります。
+         </div>
+    </div>
+
+    <div class="section" id="terminal-check">
+        <h3>2. インストールの確認 (ターミナル)</h3>
+        <p>Anaconda が正しくインストールされ、コマンドが利用可能かを確認します。</p>
+        <div class="step">
+            <strong>ターミナルを開く:</strong>
+            <ul>
+                <li>「アプリケーション」フォルダ内の「ユーティリティ」フォルダにある「ターミナル.app」を起動します。(Spotlight 検索で「ターミナル」と入力しても見つけられます)</li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>Conda コマンドの確認:</strong>
+            <ol>
+                <li>ターミナルで以下のコマンドを実行し、conda のバージョンが表示されるか確認します:
+                    <code class="command">conda --version</code>
+                    (例: <code class="code">conda 23.7.4</code> のように表示されれば OK)
+                </li>
+                <li>次に、現在の conda 環境リストを表示します:
+                    <code class="command">conda env list</code>
+                     <span class="note">インストール直後は <code class="code">base</code> という名前の環境が表示されるはずです。</span>
+                </li>
+            </ol>
+        </div>
+        <!-- <div class="confirmation">
+            <strong>確認:</strong> 上記コマンドがエラーなく実行でき、ターミナルのプロンプト (入力待ちの部分) の先頭に <span class="code">(base)</span> と表示されていれば、Anaconda の基本的な設定は完了しています。(表示されない場合はターミナルを再起動してみてください)
+        </div> -->
+
+         <div class="confirmation">
+            <strong>確認:</strong> 上記コマンドがエラーなく実行でき、ターミナルのプロンプト (入力待ちの部分) の先頭に <span class="code">(base)</span> と表示されていれば、Anaconda の基本的な設定は完了しています。(表示されない場合はターミナルを再起動してみてください)
+            <p class="note">以下の図は、ターミナルで <code class="code">conda env list</code> コマンドが成功し、<code class="code">(base)</code> 環境がアクティブになっている状態の例です。</p>
+            <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                 <img src="commandline_condaenvlist.png" 
+                      alt="ターミナルで conda env list を実行した結果のスクリーンショット" 
+                      style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+            </div>
+        </div>
+    </div>
+
+     <div class="section" id="create-env">
+        <h3>3. 専用 Conda 環境の作成 (<span class="code">control_lab</span>)</h3>
+        <p>実験に必要なライブラリを他の Python プロジェクトと分離し、バージョンの衝突を防ぐために、専用の環境を作成します。</p>
+            <div class="step task">
+                <strong>【環境作成と有効化】</strong>
+                <ol>
+                    <li>ターミナルを開き、以下のコマンドを実行して、<span class="code">control_lab</span> という名前で Python 3.9 の環境を作成します:
+                        <code class="command">conda create --name control_lab python=3.9</code>
+                        (作成を確認するプロンプト <code class="code">Proceed ([y]/n)?</code> が出たら <code class="code">y</code> を入力して Enter キーを押します)
+                    </li>
+                    <li>作成した環境を有効化（アクティベート）します:
+                        <code class="command">conda activate control_lab</code>
+                    </li>
+                </ol>
+            </div>
+
+             <div class="confirmation">
+                <strong>確認:</strong> 環境の有効化に成功すると、ターミナルのプロンプトの先頭表示が <span class="code">(base)</span> から <span class="code">(control_lab)</span> に変わります。
+                <p class="note">以下のGIFは、環境が正しく有効化され、プロンプト表示が変化する様子を示しています。</p>
+                 <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                     <img src="activate_env.gif" alt="conda activate control_lab 実行後のプロンプト変化を示すGIFアニメーション" 
+                          style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+                </div>
+            </div>
+             <p class="note">これ以降の Python パッケージのインストールは、必ずこの <span class="code">control_lab</span> 環境が**アクティブな状態**で行ってください。</p>
+       </div>
+
+    <div class="section">
+        <h3>次のステップ</h3>
+        <p>基本的な Anaconda 環境と、実験用の <span class="code">control_lab</span> 環境の準備ができました。</p>
+        <p>次は、<a href="page2.html">ガイドページ 2</a> に進み、<span class="code">control_lab</span> 環境に必要な Python パッケージをインストールし、指定されたスクリプトを実行する手順を確認してください。</p>
+    </div>
+
+</div>
+</body>
+</html>

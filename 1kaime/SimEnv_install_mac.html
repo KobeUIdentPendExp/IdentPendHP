@@ -1,0 +1,307 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ロボット制御実験 環境構築ガイド (macOS版)</title> <style>
+        /* Reusing styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .guide-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .section { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .section h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6fff2; border: 1px solid #b3ffcc; color: #00642e; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Verification green */
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Warning yellow */
+        .step ul, .step ol { margin-top: 5px; margin-bottom: 5px; padding-left: 25px; }
+        .step li { margin-bottom: 5px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; font-size: 0.95em; }
+        .command { font-family: 'Courier New', Courier, monospace; background-color: #212529; color: #f8f9fa; padding: 10px 15px; margin: 10px 0; border-radius: 4px; display: block; white-space: pre; } /* Command style */
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+    </head>
+<body>
+
+<div class="guide-container">
+    <h2>ロボット制御実験 環境構築ガイド (macOS版)</h2> <p class="note">このガイドは、macOS上でシステム同定から強化学習までの全実験に必要なソフトウェア環境を構築する手順を説明します。主な構成要素は Webots シミュレータと Anaconda (Python) です。</p>
+
+    <div class="section" id="webots-install">
+        <h3>1. Webots シミュレータのインストール</h3>
+        <p>主に強化学習の実験で使用するロボットシミュレータ Webots をインストールします。</p>
+        <div class="step">
+            <strong>ダウンロード:</strong>
+            <ul>
+                <li><a href="https://cyberbotics.com/#download" target="_blank" rel="noopener noreferrer">Webots 公式サイト</a>のダウンロードセクションへ進みます。</li>
+                <li>macOS に対応したインストーラー (<span class="code">.dmg</span> ファイル) をダウンロードします。</li>
+                <!-- <li class="note">ご自身のMacがAppleシリコン (M1/M2/M3など) かIntelかを確認し、対応するインストーラーを選択してください（サイトが自動判別する場合もあります）。</li> -->
+            </ul>
+        </div>
+        <div class="step">
+            <strong>インストール:</strong>
+            <ul>
+                <li>ダウンロードした <span class="code">.dmg</span> ファイルを開き、中の <span class="code">Webots</span> アプリケーションアイコンを「アプリケーション (<span class="code">Applications</span>)」フォルダにドラッグ＆ドロップします。</li>
+                <li>インストール後、初回起動時にセキュリティに関する確認ダイアログが表示される場合があります。指示に従って許可してください。</li>
+            </ul>
+        </div>
+        <div class="confirmation">
+            <strong>確認:</strong> インストール後、「アプリケーション」フォルダから Webots アプリケーションを起動し、サンプルワールドなどが開けることを確認してください。
+        </div>
+        <div class="section" id="webots-install">
+            <h3>1. Webots シミュレータのインストール</h3>
+            <p>主に強化学習の実験で使用するロボットシミュレータ Webots をインストールします。</p>
+            <div class="step">
+                <strong>ダウンロード:</strong>
+                <ul>
+                    <li><a href="https://cyberbotics.com/#download" target="_blank" rel="noopener noreferrer">Webots 公式サイト</a>のダウンロードセクションへ進みます。</li>
+                    <li>macOS に対応したインストーラー (<span class="code">.dmg</span> ファイル) をダウンロードします。</li>
+                     <li class="note">ご自身のMacがAppleシリコン (M1/M2/M3など) かIntelかを確認し、対応するインストーラーを選択してください（サイトが自動判別する場合もあります）。</li>
+                </ul>
+            </div>
+            <div class="step">
+                <strong>インストール:</strong>
+                <ol>
+                    <li><strong>ディスクイメージを開く試行:</strong> ダウンロードした <span class="code">.dmg</span> ファイルをダブルクリックして開こうとします。</li>
+                    <li class="warning">
+                        <strong>【セキュリティ警告が表示された場合の対処法】</strong><br>
+                        macOS のセキュリティ機能により、以下のような警告が表示されて <span class="code">.dmg</span> ファイルが開けない場合があります。（開発元が未確認などの理由）
+                        <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                            <img src="webotsMacSecAlert.png" alt="macOSセキュリティ警告の例：dmgファイルが開けない"
+                                 style="max-width: 60%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+                             <p class="note" style="margin-top: 5px;">(図：セキュリティ警告の例)</p>
+                        </div>
+                        この警告ダイアログ自体には「開く」ボタンがありません。「ゴミ箱に入れる」は**クリックせず**、以下の手順を実行してください:
+                        <ol style="list-style-type: lower-alpha;">
+                            <li>メニューから「**システム設定**」を開きます。</li>
+                            <li>左側のメニューで「**プライバシーとセキュリティ**」を選択します。</li>
+                            <li>右側を下にスクロールし、「**セキュリティ**」セクションを探します。</li>
+                            <li>「"webots-R....dmg"はブロックされました。開発元を確認できないため開けません。」のようなメッセージの横（または下）に表示されている**「このまま開く」**ボタンをクリックします。（管理者パスワードの入力が必要な場合があります）</li>
+                            <li><span class="confirmation">「このまま開く」をクリックした後、**もう一度 Finder で .dmg ファイルをダブルクリック**します。今度はディスクイメージがマウントされ、中身が表示されるはずです。</span></li>
+                        </ol>
+                        <p class="note" style="margin-top: 15px;">以下のGIFは、このセキュリティ警告に対処し、<span class="code">.dmg</span>ファイルを開く手順を示しています:</p>
+                        <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                            <img src="webotsMacinstallerOpen.gif" alt="セキュリティ警告を解除してdmgを開く手順のGIF"
+                                 style="max-width: 100%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+                        </div>
+                    </li>
+                    <li><strong>アプリケーションのコピー:</strong> <span class="code">.dmg</span> ファイルが正常に開き、中のファイルが表示されたら、<span class="code">Webots</span> アプリケーションのアイコンを、同じウィンドウ内にある「アプリケーション (<span class="code">Applications</span>)」フォルダのエイリアス（またはFinderのサイドバーにある「アプリケーション」フォルダ）にドラッグ＆ドロップしてコピーします。</li>
+                    <li><strong>ディスクイメージの取り出し (推奨):</strong> コピーが完了したら、デスクトップまたはFinderのサイドバーに表示されている Webots のディスクイメージアイコンを右クリック（またはControl+クリック）し、「"Webots"を取り出す」を選択してアンマウント（取り出し）します。</li>
+                </ol>
+            </div>
+            <div class="confirmation">
+                <strong>確認:</strong> 「アプリケーション」フォルダを開き、コピーされた <span class="code">Webots</span> アプリケーションがあることを確認してください。ダブルクリックして起動し、サンプルワールドなどが開けることを確認してください。（アプリの初回起動時に、別の種類のセキュリティ確認ダイアログが表示されることもあります。その場合は以下の操作手順を参照してください。）
+            </div>
+            <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                <img src="webots_pre.gif" alt="セキュリティ警告を解除してWebotsを開く手順のGIF"
+                     style="max-width: 100%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+            </div>
+        </div>
+    </div>
+<!-- 
+    <div class="section" id="anaconda-install">
+        <h3>2. Anaconda (Python 環境) のインストールと設定</h3>
+        <p>全ての実験で使用する Python スクリプトを実行するために Anaconda を使用します。（すでに Anaconda または Miniconda がインストール済みの場合は、このセクションの【専用 Conda 環境の作成】から進んでください）</p>
+        <div class="step">
+            <strong>ダウンロード (未インストールの場合):</strong>
+            <ul>
+                <li><a href="https://www.anaconda.com/download" target="_blank" rel="noopener noreferrer">Anaconda Distribution 公式サイト</a>にアクセスします。</li>
+                <li>macOS 用のインストーラー (<span class="code">.pkg</span> ファイル) をダウンロードします。
+                    <span class="note">ご自身のMacに合ったインストーラー (Apple Silicon または Intel) を選択してください。</span>
+                </li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>インストール (未インストールの場合):</strong>
+            <ul>
+                <li>ダウンロードした <span class="code">.pkg</span> ファイルをダブルクリックしてインストーラーを起動します。</li>
+                <li>画面の指示に従ってインストールを進めます。（「続ける」「同意する」「インストール」をクリック。通常はデフォルト設定でOK）</li>
+                <li>途中で Mac のログインパスワードの入力を求められる場合があります。</li>
+                <li>インストール完了後、ターミナルを再起動すると <span class="code">conda</span> コマンドが利用可能になります。</li>
+            </ul>
+        </div>
+        <div class="step">
+             <strong>インストールの確認 (ターミナル):</strong>
+            <ol>
+                <li>macOS の「ターミナル.app」を起動します。</li>
+                <li>以下のコマンドを実行し、conda のバージョンが表示されるか確認します:
+                    <code class="command">conda --version</code>
+                </li>
+                 <li>ターミナルのプロンプトの先頭に <span class="code">(base)</span> と表示されているか確認します。（表示されていればOK）</li>
+            </ol>
+             <div class="confirmation">
+                <p class="note">以下の図は、ターミナルで <code class="code">conda env list</code> コマンドが成功し、<code class="code">(base)</code> 環境がアクティブになっている状態の例です。</p>
+                 <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
+                     <img src="image_928040.png" alt="ターミナルで conda env list を実行した結果のスクリーンショット"
+                          style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+                 </div>
+             </div>
+        </div>
+        <div class="step task">
+            <strong>【推奨】専用 Conda 環境の作成 (<span class="code">control_lab</span>):</strong>
+            <p>実験に必要なライブラリを他の Python プロジェクトと分離するために、専用の環境を作成します。</p>
+            <ol>
+                <li>**ターミナル** を開きます。</li>
+                <li>以下のコマンドを実行して、<span class="code">control_lab</span> という名前で Python 3.9 の環境を作成します:
+                    <code class="command">conda create --name control_lab python=3.9</code>
+                    (確認プロンプト <code class="code">Proceed ([y]/n)?</code> が出たら <code class="code">y</code> を入力して Enter)
+                </li>
+                <li>作成した環境を有効化（アクティベート）します:
+                    <code class="command">conda activate control_lab</code>
+                </li>
+            </ol>
+             <div class="confirmation">
+                <p>環境の有効化に成功すると、ターミナルのプロンプトの先頭表示が <span class="code">(base)</span> から <span class="code">(control_lab)</span> に変わります。</p>
+                </div>
+             <p class="note">以降の Python パッケージのインストールは、必ずこの <span class="code">control_lab</span> 環境が**アクティブな状態**で行ってください。</p>
+       </div>
+    </div> -->
+
+    <div class="section" id="pip-install">
+        <h3>2. 必要な Python パッケージのインストール</h3>
+        <p>実験で使用するライブラリを <span class="code">control_lab</span> 環境にインストールします。</p>
+        <div class="step task">
+            <strong>【パッケージのインストール】</strong>
+            <ol>
+                <li>**ターミナル** を開き、**必ず <span class="code">control_lab</span> 環境を有効化**してください (まだ有効でない場合):
+                    <code class="command">conda activate control_lab</code>
+                    (プロンプトが <span class="code">(control_lab)</span> になっていることを確認)
+                </li>
+                <li>以下のコマンドを実行して、基本的な科学計算ライブラリをインストールします:
+                    <code class="command">conda install numpy scipy matplotlib</code>
+                    (確認プロンプトが出たら <code class="code">y</code> を入力)
+                </li>
+                 <li>次に、強化学習とハードウェア通信に必要なライブラリを <span class="code">pip</span> を使ってインストールします:
+                    <code class="command">pip install gymnasium stable-baselines3 torch torchvision torchaudio hidapi</code>
+                     <!-- <span class="note">(<span class="code">stable-baselines3</span> は PyTorch など追加の依存関係も含めてインストールします。もし PyTorch のインストールで問題が出る場合は、<a href="https://pytorch.org/" target="_blank" rel="noopener noreferrer">PyTorch 公式サイト</a> の指示に従って別途インストールを試みてください。)</span><br>
+                    <span class="note">(<span class="code">hidapi</span> のインストールでエラーが出る場合は、エラーメッセージを記録して教員/TAに相談してください。)</span> </li> -->
+            </ol>
+        </div>
+    </div>
+
+     <div class="section" id="verification">
+        <h3>3. 環境構築の最終確認</h3>
+        <div class="step">
+             <ol>
+                <li>**ターミナル** で、<span class="code">control_lab</span> 環境がアクティブなことを確認します (<span class="code">(control_lab)</span> が先頭に表示)。</li>
+                <li>Python のバージョンを確認します: <code class="command">python --version</code> (3.9.x が表示されるはず)</li>
+                <li>インストールされた主要なパッケージを確認します (一部):
+                    <code class="command">conda list '(numpy|matplotlib|scipy|gymnasium|stable-baselines3|torch|hidapi)'</code>
+                    (リストに表示され、バージョン情報が出ていれば OK。pipで入れたものは <code class="code">pip list</code> でも確認可)
+                </li>
+                <li>Python インタプリタを起動し (<span class="code">python</span> と入力)、ライブラリが import できるか試します:
+                    <code class="command">import numpy
+import matplotlib
+import scipy
+import gymnasium
+import stable_baselines3
+import torch
+import hid
+exit()</code>
+                    (エラーなくプロンプト <code class="code">>>></code> に戻り、<code class="code">exit()</code> で終了できれば成功)
+                </li>
+                 <li>「アプリケーション」フォルダから Webots アプリケーションを起動できることを確認します。（この時点ではまだPython連携設定はしていません）</li>
+            </ol>
+        </div>
+         <div class="confirmation">
+             <strong>【一旦完了】</strong> 上記の確認が全て問題なければ、ソフトウェアのインストールと基本的なPython環境の準備は完了です。次に進んでください。
+        </div>
+    </div>
+
+    <div class="section" id="webots-python-config">
+        <h3>4. Webots と Anaconda Python 環境の連携設定 (macOS)</h3>
+        <p class="warning">【macOS ユーザーへの重要注意】Webots から <span class="code">control_lab</span> 環境の Python ライブラリ（特に Stable Baselines3 など）を利用するには、特別な設定が必要です。以下のいずれかの方法を行いますが、**方法2（ターミナルからの起動）を強く推奨します**。</p>
+
+        <h4>手順1：Webots 環境設定で Python パスを指定 (動作しない可能性が高い)</h4>
+        <div class="step warning">
+            <p>この方法は、特に Conda 環境を使用する場合、macOS では正常に動作しないことが報告されています。Webots が正しいライブラリを見つけられない可能性があります。もし問題が発生した場合は、以下の「方法2」を試してください。</p>
+            <ol>
+                <li><strong><span class="code">control_lab</span> 環境の Python パスを確認する:</strong>
+                    <ul>
+                        <li>ターミナルを開き、<span class="code">control_lab</span> 環境を有効化します: <code class="command">conda activate control_lab</code></li>
+                        <li>以下のコマンドを実行して、Python 実行ファイルのフルパスを調べ、コピーします:
+                             <code class="command">which python</code>
+                             (例: <code class="code">/Users/yourname/anaconda3/envs/control_lab/bin/python</code>)
+                        </li>
+                     </ul>
+                </li>
+                <li><strong>Webots の設定を変更する:</strong>
+                     <ul>
+                        <li>Webots アプリケーションを（通常の方法で）起動します。</li>
+                        {/* Corrected menu path based on user snippet */}
+                        <li>メニューバーから <span class="code">Webots</span> -> <span class="code">Preferences...</span> を選択。</li>
+                        <li><span class="code">General</span> タブの <span class="code">Python command</span> フィールドに、上でコピーしたフルパスを貼り付けます。</li>
+                         {/* Changed "OK or Apply" to just "OK" based on user snippet */}
+                        <li><span class="code">OK</span> をクリックして保存し、一度 Webots を**終了**します。</li>
+                     </ul>
+                     <div style="text-align: center; margin-top: 15px; margin-bottom: 10px;">
+                         {/* Updated GIF filename and style based on user snippet */}
+                         <img src="webotsPythonEnv.gif"
+                              alt="Webots PreferencesでPythonコマンドのパスを設定する手順のGIFアニメーション"
+                              style="max-width: 100%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+                         <p class="note" style="margin-top: 5px;">(図：Webots 設定画面での Python パス設定手順)</p>
+                     </div>
+                 </li>
+            </ol>
+        </div>
+
+        <h4>手順2：【macOS推奨】ターミナルから Webots を起動する (連携を有効にするため)</h4>
+        <div class="step task">
+            {/* Updated explanation based on previous refinement */}
+            <p class="warning">【重要】手順1で Webots の Preferences に Python パスを設定した場合でも、macOS で Webots を通常起動（アプリケーションフォルダや Dock から起動）すると、設定した Conda 環境 (<span class="code">control_lab</span>) が**正しく認識・利用されず**、コントローラ実行時にライブラリが見つからないエラーが発生することがあります（理由は定かではありませんが、よく報告される現象です）。</p>
+            <p>この問題を回避し、設定した <span class="code">control_lab</span> 環境とライブラリを Webots に確実に認識・利用させるためには、以下の手順で**ターミナルから Webots を起動する必要があります**。</p>
+            <ol>
+                <li><strong>ターミナルを開く:</strong> macOS のターミナル.app を起動します。</li>
+                <li><strong>Conda 環境を有効化:</strong> 以下のコマンドで <span class="code">control_lab</span> 環境を有効化します。
+                    <code class="command">conda activate control_lab</code>
+                    <br>(プロンプトの先頭が <span class="code">(control_lab)</span> になっていることを確認)
+                </li>
+                <li><strong>Webots をターミナルから起動:</strong> **環境を有効化した、その同じターミナルウィンドウで**、以下のコマンドを実行して Webots を起動します。
+                    <code class="command">/Applications/Webots.app/Contents/MacOS/webots</code>
+                    <span class="note">上記は標準的なインストールパスです。もし異なる場所にインストールした場合や、バージョンによってパスが違う場合は、実際のパスに調整してください (Tabキー補完が使えるかもしれません)。<br>
+                    このようにターミナル経由で起動することで、Webots は <span class="code">control_lab</span> 環境の Python 及びインストールされたライブラリ（numpy, stable-baselines3, torch, hidapi 等）を正しく見つけて使用することができます。（Preferences の設定がこの方法で初めて有効になると考えられます。）</span>
+                 </li>
+                 {/* Note about inconvenience kept from user snippet */}
+                 <li class="note">毎回このコマンドを打つのが面倒な場合は、このコマンドへのエイリアスを作成したり、PATH を通したりする方法もありますが、まずはこの直接的な方法で動作を確認してください。（詳細は下の【任意】設定を参照）</li>
+            </ol>
+        </div>
+
+        <h4>【任意】Webots 起動コマンドの簡略化</h4>
+
+        <div class="step note" style="margin-top: 20px; background-color: #f0f0f0;">
+            <!-- <h5 style="margin-top:0; border-bottom: 1px solid #ccc; padding-bottom: 5px;">【任意】Webots 起動コマンドの簡略化</h5> -->
+            <p>毎回ターミナルで <code class="code">/Applications/Webots.app/Contents/MacOS/webots</code> と入力するのは少し長いと感じるかもしれません。以下は、単に <code class="code">webots</code> と入力するだけで起動できるようにするための、**任意の設定**です（必須ではありません）。</p>
+
+            <p><strong>エイリアス (alias) を設定する</strong></p>
+            <p>エイリアスは、長いコマンドに短い別名を付ける機能です。以下のコマンドをターミナルで実行すると、<code class="code">webots</code> という名前でフルパスのコマンドを実行できるようになります。(macOSの標準シェルzshの場合)</p>
+            <code class="command">echo 'export PATH="/Applications/Webots.app/Contents/MacOS:$PATH"' >> ~/.zshrc</code>
+
+            {/* Added Troubleshooting Note for Permission Denied */}
+            <p class="note" style="margin-top: 5px; margin-bottom: 10px;">
+                <strong style="color: #856404;">【エラーが出る場合】</strong> もし上記のコマンド実行時に <code class="code">permission denied</code> (権限拒否) エラーが出た場合は、方法 A と同様に <code class="code">~/.zshrc</code> ファイルの権限を確認・修正してください。<br/>
+                <code class="command">ls -l ~/.zshrc</code> で確認し、必要に応じて <code class="command">sudo chown $(whoami) ~/.zshrc</code> や <code class="command">chmod u+w ~/.zshrc</code> を実行してから、再度上記の <code class="code">echo ...</code> コマンドを実行してください。
+            </p>
+
+            <p>同様に、設定を反映させるにはターミナルを再起動するか <code class="command">source ~/.zshrc</code> を実行してください。その後は <code class="code">conda activate control_lab</code> した後に <code class="command">webots</code> と入力するだけで起動できます。</p>
+
+            <p class="warning" style="margin-top: 15px;"><strong>注意:</strong></p>
+            <ul>
+                <li>これらの設定は任意であり、利便性のためのものです。設定しなくても、フルパスでコマンドを実行すれば問題ありません。</li>
+                <li><code class="code">~/.zshrc</code> は zsh 用の設定ファイルです。もし bash など他のシェルをお使いの場合は、対応する設定ファイル（例: <code class="code">~/.bash_profile</code>）に追記してください。</li>
+                <li>設定ファイルの編集は慎重に行ってください。</li>
+                <li>**重要:** これらの設定を行っても、Webots を起動する前に <code class="command">conda activate control_lab</code> を実行して環境を有効化するステップは依然として**必要**です。エイリアスやPATH設定は、Webotsの実行ファイルを見つけやすくするだけで、Conda環境を自動で有効化するわけではありません。</li>
+            </ul>
+        </div>
+        <div class="confirmation">
+             <strong>【連携のポイント】</strong> 実験で Python コントローラを使用する際は、**必ずこの手順2の方法（ターミナルで <span class="code">control_lab</span> を有効化 → 同じターミナルから Webots を起動）で Webots を起動する**ようにしてください。これにより、設定した Python 環境が Webots 上で正しく機能します。
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>6. 次のステップ</h3>
+        <p>環境構築が完了したら、教員の指示に従い、指定された実験用プロジェクトファイル（Webots ワールドファイル、Python スクリプト等）をダウンロードまたは取得し、各回の実験手順に進んでください。</p>
+        <p class="warning">もし環境構築や Webots との連携で問題が発生した場合は、遠慮なく教員またはティーチングアシスタント (TA) に質問してください。</p>
+    </div>
+
+</div>
+</body>
+</html>
