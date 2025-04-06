@@ -211,7 +211,7 @@ exit()</code>
         <h3>4. Webots と Anaconda Python 環境の連携設定 (macOS)</h3>
         <p class="warning">【macOS ユーザーへの重要注意】Webots から <span class="code">control_lab</span> 環境の Python ライブラリ（特に Stable Baselines3 など）を利用するには、特別な設定が必要です。以下のいずれかの方法を行いますが、**方法2（ターミナルからの起動）を強く推奨します**。</p>
 
-        <h4>手順1：Webots 環境設定で Python パスを指定 (動作しない可能性が高い)</h4>
+        <!-- <h4>手順1：Webots 環境設定で Python パスを指定 (動作しない可能性が高い)</h4>
         <div class="step warning">
             <p>この方法は、特に Conda 環境を使用する場合、macOS では正常に動作しないことが報告されています。Webots が正しいライブラリを見つけられない可能性があります。もし問題が発生した場合は、以下の「方法2」を試してください。</p>
             <ol>
@@ -242,12 +242,12 @@ exit()</code>
                      </div>
                  </li>
             </ol>
-        </div>
+        </div> -->
 
-        <h4>手順2：【macOS推奨】ターミナルから Webots を起動する (連携を有効にするため)</h4>
+        <h4>【macOS推奨】ターミナルから Webots を起動する (連携を有効にするため)</h4>
         <div class="step task">
-            {/* Updated explanation based on previous refinement */}
-            <p class="warning">【重要】手順1で Webots の Preferences に Python パスを設定した場合でも、macOS で Webots を通常起動（アプリケーションフォルダや Dock から起動）すると、設定した Conda 環境 (<span class="code">control_lab</span>) が**正しく認識・利用されず**、コントローラ実行時にライブラリが見つからないエラーが発生することがあります（理由は定かではありませんが、よく報告される現象です）。</p>
+
+            <p class="warning">macOS で Webots を通常起動（アプリケーションフォルダや Dock から起動）すると、設定した Conda 環境 (<span class="code">control_lab</span>) が**正しく認識・利用されず**、コントローラ実行時にライブラリが見つからないエラーが発生することがあります（理由は定かではありませんが、よく報告される現象です）。</p>
             <p>この問題を回避し、設定した <span class="code">control_lab</span> 環境とライブラリを Webots に確実に認識・利用させるためには、以下の手順で**ターミナルから Webots を起動する必要があります**。</p>
             <ol>
                 <li><strong>ターミナルを開く:</strong> macOS のターミナル.app を起動します。</li>
@@ -260,8 +260,11 @@ exit()</code>
                     <span class="note">上記は標準的なインストールパスです。もし異なる場所にインストールした場合や、バージョンによってパスが違う場合は、実際のパスに調整してください (Tabキー補完が使えるかもしれません)。<br>
                     このようにターミナル経由で起動することで、Webots は <span class="code">control_lab</span> 環境の Python 及びインストールされたライブラリ（numpy, stable-baselines3, torch, hidapi 等）を正しく見つけて使用することができます。（Preferences の設定がこの方法で初めて有効になると考えられます。）</span>
                  </li>
-                 {/* Note about inconvenience kept from user snippet */}
                  <li class="note">毎回このコマンドを打つのが面倒な場合は、このコマンドへのエイリアスを作成したり、PATH を通したりする方法もありますが、まずはこの直接的な方法で動作を確認してください。（詳細は下の【任意】設定を参照）</li>
+                 <img src="webotsTerminal.gif"
+                 alt="Webotsはタミナールから起動のGIFアニメーション"
+                 style="max-width: 100%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+            <p class="note" style="margin-top: 5px;">(図：Webots Webotsはタミナールから起動)</p>
             </ol>
         </div>
 
@@ -278,7 +281,7 @@ exit()</code>
             {/* Added Troubleshooting Note for Permission Denied */}
             <p class="note" style="margin-top: 5px; margin-bottom: 10px;">
                 <strong style="color: #856404;">【エラーが出る場合】</strong> もし上記のコマンド実行時に <code class="code">permission denied</code> (権限拒否) エラーが出た場合は、方法 A と同様に <code class="code">~/.zshrc</code> ファイルの権限を確認・修正してください。<br/>
-                <code class="command">ls -l ~/.zshrc</code> で確認し、必要に応じて <code class="command">sudo chown $(whoami) ~/.zshrc</code> や <code class="command">chmod u+w ~/.zshrc</code> を実行してから、再度上記の <code class="code">echo ...</code> コマンドを実行してください。
+                <code class="command">ls -l ~/.zshrc</code> で確認し、必要に応じて <code class="command">sudo chown $(whoami) ~/.zshrc</code>  を実行してから、再度上記の <code class="code">echo ...</code> コマンドを実行してください。
             </p>
 
             <p>同様に、設定を反映させるにはターミナルを再起動するか <code class="command">source ~/.zshrc</code> を実行してください。その後は <code class="code">conda activate control_lab</code> した後に <code class="command">webots</code> と入力するだけで起動できます。</p>
