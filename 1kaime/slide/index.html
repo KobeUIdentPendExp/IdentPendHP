@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>総合実験１ プレゼンテーション - JS修正版</title>
+
+        <link rel="stylesheet" href="dist/reveal.css">
+        <link rel="stylesheet" href="dist/theme/white.css" id="theme">
+        <link rel="stylesheet" href="dist/print/pdf.css" type="text/css" media="print">
+        <link rel="stylesheet" href="custom-style.css">
+
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+
+                <section class="title-slide">
+					<div class="header-info">
+					   <span class="course-name">2025年度 総合実験 1 (b)</span>
+					   <span class="date">2025.4.10</span>
+				   </div>
+				   <h1>ビュートバランサー2を用いた<br>二輪型倒立振子のモデリングと制御</h1>
+				   <div class="presenter-info">
+					   <p>担当者: 古賀、中田、曹、小西</p>
+					   <p>TA: 小川、吉田、友成</p>
+				   </div>
+			   </section>
+
+                <!-- <section class="content-slide objective-focus-slide plan-a"> <div class="top-media-row">
+                        <div class="media-item">
+                            <video controls muted data-autoplay> <source src="3.mp4" type="video/mp4">
+                                お使いのブラウザはHTML5ビデオに対応していません。
+                            </video>
+                            <p class="media-caption">本実験ロボット (二輪倒立振子)</p>
+                        </div>
+                        <div class="media-item">
+                            <video controls muted data-autoplay> <source src="G1_robot.mp4" type="video/mp4">
+                                お使いのブラウザはHTML5ビデオに対応していません。
+                            </video>
+                             <p class="media-caption">応用例 (Unitree G1 humanoid Robot)</p>
+                        </div>
+                    </div>
+
+                    <div class="bottom-content-wrapper"> 
+                        <p class="connection-text">
+                             二輪倒立振子の制御原理は、人型ロボットの運動制御の基礎をなす 
+                        </p>
+                        <hr class="connection-divider"> <div class="objective-box">
+                            <h4 class="objective-title">実験の目的</h4>
+                            <ul>
+                                <li><strong>対象とプロセス:</strong> 二輪倒立振子を用い、モデル構築 (運動方程式, 同定) から制御実装 (Python PID, 実機安定化/方向制御) までを体験。</li>
+                                <li><strong>多様なアプローチ:</strong> 解析的な制御に加え、強化学習による制御も実践。</li>
+                                <li><strong>学習目標:</strong> 関連知識を応用し、不安定な実ロボットを制御する技術の基本と多様性を学ぶ。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section> -->
+
+				<section class="content-slide objective-focus-slide plan-a"> <div class="top-media-row">
+					<div class="media-item">
+						<img src="3.gif" alt="" /> 
+						<p class="media-caption">本実験ロボット (二輪倒立振子)</p>
+					</div>
+					<div class="media-item">
+						<img src="G1_robot.gif" alt="" /> 
+						 <p class="media-caption">応用例 (人型ロボット)</p>
+					</div>
+				</div>
+
+				<div class="bottom-content-wrapper"> 
+					<p class="connection-text">
+						 二輪倒立振子の制御原理は、人型ロボットの運動制御の基礎をなす 
+					</p>
+					<hr class="connection-divider">
+					<div class="objective-box">
+						<h4 class="objective-title">実験の目的</h4>
+						<ul>
+							<li><strong>対象とプロセス:</strong> 二輪倒立振子を用い、モデル構築 (運動方程式, 同定) から制御実装 (Python PID, 実機安定化/方向制御) までを体験。</li>
+							<li><strong>多様なアプローチ:</strong> 解析的な制御に加え、強化学習による制御も実践。</li>
+							<li><strong>学習目標:</strong> 関連知識を応用し、不安定な実ロボットを制御する技術の基本と多様性を学ぶ。</li>
+						</ul>
+					</div>
+				</div>
+			</section>
+
+
+			   <section class="content-slide schedule-slide" data-background-color="#f7f7f7">
+					<h2>２ 実験スケジュール</h2>
+					<div class="schedule-container">
+						<div class="schedule-column">
+							<div class="phase-title">【前半】第 1～3 週<br>基礎構築とシミュレーション</div>
+							<div class="week-block"><h3>第1週</h3><ul><li>ロボットの組み立てとPC開発環境（WSL, Python等）のセットアップ。Webots等の導入。</li></ul></div>
+							<div class="week-block"><h3>第2週</h3><ul><li>モータ動作とデータ記録、物理パラメータ同定。</li></ul></div>
+							<div class="week-block"><h3>第3週</h3><ul><li>中間レポート課題提示。Pythonシミュレーション (P/PD/PID等、ゲイン調整、モデルマッチング法)。</li></ul></div>
+						</div>
+						<div class="schedule-column">
+							 <div class="phase-title">【後半】第 4～6 週<br>実機制御と応用</div>
+							 <div class="week-block"><h3>第4週</h3><ul><li>実機PID制御と電流PI制御の統合・実装、ゲイン調整と効果検証。</li></ul></div>
+							 <div class="week-block"><h3>第5週</h3><ul><li>倒立安定化と方向制御の統合。安定性を保ちつつ目標方向へ移動させる方法の探求。</li></ul></div>
+							 <div class="week-block"><h3>第6週</h3><ul><li>最終レポート課題提示。Webotsシミュレータでの強化学習（SAC）体験。全体考察。</li></ul></div>
+						</div>
+					</div>
+				</section>
+
+				<section class="content-slide equipment-slide"> <h2>３ 人数、実験器具等</h2>
+				   <ul class="icon-list"> <li class="item-group">2名または3名で1つの班を構成し、実験を行う。</li>
+					   <li class="item-robot">各班に1組のビュートバランサー2などを貸し出す。ただし、実験室外への持ち出しは禁止とする。実験終了後は全て返却すること。</li>
+					   <li class="item-tool">ドライバーは使用後，必ず元の場所に戻すこと。</li>
+					   <li class="item-battery">実験終了後は，ビュートバランサー2から電池を必ず取り外すこと。</li>
+					   <li class="item-pc">基本的には各自のノートパソコンを使用すること。共用ノートパソコンも用意されているが、その利用は実験時間内のみに限定される。</li>
+					   <li class="item-save">プログラムは各自で保存し、確実に管理すること。</li>
+				   </ul>
+			   </section>
+
+			   <section class="content-slide week1-tasks-slide">
+				   <h2>第1週の課題</h2>
+
+				   <div class="task-card-container">
+					   <div class="task-card">
+						   <div class="task-icon">🛠️</div>
+						   <div class="task-content">
+							   <p class="task-title">ロボットの組み立てとテスト</p>
+							   <p class="task-description">
+								   提供される部品を用い、二輪型倒立振子ロボットを組み立てる．各部が正しく動作するか確認する．
+							   </p>
+						   </div>
+					   </div>
+
+					   <div class="task-card">
+							<div class="task-icon">💻</div>
+							<div class="task-content">
+							   <p class="task-title">PC開発環境のセットアップ</p>
+							   <p class="task-description">
+								   各自PCに指定手順(WSL/Docker/直接)でPython環境を構築。
+								   <br>【注意点】<strong style="color: #e74c3c;">ロボット接続は班でPC1台を設定する必要</strong>、<strong style="color: #2980b9;">Webots導入は任意</strong>(最低1台)。<strong style="color: #c0392b;">Macユーザ</strong>は接続にアダプタが必要な場合があるためTAに申請してください。
+							   </p>
+							   </div>
+					   </div>
+				   </div>
+			   </section>
+			   <section class="content-slide hardware-overview-slide"> 
+				<h2>ロボットの構造と回路概要</h2>
+
+				<div class="image-row">
+					<div class="image-item">
+						<img src="robot_base_wheel.png" alt="ロボット構造図" />
+						<p class="image-caption">ロボット基本構造 (側面・正面)<br><small>駆動方式: 車輪表面接触棒による摩擦駆動</small></p>
+					</div>
+					<div class="image-item">
+						 <img src="robot_base_sensor.png" alt="ロボット回路基板構成図" />
+						 <p class="image-caption">回路基板構成<br><small>主要センサ: ジャイロ, ロータリーエンコーダ</small></p>
+					</div>
+				</div>
+
+				<div class="explanation-text">
+					<ul>
+						<li>上図に示すように、特殊な**摩擦駆動方式**を採用しています。</li>
+						<li>**ジャイロセンサ**で車体角度を、**ロータリーエンコーダ**で車輪回転角を検出し、DCモータを駆動します。</li>
+					</ul>
+				</div>
+			</section>
+                <!-- <section class="content-slide">
+                    <h2>DCモータの基本モデル (数式例)</h2>
+                    <p>
+                        DCモータの電気的な関係は、$L, R, K_e, \dot{\theta}, I, V$ を用いて以下のように表されます：
+                    </p>
+                    $$ V = L \frac{dI}{dt} + RI + K_e \dot{\theta} $$
+                    <p>
+                        電気系の応答が十分に速い ($L \frac{dI}{dt} \approx 0$) 場合の近似式：
+                    </p>
+                    $$ V \approx RI + K_e \dot{\theta} $$
+                    <p>
+                        発生トルク $\tau$ とトルク定数 $K_t$ の関係： $\tau = K_t I$
+                    </p>
+                     <p>
+                        慣性 $J$ を考慮した運動方程式：
+                    </p>
+                     $$ J\ddot{\theta} = \tau + ... = \frac{K_t}{R}V - \frac{K_t K_e}{R}\dot{\theta} + ... $$
+                 </section> -->
+                </div> </div> <script src="dist/reveal.js"></script>
+        <script src="plugin/notes/notes.js"></script>
+        <script src="plugin/markdown/markdown.js"></script>
+        <script src="plugin/highlight/highlight.js"></script>
+        <script src="plugin/math/math.js"></script> <script>
+            Reveal.initialize({
+                hash: true, 
+                controls: true, 
+                progress: true, 
+                center: true, 
+                slideNumber: 'c/t', 
+                width: 1100, 
+                height: 700, 
+                margin: 0.05, 
+
+                mathjax3: {
+                    mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js',
+                    tex: {
+                        inlineMath: [ [ '$', '$' ], [ '\\(', '\\)' ] ],
+                        displayMath: [ [ '$$', '$$' ], [ '\\[', '\\]' ] ] 
+                    },
+                    options: {
+                        skipHtmlTags: [ 'script', 'noscript', 'style', 'textarea', 'pre' ]
+                    }
+                },
+
+                plugins: [ 
+                    RevealMarkdown, 
+                    RevealHighlight, 
+                    RevealNotes, 
+                    RevealMath.MathJax3 // 启用 MathJax3 插件
+                ] 
+            });
+        </script>
+        
+    </body>
+</html>

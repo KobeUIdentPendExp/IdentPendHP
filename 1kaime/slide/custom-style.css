@@ -1,0 +1,481 @@
+/* --- custom-style.css --- */
+
+/* 全局字体和基础样式 */
+.reveal {
+    font-family: "Meiryo", "メイリオ", "Hiragino Sans", "ヒラギノ角ゴ Pro W3", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
+    font-size: 28px;
+    line-height: 1.6;
+    color: #333;
+}
+ body { background-color: white; }
+.reveal .slides { background-color: inherit; }
+.reveal a { color: #0056b3; }
+.reveal a:hover { color: #003d82; }
+
+/* --- 标题页样式 (.title-slide) --- */
+.reveal .slides section.title-slide {
+    text-align: center; padding-top: 80px; padding-bottom: 60px; position: relative; min-height: 100%;
+    display: flex; flex-direction: column; justify-content: center; background-color: white;
+}
+ .reveal .slides section.title-slide .header-info {
+    position: absolute; top: 25px; width: 95%; left: 2.5%; display: flex;
+    justify-content: space-between; font-size: 0.6em; color: #555;
+ }
+ .reveal .slides section.title-slide .header-info .course-name { text-align: left; }
+ .reveal .slides section.title-slide .header-info .date { text-align: right; }
+.reveal .slides section.title-slide h1 {
+    font-size: 2.2em; font-weight: bold; color: #000; margin-top: 20px; margin-bottom: 40px; line-height: 1.4;
+}
+.reveal .slides section.title-slide .presenter-info { font-size: 0.8em; line-height: 1.7; color: #333; margin-top: 30px; }
+ .reveal .slides section.title-slide .presenter-info p { margin: 5px 0; text-align: center; }
+
+/* --- 正文页通用样式 (.content-slide) --- */
+ .reveal .slides section.content-slide { text-align: left; padding: 30px 50px; box-sizing: border-box; }
+.reveal .slides section.content-slide h2 {
+    font-size: 1.6em; color: #000; text-align: left; border-bottom: 2px solid #666;
+    padding-bottom: 10px; margin-bottom: 30px; font-weight: bold;
+}
+ .reveal .slides section.content-slide h3 { font-size: 1.2em; color: #111; text-align: left; margin-top: 25px; margin-bottom: 15px; font-weight: bold; }
+ .reveal .slides section.content-slide h4 { font-size: 1.0em; color: #222; text-align: left; margin-top: 20px; margin-bottom: 10px; font-weight: bold; }
+.reveal .slides section.content-slide p, .reveal .slides section.content-slide li { font-size: 0.85em; line-height: 1.7; margin-bottom: 10px; color: #222; }
+.reveal .slides section.content-slide ul { list-style-type: disc; margin-left: 2em; margin-bottom: 15px; }
+ .reveal .slides section.content-slide li { margin-bottom: 6px; }
+ .reveal .slides section.content-slide li code,
+ .reveal .slides section.content-slide li strong { font-size: 0.95em; }
+
+
+/* --- 视频页特定样式 (.video-slide) --- */
+ /* 背景色在 section 标签用 data-background-color 设置 */
+ .reveal .slides section.video-slide h2 { margin-bottom: 20px; }
+ .reveal .slides section.video-slide h4 { margin-bottom: 20px; color: #555; }
+ .reveal .slides section.video-slide .video-description { font-size: 0.85em; width: 80%; margin: 0 auto 25px auto; text-align: center; color: #444; }
+.reveal .slides section.video-slide video {
+     display: block; margin: 15px auto; max-width: 70%; max-height: 55vh; border: none;
+     box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 5px;
+}
+ .reveal .slides section.video-slide .video-caption { font-size: 0.75em; color: #666; text-align: center; margin-top: 10px; }
+
+/* --- 视频对比页面 (.video-comparison-slide) 样式 --- */
+.reveal .slides section.video-comparison-slide { padding: 40px 30px; }
+.reveal .slides section.video-comparison-slide h3 { font-size: 1.3em; color: #2c3e50; font-weight: bold; text-align: center; margin-bottom: 40px; }
+ .reveal .slides section.video-comparison-slide .comparison-container { display: flex; justify-content: space-around; align-items: flex-start; margin-top: 20px; gap: 30px; }
+.reveal .slides section.video-comparison-slide .comparison-item { flex-basis: 45%; text-align: center; }
+.reveal .slides section.video-comparison-slide .comparison-item h4 { font-size: 0.9em; color: #34495e; margin-bottom: 15px; font-weight: 600; }
+.reveal .slides section.video-comparison-slide .comparison-item .item-caption { font-size: 0.75em; color: #7f8c8d; margin-top: 10px; }
+.reveal .slides section.video-comparison-slide .image-placeholder { width: 90%; height: 45vh; background-color: #ecf0f1; border: 2px dashed #bdc3c7; display: flex; align-items: center; justify-content: center; margin: 0 auto; border-radius: 4px; }
+ .reveal .slides section.video-comparison-slide .image-placeholder p { font-size: 0.8em; color: #7f8c8d; text-align: center; line-height: 1.4; }
+.reveal .slides section.video-comparison-slide .connection-explanation { margin-top: 35px; text-align: center; font-size: 0.85em; color: #2980b9; font-weight: 600; line-height: 1.3; }
+ .reveal .slides section.video-comparison-slide .connection-explanation span { display: block; font-size: 1.5em; line-height: 1; margin: 5px 0; }
+  .reveal .slides section.video-comparison-slide .connection-explanation p { margin: 0; text-align: center; }
+  .reveal .slides section.video-comparison-slide .connection-explanation strong { color: #c0392b; }
+
+/* --- 日程表页面特定样式 (.schedule-slide) --- */
+ /* 背景色在 section 标签用 data-background-color 设置 */
+.reveal .slides section.schedule-slide h2 { margin-bottom: 25px; font-size: 1.5em; }
+.reveal .slides section.schedule-slide .schedule-container { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; gap: 25px; }
+.reveal .slides section.schedule-slide .schedule-column { width: 48%; }
+.reveal .slides section.schedule-slide .schedule-column .phase-title { font-size: 0.9em; font-weight: bold; color: #333; background-color: #e9ecef; padding: 8px 12px; margin-bottom: 15px; border-radius: 4px; text-align: left; border-bottom: 2px solid #adb5bd; }
+.reveal .slides section.schedule-slide .schedule-column .week-block { background-color: #fff; border: 1px solid #dee2e6; padding: 10px 15px; margin-top: 0; margin-bottom: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+.reveal .slides section.schedule-slide .schedule-column .week-block h3 { font-size: 0.85em; color: #212529; margin-top: 5px; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid #e9ecef; font-weight: 600; }
+.reveal .slides section.schedule-slide .schedule-column .week-block ul { margin-left: 0; padding-left: 1.3em; font-size: 0.75em; list-style-type: none; color: #495057; margin-bottom: 5px; }
+ .reveal .slides section.schedule-slide .schedule-column .week-block li { margin-bottom: 4px; line-height: 1.5; position: relative; padding-left: 1.2em; }
+.reveal .slides section.schedule-slide .schedule-column .week-block li::before { content: "▪"; position: absolute; left: 0; top: 0px; color: #6c757d; font-weight: bold; font-size: 0.9em; }
+
+/* --- 每周课题页面样式 (.tasks-slide) --- */
+ .reveal .slides section.tasks-slide h3 { font-size: 1.1em; color: #1a5276; margin-top: 20px; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed #ccc; }
+ .reveal .slides section.tasks-slide ul { font-size: 0.85em; margin-left: 1em; padding-left: 1em; list-style-type: none; }
+ .reveal .slides section.tasks-slide li { margin-bottom: 8px; padding-left: 1.5em; position: relative; }
+ .reveal .slides section.tasks-slide li::before { content: "▸"; position: absolute; left: 0; top: 1px; color: #3498db; font-weight: bold; }
+ .reveal .slides section.tasks-slide li strong { font-weight: 600; color: #333; }
+ /* --- CSS for Slide 2 (Objective Focus Slide) --- */
+
+.reveal .slides section.objective-focus-slide {
+    padding: 30px 40px; /* Adjust padding */
+}
+
+.reveal .slides section.objective-focus-slide .top-media-row {
+    display: flex;
+    justify-content: space-around; /* Space items out */
+    align-items: flex-start; /* Align tops */
+    margin-bottom: 20px; /* Space below the media row */
+    width: 95%; /* Limit width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.reveal .slides section.objective-focus-slide .media-item {
+    flex-basis: 45%; /* Adjust width of each item */
+    text-align: center;
+}
+
+.reveal .slides section.objective-focus-slide .media-item video,
+.reveal .slides section.objective-focus-slide .media-item .image-placeholder {
+    width: 100%; /* Make video/placeholder fill item width */
+    height: 28vh; /* Set a consistent height */
+    margin-bottom: 5px; /* Space before caption */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    object-fit: cover; /* For video/img if aspect ratio differs */
+}
+.reveal .slides section.objective-focus-slide .media-item .image-placeholder {
+    background-color: #f0f0f0;
+    border: 1px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box; /* Include border in size */
+}
+.reveal .slides section.objective-focus-slide .media-item .image-placeholder p {
+    font-size: 0.8em;
+    color: #888;
+    text-align: center;
+}
+
+
+.reveal .slides section.objective-focus-slide .media-caption {
+    font-size: 0.7em; /* Smaller caption font */
+    color: #555;
+    margin-top: 5px;
+}
+
+.reveal .slides section.objective-focus-slide .connection-text {
+    text-align: center;
+    font-size: 0.8em; /* Connection text size */
+    color: #0056b3; /* Blue color */
+    margin-top: 25px; /* Space above */
+    margin-bottom: 25px; /* Space below */
+    font-weight: 500;
+}
+
+.reveal .slides section.objective-focus-slide .objective-box {
+    border: 2px solid #0056b3; /* Blue border */
+    border-radius: 8px;
+    padding: 15px 25px; /* Padding inside the box */
+    margin-top: 20px; /* Space above the box */
+    background-color: #f8f9fa; /* Very light grey background */
+    width: 85%; /* Box width */
+    margin-left: auto;
+    margin-right: auto; /* Center the box */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.reveal .slides section.objective-focus-slide .objective-box .objective-title {
+    font-size: 1.1em; /* Heading size */
+    font-weight: bold;
+    color: red; /* Red color as requested */
+    margin-top: 0;
+    margin-bottom: 15px; /* Space below heading */
+    text-align: center; /* Center heading */
+    padding-bottom: 5px;
+    /* border-bottom: 1px solid #ddd; Optional divider */
+}
+
+.reveal .slides section.objective-focus-slide .objective-box ul {
+    margin-left: 0; /* Reset list margin */
+    padding-left: 1.5em; /* Indent list items */
+    list-style-position: outside; /* Bullets outside text block */
+    font-size: 0.8em; /* List item font size */
+    margin-bottom: 5px; /* Space below list */
+}
+.reveal .slides section.objective-focus-slide .objective-box li {
+    margin-bottom: 6px; /* Space between items */
+    line-height: 1.6;
+    color: #333;
+}
+.reveal .slides section.objective-focus-slide .objective-box li::marker { /* Style standard bullets */
+    color: #0056b3; /* Blue bullets */
+}
+
+/* --- CSS for Slide 5 (Equipment Slide) --- */
+
+.reveal .slides section.equipment-slide ul.icon-list {
+    list-style-type: none; /* 移除默认的项目符号 */
+    padding-left: 0; /* 移除默认的左侧内边距 */
+    margin-top: 25px; /* 列表与标题的间距 */
+}
+
+.reveal .slides section.equipment-slide ul.icon-list li {
+    padding-left: 2.5em; /* 为图标留出空间 */
+    position: relative; /* 为了绝对定位图标 */
+    margin-bottom: 18px; /* 增大列表项之间的垂直间距 */
+    line-height: 1.7; /* 确保行高足够 */
+    font-size: 0.88em; /* 可以微调列表项字体大小 */
+}
+
+.reveal .slides section.equipment-slide ul.icon-list li::before {
+    position: absolute;
+    left: 0;
+    top: 0px; /* 微调图标的垂直位置 */
+    font-size: 1.5em; /* 图标大小 */
+    width: 1.5em; /* 确保图标有固定宽度，文本左侧对齐 */
+    text-align: center; /* 图标居中（在其自己的空间内） */
+    line-height: 1.6; /* 调整图标行高使其与文本对齐 */
+    color: #3498db; /* 设置图标颜色 */
+    /* content 属性将在下面为每个特定类设置 */
+}
+
+/* 为不同的列表项设置不同的图标 */
+.reveal .slides section.equipment-slide ul.icon-list li.item-group::before {
+    content: "👥"; /* 人数组图标 */
+}
+.reveal .slides section.equipment-slide ul.icon-list li.item-robot::before {
+    content: "🤖"; /* 机器人图标 */
+}
+.reveal .slides section.equipment-slide ul.icon-list li.item-tool::before {
+    content: "🛠️"; /* 工具图标 */
+    font-size: 1.3em; /* 工具图标可能需要微调大小 */
+    top: 2px;
+}
+.reveal .slides section.equipment-slide ul.icon-list li.item-battery::before {
+    content: "🔋"; /* 电池图标 */
+}
+.reveal .slides section.equipment-slide ul.icon-list li.item-pc::before {
+    content: "💻"; /* 笔记本电脑图标 */
+}
+.reveal .slides section.equipment-slide ul.icon-list li.item-save::before {
+    content: "💾"; /* 保存图标 */
+}
+
+/* --- 强调“移除电池”项 --- */
+.reveal .slides section.equipment-slide ul.icon-list li.item-battery {
+    color: red;          /* 将文字颜色设置为红色 */
+    font-weight: bold;   /* 同时加粗以示强调 */
+}
+
+/* (可选) 如果你希望图标也变成红色 */
+.reveal .slides section.equipment-slide ul.icon-list li.item-battery::before {
+    color: red;          /* 将图标也设置为红色 */
+}
+
+/* --- CSS for Optimized Week 1 Tasks Slide (.week1-tasks-slide) --- */
+
+.reveal .slides section.week1-tasks-slide h2 {
+    margin-bottom: 40px; /* 标题下方留出更多空间 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card-container {
+    margin-top: 20px;
+}
+
+.reveal .slides section.week1-tasks-slide .task-card {
+    display: flex; /* 让图标和内容水平排列 */
+    align-items: flex-start; /* 顶部对齐 */
+    background-color: #f8f9fa; /* 卡片背景色 */
+    border-left: 6px solid #3498db; /* 左侧蓝色边框 */
+    border-radius: 6px;
+    padding: 20px 25px; /* 卡片内边距 */
+    margin-bottom: 25px; /* 卡片间距 */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08); /* 阴影 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .task-icon {
+    font-size: 2em; /* 图标大小 */
+    margin-right: 20px; /* 图标和文字间距 */
+    color: #3498db; /* 图标颜色 */
+    line-height: 1.2; /* 调整行高使图标大致居中 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .task-content {
+    flex: 1; /* 内容区域占据剩余空间 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .task-title {
+    font-weight: bold;
+    color: #2c3e50; /* 标题颜色 */
+    font-size: 1.0em; /* 任务标题大小 */
+    margin-top: 0;
+    margin-bottom: 8px; /* 标题和描述间距 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .task-description {
+    font-size: 0.85em; /* 描述文字大小 */
+    color: #555; /* 描述文字颜色 */
+    line-height: 1.6;
+    margin: 0; /* 移除描述段落的默认边距 */
+}
+
+/* --- CSS for Optimized Week 1 Tasks Slide (.week1-tasks-slide) --- */
+/* ... (保留 .reveal .slides section.week1-tasks-slide h2 规则) ... */
+
+.reveal .slides section.week1-tasks-slide .task-card-container {
+    margin-top: 15px; /* 减小容器与标题间距 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card {
+    display: flex; align-items: flex-start; background-color: #f8f9fa;
+    border-left: 6px solid #3498db; border-radius: 6px;
+    /* --- 修改: 减小内边距 --- */
+    padding: 15px 20px;
+    /* --- 修改: 减小卡片间距 --- */
+    margin-bottom: 15px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .task-icon {
+    font-size: 1.8em; /* 可略微减小图标大小 */
+    margin-right: 15px; /* 减小图标与文字间距 */
+    color: #3498db;
+    line-height: 1.2;
+    /* margin-top: 5px; */ /* 可能需要微调图标垂直位置 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .task-content {
+    flex: 1;
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .task-title {
+    font-weight: bold; color: #2c3e50;
+    font-size: 0.95em; /* 略微减小任务标题 */
+    margin-top: 0; margin-bottom: 6px; /* 减小间距 */
+}
+
+/* --- 修改: 调整描述区域样式 --- */
+.reveal .slides section.week1-tasks-slide .task-card .task-description {
+    font-size: 0.8em; /* 保持或微调基础描述字号 */
+    line-height: 1.55; /* 调整行高 */
+    margin-top: 6px;
+    color: #555;
+}
+
+/* --- 修改: 压缩嵌套列表样式 --- */
+.reveal .slides section.week1-tasks-slide .task-card .setup-notes {
+    list-style-type: none;
+    padding-left: 1em; /* 减小列表左侧内边距 */
+    margin-top: 8px; /* 减小列表与上方文字间距 */
+    margin-bottom: 0;
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .setup-notes li {
+    position: relative;
+    /* --- 修改: 大幅减小列表项字体和间距 --- */
+    font-size: 0.85em;  /* 相对于 .task-description 的 0.8em 再缩小 */
+    line-height: 1.45; /* 减小行高 */
+    margin-bottom: 5px; /* 减小列表项间距 */
+    padding-left: 0.6em; /* 减小文本与符号间距 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .setup-notes li::before {
+    content: "💡";
+    position: absolute;
+    left: -0.4em; /* 调整符号位置 */
+    top: 0px;
+    color: #f39c12;
+    font-size: 0.85em; /* 减小符号大小 */
+}
+
+.reveal .slides section.week1-tasks-slide .task-card .setup-notes li strong {
+    color: #34495e;
+}
+
+/* 调整 Mac 注意事项符号 */
+.reveal .slides section.week1-tasks-slide .task-card .setup-notes li:last-child::before {
+    content: "⚠️";
+    color: #e74c3c;
+    font-size: 0.85em; /* 保持符号大小一致 */
+}
+.reveal .slides section.week1-tasks-slide .task-card .setup-notes li:last-child strong {
+    color: #c0392b;
+}
+
+/* --- CSS for Hardware Overview Slide (.hardware-overview-slide) --- */
+
+.reveal .slides section.hardware-overview-slide {
+    padding: 30px 40px; /* 内边距 */
+}
+
+.reveal .slides section.hardware-overview-slide h2 {
+    margin-bottom: 12px; /* 标题下方间距 */
+}
+
+.reveal .slides section.hardware-overview-slide .image-row {
+    display: flex;
+    justify-content: space-around; /* 图片均匀分布 */
+    align-items: flex-start; /* 顶部对齐 */
+    margin-bottom: 20px; /* 图片行下方间距 */
+    gap: 20px; /* 图片之间的间距 */
+}
+
+.reveal .slides section.hardware-overview-slide .image-item {
+    flex: 1; /* 让两个图片项平分空间 */
+    text-align: center; /* 图片和标题居中 */
+    max-width: 48%; /* 限制最大宽度 */
+}
+
+.reveal .slides section.hardware-overview-slide .image-item img {
+    max-width: 100%; /* 图片最大宽度为其容器宽度 */
+    height: 30vh; /* 限制一个统一的最大高度，防止图片过大 */
+    object-fit: contain; /* 保持图片比例缩放 */
+    border: 1px solid #eee; /* 浅边框 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 阴影 */
+    margin-bottom: 5px; /* 图片与标题间距 */
+}
+
+.reveal .slides section.hardware-overview-slide .image-caption {
+    font-size: 0.65em; /* 图片标题字号 */
+    color: #555;
+    line-height: 1.4;
+    margin-top: 5px;
+}
+.reveal .slides section.hardware-overview-slide .image-caption small {
+    display: block; /* 让 small 标签内容换行 */
+    color: #777;
+    margin-top: 3px;
+}
+
+.reveal .slides section.hardware-overview-slide .explanation-text {
+    margin-top: 20px; /* 与图片行的间距 */
+    font-size: 0.8em; /* 说明文字字号 */
+    line-height: 1.7;
+    text-align: left; /* 左对齐 */
+    padding: 0 5%; /* 左右留白 */
+    color: #333;
+}
+
+/* --- Styling for Explanation List in Hardware Overview --- */
+
+.reveal .slides section.hardware-overview-slide .explanation-text {
+    margin-top: 20px; /* 与图片行的间距 */
+    font-size: 0.8em; /* 说明文字字号 */
+    line-height: 1.7;
+    text-align: left;
+    padding: 0 5%; /* 左右留白 */
+    color: #333;
+}
+
+.reveal .slides section.hardware-overview-slide .explanation-text ul {
+    list-style-type: disc; /* 使用默认实心圆点 */
+    margin-left: 0; /* 重置外边距 */
+    padding-left: 1.8em; /* 设置列表缩进 */
+    margin-top: 0; /* 移除列表顶部外边距 */
+    margin-bottom: 0; /* 移除列表底部外边距 */
+}
+
+.reveal .slides section.hardware-overview-slide .explanation-text li {
+    margin-bottom: 10px; /* 列表项之间的间距 */
+    padding-left: 0; /* 移除列表项内边距（因为缩进由ul控制） */
+}
+.reveal .slides section.hardware-overview-slide .explanation-text li::marker {
+    color: #3498db; /* 设置项目符号颜色 (蓝色) */
+}
+
+.reveal .slides section.hardware-overview-slide .explanation-text li strong {
+    font-weight: bold; /* 加粗强调 */
+    color: #1a5276; /* 强调文字颜色 */
+}
+/* --- CSS for Slide 2 Media Items (Now Images/GIFs) --- */
+
+.reveal .slides section.objective-focus-slide .media-item img { /* 修改选择器 video -> img */
+    display: block; /* 让图片成为块级元素，方便居中 */
+    width: 120%;    /* 图片宽度充满容器 */
+    max-height: 25vh; /* 保持或调整高度限制 */
+    height: auto;   /* 高度自动，保持比例 */
+    /*object-fit: contain;*/ /* 确保整个 GIF 都可见，可能会留白 */
+    object-fit: cover; /* 另一种选择：填满容器，可能会裁剪 */
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background-color: #f0f0f0; /* 图片加载时的背景色 */
+    margin: 0 auto 1px auto; /* 上0，左右自动居中，下5px */
+}
+
+/* 如果你之前有 image-placeholder 的样式，可以保留或删除 */
+/* .reveal .slides section.objective-focus-slide .media-item .image-placeholder { ... } */
