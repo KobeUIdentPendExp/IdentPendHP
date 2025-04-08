@@ -143,7 +143,7 @@
     font-size: 0.8em; /* Connection text size */
     color: #0056b3; /* Blue color */
     margin-top: 25px; /* Space above */
-    margin-bottom: 25px; /* Space below */
+    margin-bottom: 5px; /* Space below */
     font-weight: 500;
 }
 
