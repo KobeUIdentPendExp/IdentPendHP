@@ -164,7 +164,7 @@
     font-weight: bold;
     color: red; /* Red color as requested */
     margin-top: 0;
-    margin-bottom: 1px; /* Space below heading */
+    margin-bottom: 15px; /* Space below heading */
     text-align: center; /* Center heading */
     padding-bottom: 5px;
     /* border-bottom: 1px solid #ddd; Optional divider */
