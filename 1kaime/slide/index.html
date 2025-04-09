@@ -161,16 +161,15 @@
 					</ul>
 				</div>
 			</section>
-		                 <section class="content-slide system-overview-slide">
-                 <h2>実験システムの連携概要</h2>
-                 <div style="text-align: center; margin-top: 20px;">
-                     <img src="overview.jpg" alt="実験システム構成図" style="max-width: 80%; height: auto; border: 1px solid #ccc;">
-                     <p style="margin-top: 15px; font-size: 0.9em;">
-                         ノートPC上のPythonスクリプトがUSB通信を介して倒立振子ロボットと連携します。<br>
-                         PCからモータ電流指令値を送り、ロボットからセンサー値（角度、角速度など）を受け取ります。
-                     </p>
-                 </div>
-             </section>
+            <section class="content-slide system-overview-slide">
+                <h2>実験システムの連携概要</h2>
+                <div class="overview-container">
+                    <img src="overview.png" alt="実験システム構成図：ノートPC、USB通信、倒立振子間のデータフロー">
+                    <ul class="overview-caption"> <li>ノートPC上のPythonスクリプトがUSB通信を介して倒立振子ロボットと連携する。</li>
+                        <li>PCからモータ電流指令値を送り、ロボットからセンサー値（角度、角速度など）を受け取る。</li>
+                    </ul>
+                </div>
+            </section>
                 <!-- <section class="content-slide">
                     <h2>DCモータの基本モデル (数式例)</h2>
                     <p>
