@@ -92,7 +92,7 @@
                 <strong>確認:</strong> 「アプリケーション」フォルダを開き、コピーされた <span class="code">Webots</span> アプリケーションがあることを確認してください。ダブルクリックして起動し、サンプルワールドなどが開けることを確認してください。（アプリの初回起動時に、別の種類のセキュリティ確認ダイアログが表示されることもあります。その場合は以下の操作手順を参照してください。）
             </div>
             <div style="text-align: center; margin-top: 10px; margin-bottom: 10px;">
-                <img src="webots_pre1.gif" alt="セキュリティ警告を解除してWebotsを開く手順のGIF"
+                <img src="webots_pre.gif" alt="セキュリティ警告を解除してWebotsを開く手順のGIF"
                      style="max-width: 100%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
             </div>
         </div>
@@ -298,13 +298,242 @@ exit()</code>
              <strong>【連携のポイント】</strong> 実験で Python コントローラを使用する際は、**必ずこの手順2の方法（ターミナルで <span class="code">control_lab</span> を有効化 → 同じターミナルから Webots を起動）で Webots を起動する**ようにしてください。これにより、設定した Python 環境が Webots 上で正しく機能します。
         </div>
     </div>
+    <div class="section" id="integration-test">
+        <h3>5. 最終動作確認: Webots と Python 環境の連携テスト (macOS)</h3>
+        <p>このセクションでは、Webots が正しく設定・起動され（特にセクション4の手順に従ってターミナルから起動され）、作成した Conda 環境 (<code class="code">control_lab</code>) を認識し、その環境にインストールされた Python パッケージ (numpy, matplotlib, scipy, gymnasium, stable-baselines3, torch) を Webots のコントローラースクリプト内から正常に import できるかを最終確認します。</p>
+        <p class="warning">【重要前提】このテストを行う前に、必ず<a href="#webots-python-config">セクション4</a>の【macOS推奨】の手順に従い、<strong>ターミナルで <code class="code">control_lab</code> 環境を有効化してから、そのターミナル経由で Webots を起動していること</strong>を確認してください。また、念のため Webots の Preferences で Python パスが正しく <code class="code">control_lab</code> 環境の <code class="code">python</code> 実行ファイルを指しているかも確認しておくと良いでしょう。</p>
 
-    <div class="section">
-        <h3>6. 次のステップ</h3>
+        <div class="step task">
+            <strong>Step 1: テスト用 Python コードの準備</strong>
+            <ol>
+                <li>以下の折りたたみ部分を展開し、テスト用コード全文をコピーして、クリップボードに準備します。（ファイルとして保存する必要はありません）</li>
+            </ol>
+            <p><strong>テスト用 Python コード (コピーして使用):</strong></p>
+            <details style="margin-top: 10px; border: 1px solid #e0e0e0; border-radius: 4px;">
+                <summary style="cursor: pointer; font-weight: bold; padding: 10px 15px; background-color: #f8f9fa; border-bottom: 1px solid #e0e0e0;">
+                    コードを表示/非表示 (クリックして展開/折りたたみ)
+                </summary>
+                <pre><code id="test-code-block-mac" class="command" style="white-space: pre-wrap; word-wrap: break-word; max-height: 450px; overflow-y: auto; display: block; padding: 15px; background-color: #212529; color: #f8f9fa; border-radius: 0 0 4px 4px; margin-top: 0;">
+# Copyright 1996-2024 Cyberbotics Ltd.
+# ... (license details) ...
+
+"""
+This controller primarily tests if required Python packages
+(numpy, matplotlib, scipy, gymnasium, stable_baselines3, torch)
+are installed and accessible by the Python environment used by Webots.
+It incorporates the basic structure of the original 'driver' example
+but focuses on the import checks first.
+"""
+
+# --- Add these import statements to test your environment ---
+print("--- Starting Check: Importing Required Packages ---")
+import sys  # Needed for sys.exit() on failure
+
+all_imports_successful = True # Flag to track success
+
+try:
+    import numpy as np
+    print("[ OK ] Successfully imported numpy")
+    # Optional basic check:
+    # _ = np.array([1, 2])
+    # print("[ OK ] numpy basic functionality check passed")
+
+    # Import matplotlib.pyplot as requested
+    import matplotlib.pyplot as plt
+    print("[ OK ] Successfully imported matplotlib.pyplot")
+    # Note: Using plt functions directly might be complex here,
+    # but the import itself tests installation.
+
+    import scipy
+    print("[ OK ] Successfully imported scipy")
+    # Optional basic check:
+    # from scipy import constants
+    # _ = constants.pi
+    # print("[ OK ] scipy basic functionality check passed")
+
+    import gymnasium as gym
+    print("[ OK ] Successfully imported gymnasium")
+    # Optional basic check:
+    # _ = gym.spaces.Discrete(2)
+    # print("[ OK ] gymnasium basic functionality check passed")
+
+    import stable_baselines3
+    print("[ OK ] Successfully imported stable_baselines3")
+    # Optional basic check:
+    # _ = stable_baselines3.A2C
+    # print("[ OK ] stable_baselines3 basic functionality check passed")
+
+    import torch
+    print("[ OK ] Successfully imported torch")
+    # Optional basic check:
+    # _ = torch.tensor([1.0, 2.0])
+    # print("[ OK ] torch basic functionality check passed")
+
+    print("\n--- Check Complete: All specified packages imported successfully! ---")
+
+except ImportError as e:
+    all_imports_successful = False # Mark failure
+    print(f"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(f"[FAIL] FAILED TO IMPORT A REQUIRED PACKAGE: {e}")
+    print(f"       Error Type: {type(e)}")
+    # e.name often holds the name of the failed module
+    module_name = getattr(e, 'name', 'Unknown')
+    print(f"       Failed Module: '{module_name}'")
+    print(f"       -> Check if '{module_name}' is installed in the Python environment")
+    print(f"          that Webots is configured to use (control_lab).")
+    print(f"       -> CRITICAL (macOS): Did you launch Webots FROM THE TERMINAL")
+    print(f"          AFTER running 'conda activate control_lab'?")
+    print(f"       -> Verify Path: Webots > Preferences > Python command (should match 'which python' in activated env)")
+    print(f"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n")
+    # Exit the controller script if an import fails - prevents running Supervisor code
+    sys.exit(f"ImportError: Required package '{module_name}' not found or import failed.")
+# --- End of added import test section ---
+
+
+# --- Original Webots example script structure (optional, runs only if imports succeed) ---
+# --- This part might produce warnings if the world doesn't match the example exactly ---
+if all_imports_successful:
+    print("\n[INFO] Imports successful, proceeding with Supervisor initialization (if applicable).")
+    from controller import Supervisor
+    # Make sure 'common.py' exists if you are using the original example structure, otherwise define dummy
+    try:
+        # This specific example might not need common.py, adjust if needed
+        pass # from common import common_print
+    except ImportError:
+        # Define a dummy function if needed
+        # def common_print(msg): print(f"Dummy common_print: {msg}")
+        print("[WARN] 'common.py' not found or not needed for this basic test.")
+
+
+    class Driver (Supervisor):
+        timeStep = 128 # Or get from world basicTimeStep
+
+        def __init__(self):
+            super(Driver, self).__init__()
+            self.keyboard = None # Initialize to None
+            # Use world timestep if available, otherwise default
+            try:
+                self.timeStep = int(self.getBasicTimeStep())
+            except: # Fallback if getBasicTimeStep fails for some reason
+                print("[WARN] Could not get basicTimeStep from world, using default.")
+                self.timeStep = 128
+
+            # Safely try to get keyboard (may not exist)
+            try:
+                self.keyboard = self.getKeyboard() # Get keyboard device
+                if self.keyboard: # Check if keyboard was found
+                    self.keyboard.enable(self.timeStep) # Enable keyboard reading
+                    print("[INFO] Keyboard enabled for optional interaction.")
+                else:
+                    print("[WARN] Keyboard device not found in this world.")
+
+            except Exception as e:
+                print(f"[WARN] Could not initialize keyboard device: {e}")
+
+        def run(self):
+            print("[INFO] Controller 'run' method started.")
+            print("[INFO] Primary goal (import tests) already passed.")
+            print("[INFO] This controller will now run passively.")
+            if self.keyboard:
+                print("[INFO] You can press keys (if defined below) but main focus was imports.")
+            # Passive loop to keep controller alive and show simulation running
+            while self.step(self.timeStep) != -1:
+                # Optionally add key checks here if needed for further testing
+                # k = self.keyboard.getKey() if self.keyboard else -1
+                # if k == ord('I'): print("Info key pressed")
+                pass # Just keep stepping
+
+            print("[INFO] Driver run loop finished or simulation stopped.")
+
+    # --- Script execution ---
+    if all_imports_successful:
+        print("[INFO] Initializing Driver controller...")
+        controller = Driver()
+        print("[INFO] Starting controller run loop (passive)...")
+        controller.run()
+        print("[INFO] Controller run loop exited.")
+    else:
+        print("[INFO] Script halted due to import errors. Supervisor code was not executed.")
+
+else:
+     print("[INFO] Script halted before Supervisor initialization due to import errors.")
+</code></pre>
+            </details>
+        </div>
+
+        <div class="step task">
+            <strong>Step 2: Webots でテストを実行する (macOS版)</strong>
+            <ol>
+                <li><strong>【重要】</strong><a href="#webots-python-config">セクション4</a>で説明した通り、**ターミナル** を開きます。</li>
+                <li>ターミナルで <span class="code">control_lab</span> 環境を有効化します:
+                    <code class="command">conda activate control_lab</code>
+                </li>
+                <li>**同じターミナルウィンドウで**、Webots を起動します:
+                    <code class="command">/Applications/Webots.app/Contents/MacOS/webots</code>
+                    <span class="note">(エイリアス等を設定済みの場合は、そのコマンドで起動)</span>
+                </li>
+                <li>Webots が起動したら、メニューから <code class="code">File</code> -> <code class="code">Open Sample World...</code> を選択します。</li>
+                <li>表示されるウィンドウで、フォルダを次のように辿って <code class="code">examples.wbt</code> を選択し、開きます:
+                    <ul>
+                        <li><code class="code">languages</code> &#x25B6; <code class="code">python</code> &#x25B6; <code class="code">examples.wbt</code></li>
+                    </ul>
+                    <span class="note">(このワールドには、Python コントローラーの基本的な使用例が含まれています。)</span>
+                </li>
+                <li>ワールドがロードされると、ウィンドウ右側にテキストエディタが表示され、<code class="code">driver.py</code> の内容が自動的に開かれます。</li>
+                <li>テキストエディタ内で以下の操作を行います:
+                    <ul>
+                        <li>エディタ内の既存のコードを全て選択します (Cmd+A またはマウスでドラッグ)。</li>
+                        <li><strong>Step 1 でコピーしたテスト用 Python コードをエディタ内に貼り付けます (Cmd+V)。</strong></li>
+                        <li>Save Text File、Cmd+S キーを押します。</li>
+                    </ul>
+                </li>
+                <li>Webots の上部にリロードを促すメッセージが表示されたら、「Reload」ボタンまたは回転矢印アイコンをクリックします。(保存後に自動でリロードされる場合もあります)</li>
+                <li>シミュレーション実行ボタン (▶ アイコン) をクリックして、シミュレーションを開始します。</li>
+            </ol>
+        </div>
+
+        <div class="step task">
+            <strong>Step 3: Webots コンソールの出力を確認する</strong>
+            <ol>
+                <li>シミュレーションが開始されると、Webots ウィンドウの下部にあるコンソール（Console）にメッセージが出力されます。</li>
+                <li class="confirmation"><strong>【成功の場合】</strong> 以下のように、テストコード内で指定した全てのライブラリについて <code class="code">[ OK ] Successfully imported ...</code> というメッセージが表示され、最後に <code class="code">--- Check Complete: All specified packages imported successfully! ---</code> が表示されていれば、連携は成功です！
+                    <pre><code class="command" style="font-size: 0.9em;">--- Starting Check: Importing Required Packages ---
+[ OK ] Successfully imported numpy
+[ OK ] Successfully imported matplotlib.pyplot
+[ OK ] Successfully imported scipy
+[ OK ] Successfully imported gymnasium
+[ OK ] Successfully imported stable_baselines3
+[ OK ] Successfully imported torch
+
+--- Check Complete: All specified packages imported successfully! ---
+
+[INFO] Imports successful, proceeding with Supervisor initialization (if applicable).
+... (以降のINFO/WARNメッセージ) ...
+</code></pre>
+                </li>
+                <!-- <li class="troubleshooting"><strong>【失敗の場合】</strong> もし <code class="code">[FAIL] FAILED TO IMPORT A REQUIRED PACKAGE: ...</code> というエラーメッセージが表示された場合、そのライブラリの import に失敗しています。エラーメッセージに表示されている `Failed Module: 'xxx'` を確認します。
+                    <ul>
+                        <li><strong>対処法 (macOS):</strong>
+                            <ul>
+                                <li><strong>最優先確認:</strong> Webots を**ターミナルから** ( <code class="code">conda activate control_lab</code> の後に) 起動しましたか？これが macOS で最も一般的な原因です。Webots を一度終了し、Step 2 の起動手順を再確認してください。</li>
+                                <li><a href="#webots-python-config">セクション4</a>に戻り、Webots の Preferences で設定した Python のパスが、ターミナルで <code class="code">conda activate control_lab</code> を実行後、<code class="code">which python</code> で表示されるパスと一致しているか再確認します。（ターミナルからの起動が前提ですが、パス設定も正しい方が確実です）</li>
+                                <li><a href="#pip-install">セクション2</a> (パッケージインストール) に戻り、ターミナルで <code class="code">conda activate control_lab</code> を実行した後、エラーになったパッケージ（例: `pip install torch` や `conda install scipy` など）が正しくインストールされているか確認、または再インストールしてみます (<code class="code">conda list パッケージ名</code> や <code class="code">pip show パッケージ名</code> で確認後、必要なら再インストール)。</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li> -->
+            </ol>
+        </div>
+
+        <div class="confirmation">
+            <strong>【最終確認完了】</strong> コンソールで全てのパッケージが <code class="code">[ OK ]</code> となり、<code class="code">[FAIL]</code> が表示されなければ、Webots と <code class="code">control_lab</code> Python 環境の連携設定（特にターミナルからの起動方法）は正しく完了しており、必要なライブラリも Webots から利用可能です！これで実験を進める準備が整いました。
+        </div>
+    </div>
+    <div class="section" id="next-steps">
+        <h3>7. 次のステップ</h3>
         <p>環境構築が完了したら、教員の指示に従い、指定された実験用プロジェクトファイル（Webots ワールドファイル、Python スクリプト等）をダウンロードまたは取得し、各回の実験手順に進んでください。</p>
-        <p class="warning">もし環境構築や Webots との連携で問題が発生した場合は、遠慮なく教員またはティーチングアシスタント (TA) に質問してください。</p>
+        <p class="warning">もし環境構築や Webots との連携（特にmacOSでのターミナル起動）で問題が発生した場合は、遠慮なく教員またはティーチングアシスタント (TA) に質問してください。</p>
     </div>
 
-</div>
-</body>
+</div> </body>
 </html>
