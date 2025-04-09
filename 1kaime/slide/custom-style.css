@@ -88,127 +88,124 @@
  .reveal .slides section.tasks-slide li::before { content: "▸"; position: absolute; left: 0; top: 1px; color: #3498db; font-weight: bold; }
  .reveal .slides section.tasks-slide li strong { font-weight: 600; color: #333; }
  /* --- CSS for Slide 2 (Objective Focus Slide) --- */
- 
- /* --- CSS for Slide 2 (Objective Focus Slide) --- */
- /* スライド全体のパディング */
- .reveal .slides section.objective-focus-slide {
-     padding: 30px 40px; /* 内側の余白 */
-     box-sizing: border-box; /* paddingを含めてサイズ計算 */
- }
- 
- /* 上部のメディア（画像）行 */
- .reveal .slides section.objective-focus-slide .top-media-row {
-     display: flex;
-     justify-content: space-around; /* アイテム間のスペースを均等に */
-     align-items: flex-start;    /* アイテムを上端揃え */
-     margin-bottom: auto;       /* 下部のコンテンツとの間隔 */
-     width: 95%;               /* 全体の幅 */
-     margin-left: auto;
-     margin-right: auto;
-     max-width: 1000px;         /* 広がりすぎを防ぐ最大幅 (調整可能) */
- }
- 
- /* 各メディア（画像）アイテム */
- .reveal .slides section.objective-focus-slide .media-item {
-     flex-basis: auto;           /* 各アイテムの基本幅 */
-     text-align: center;        /* キャプションを中央揃え */
-     max-width: auto;          /* 各アイテムの最大幅 (調整可能) */
- }
- 
- /* メディアアイテム内の画像 (GIF) */
- .reveal .slides section.objective-focus-slide .media-item img {
-     display: block;
-     width: auto;               /* 親要素(media-item)の幅に合わせる */
-     height: auto;              /* 高さは自動でアスペクト比を維持 */
-     max-height: 30vh;          /* 高くなりすぎないように上限を設定 (調整可能) */
-     object-fit: contain;       /* 画像全体が表示されるように調整 */
-     border-radius: 6px;
-     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-     background-color: #f0f0f0; /* 画像読み込み中の背景色 */
-     margin: 0 auto 5px auto;   /* 上0, 左右自動(中央揃え), 下5px */
- }
- 
- /* メディアキャプション */
- .reveal .slides section.objective-focus-slide .media-caption {
-     font-size: 0.7em;          /* キャプションの文字サイズ */
-     color: #555;
-     margin-top: 5px;
- }
- 
- /* 接続テキスト (画像と目的ボックスの間) */
- .reveal .slides section.objective-focus-slide .connection-text {
-     text-align: center;
-     font-size: 0.8em;
-     color: #0056b3;
-     margin-top: 25px;
-     margin-bottom: 5px;
-     font-weight: 500;
- }
- 
- /* 水平線 (必要であればスタイルを追加) */
- .reveal .slides section.objective-focus-slide .connection-divider {
-     border: 0;
-     height: 1px;
-     background-color: #ddd; /* 線の色 */
-     width: 60%;             /* 線の幅 */
-     margin: 15px auto;      /* 上下の間隔と中央揃え */
- }
- 
- /* 下部のコンテンツラッパー (テキストと目的ボックスをまとめる) */
+ /* ========================================= */
+/* --- 第2页样式 (.objective-focus-slide) --- */
+/* ========================================= */
 
- /* 実験の目的ボックス */
- .reveal .slides section.objective-focus-slide .objective-box {
-     border: 2px solid #0056b3; /* 青い枠線 */
-     border-radius: 8px;
-     padding: 15px 25px;        /* ボックス内の余白 */
-     margin-top: 20px;          /* 上の要素との間隔 */
-     background-color: #f8f9fa; /* 背景色 */
-     width: 85%;                /* 基本の幅 */
-     max-width: 800px;          /* 広がりすぎを防ぐ最大幅 (調整可能) */
-     margin-left: auto;
-     margin-right: auto;        /* 中央揃え */
-     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-     box-sizing: border-box;    /* paddingを含めて幅計算 */
- }
- 
- /* 目的ボックス内のタイトル */
- .reveal .slides section.objective-focus-slide .objective-box .objective-title {
-     font-size: 1.1em;          /* タイトルの文字サイズ */
-     font-weight: bold;
-     color: red;                /* 赤色 */
-     margin-top: 0;
-     margin-bottom: 15px;       /* 下のリストとの間隔 */
-     text-align: center;        /* 中央揃え */
-     padding-bottom: 5px;
-     /* border-bottom: 1px solid #ddd; */ /* 必要なら下線 */
- }
- 
- /* 目的ボックス内のリスト */
- .reveal .slides section.objective-focus-slide .objective-box ul {
-     margin-left: 0;
-     padding-left: 1.5em;       /* リスト項目のインデント */
-     list-style-position: outside; /* リストマーカーを外側に */
-     font-size: 0.8em;          /* リスト項目の文字サイズ */
-     margin-bottom: 5px;
- }
- 
- /* 目的ボックス内のリスト項目 */
- .reveal .slides section.objective-focus-slide .objective-box li {
-     margin-bottom: 6px;        /* 項目間のスペース */
-     line-height: 1.6;
-     color: #333;
- }
- 
- /* リストマーカー（点）の色 */
- .reveal .slides section.objective-focus-slide .objective-box li::marker {
-     color: #0056b3; /* 青色 */
- }
- 
- /* リスト項目内の強調テキスト */
- .reveal .slides section.objective-focus-slide .objective-box li strong {
-    /* デフォルトの太字で十分な場合が多い */
-    color: #000; /* 必要なら色を指定 */
- }
+.reveal .slides section.objective-focus-slide {
+    padding: 30px 40px;
+    box-sizing: border-box;
+}
+
+.reveal .slides section.objective-focus-slide .top-media-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-bottom: 15px; /* 减少间距 */
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 1000px; /* 限制最大宽度 */
+}
+
+.reveal .slides section.objective-focus-slide .media-item {
+    flex-basis: 45%;
+    text-align: center;
+    max-width: 450px; /* 限制图片项最大宽度 */
+}
+
+/* 第2页图片样式 (重要修改) */
+.reveal .slides section.objective-focus-slide .media-item img {
+    display: block;
+    width: 100%;               /* 宽度充满容器 */
+    height: auto;              /* 高度自动，保持比例 */
+    max-height: 30vh;          /* 限制最大高度 (可调整: 25vh, 20rem ...) */
+    object-fit: contain;       /* 完整显示图片 */
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background-color: #f0f0f0;
+    margin: 0 auto 5px auto;
+}
+
+.reveal .slides section.objective-focus-slide .media-caption {
+    font-size: 0.7em;
+    color: #555;
+    margin-top: 5px;
+}
+
+.reveal .slides section.objective-focus-slide .connection-text {
+    text-align: center;
+    font-size: 0.8em;
+    color: #0056b3;
+    margin-top: 15px; /* 减少间距 */
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.reveal .slides section.objective-focus-slide .connection-divider {
+    border: 0;
+    height: 1px;
+    background-color: #ddd;
+    width: 60%;
+    margin: 10px auto; /* 减少间距 */
+}
+
+.reveal .slides section.objective-focus-slide .bottom-content-wrapper {
+    /* 可能不需要特殊样式 */
+}
+
+/* 第2页 "实验目的" 方框样式 (重要修改) */
+.reveal .slides section.objective-focus-slide .objective-box {
+    border: 2px solid #0056b3;
+    border-radius: 8px;
+    padding: 15px 25px;
+    margin-top: 15px; /* 减少间距 */
+    background-color: #f8f9fa;
+    width: 85%;
+    max-width: 800px;          /* 限制最大宽度 */
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    box-sizing: border-box;    /* 确保padding不影响宽度计算 */
+
+    /* 新增: 限制最大高度，防止被推出画面 */
+    max-height: 35vh;          /* (可调整: 30vh, 25rem...) */
+    /* 新增: 内容超出时显示滚动条 */
+    overflow-y: auto;
+}
+
+.reveal .slides section.objective-focus-slide .objective-box .objective-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: red;
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.reveal .slides section.objective-focus-slide .objective-box ul {
+    margin-left: 0;
+    padding-left: 1.5em;
+    list-style-position: outside;
+    font-size: 0.8em;
+    margin-bottom: 5px; /* 内部列表底部边距 */
+}
+
+.reveal .slides section.objective-focus-slide .objective-box li {
+    margin-bottom: 6px;
+    line-height: 1.6;
+    color: #333;
+}
+
+.reveal .slides section.objective-focus-slide .objective-box li::marker {
+    color: #0056b3;
+}
+
+.reveal .slides section.objective-focus-slide .objective-box li strong {
+    /* 默认样式 */
+}
+
 
 /* --- CSS for Slide 5 (Equipment Slide) --- */
 
@@ -402,104 +399,102 @@
 }
 
 /* --- CSS for Hardware Overview Slide (.hardware-overview-slide) --- */
+/* ========================================= */
+/* --- 第6页样式 (.hardware-overview-slide) --- */
+/* ========================================= */
 
 .reveal .slides section.hardware-overview-slide {
-    padding: 30px 40px; /* 内边距 */
+    padding: 30px 40px;
+    box-sizing: border-box;
 }
 
 .reveal .slides section.hardware-overview-slide h2 {
-    margin-bottom: 12px; /* 标题下方间距 */
+    margin-bottom: 15px; /* 减少间距 */
 }
 
 .reveal .slides section.hardware-overview-slide .image-row {
     display: flex;
-    justify-content: space-around; /* 图片均匀分布 */
-    align-items: flex-start; /* 顶部对齐 */
-    margin-bottom: 20px; /* 图片行下方间距 */
-    gap: 20px; /* 图片之间的间距 */
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-bottom: 15px; /* 减少间距 */
+    gap: 20px;
+    width: 100%; /* 宽度可设为100% */
+    max-width: 1000px; /* 限制最大宽度 */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .reveal .slides section.hardware-overview-slide .image-item {
-    flex: 1; /* 让两个图片项平分空间 */
-    text-align: center; /* 图片和标题居中 */
-    max-width: 48%; /* 限制最大宽度 */
+    flex: 1; /* flex: 1 比 flex-basis: 45% 更灵活 */
+    text-align: center;
+    /* max-width: 48%; */ /* 可以移除，让 flex 自动分配 */
+    max-width: 450px; /* 或者设置一个像素最大宽度 */
 }
 
+/* 第6页图片样式 (重要修改) */
 .reveal .slides section.hardware-overview-slide .image-item img {
-    max-width: 100%; /* 图片最大宽度为其容器宽度 */
-    height: 30vh; /* 限制一个统一的最大高度，防止图片过大 */
-    object-fit: contain; /* 保持图片比例缩放 */
-    border: 1px solid #eee; /* 浅边框 */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* 阴影 */
-    margin-bottom: 5px; /* 图片与标题间距 */
+    display: block;
+    max-width: 100%;    /* 不超过容器宽度 */
+    height: auto;       /* 高度自动，保持比例 */
+    max-height: 30vh;   /* 限制最大高度 (可调整) */
+    object-fit: contain;/* 完整显示图片 */
+    border: 1px solid #eee;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin: 0 auto 5px auto; /* 上0, 左右自动居中, 下5px */
+    background-color: #f0f0f0;
 }
 
 .reveal .slides section.hardware-overview-slide .image-caption {
-    font-size: 0.65em; /* 图片标题字号 */
+    font-size: 0.65em;
     color: #555;
     line-height: 1.4;
     margin-top: 5px;
 }
+
 .reveal .slides section.hardware-overview-slide .image-caption small {
-    display: block; /* 让 small 标签内容换行 */
+    display: block;
     color: #777;
     margin-top: 3px;
 }
 
 .reveal .slides section.hardware-overview-slide .explanation-text {
-    margin-top: 20px; /* 与图片行的间距 */
-    font-size: 0.8em; /* 说明文字字号 */
-    line-height: 1.7;
-    text-align: left; /* 左对齐 */
-    padding: 0 5%; /* 左右留白 */
-    color: #333;
-}
-
-/* --- Styling for Explanation List in Hardware Overview --- */
-
-.reveal .slides section.hardware-overview-slide .explanation-text {
-    margin-top: 20px; /* 与图片行的间距 */
-    font-size: 0.8em; /* 说明文字字号 */
+    margin-top: 20px;
+    font-size: 0.8em;
     line-height: 1.7;
     text-align: left;
-    padding: 0 5%; /* 左右留白 */
+    padding: 0 5%;
     color: #333;
+    /* 如果文本也可能溢出，可以考虑也加 max-width */
+    /* max-width: 800px; */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
 }
 
 .reveal .slides section.hardware-overview-slide .explanation-text ul {
-    list-style-type: disc; /* 使用默认实心圆点 */
-    margin-left: 0; /* 重置外边距 */
-    padding-left: 1.8em; /* 设置列表缩进 */
-    margin-top: 0; /* 移除列表顶部外边距 */
-    margin-bottom: 0; /* 移除列表底部外边距 */
+    list-style-type: disc;
+    margin-left: 0;
+    padding-left: 1.8em;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .reveal .slides section.hardware-overview-slide .explanation-text li {
-    margin-bottom: 10px; /* 列表项之间的间距 */
-    padding-left: 0; /* 移除列表项内边距（因为缩进由ul控制） */
+    margin-bottom: 10px;
+    padding-left: 0;
 }
+
 .reveal .slides section.hardware-overview-slide .explanation-text li::marker {
-    color: #3498db; /* 设置项目符号颜色 (蓝色) */
+    color: #3498db;
 }
 
 .reveal .slides section.hardware-overview-slide .explanation-text li strong {
-    font-weight: bold; /* 加粗强调 */
-    color: #1a5276; /* 强调文字颜色 */
+    font-weight: bold;
+    color: #1a5276;
 }
+
 /* --- CSS for Slide 2 Media Items (Now Images/GIFs) --- */
 
-.reveal .slides section.objective-focus-slide .media-item img { /* 修改选择器 video -> img */
-    display: block; /* 让图片成为块级元素，方便居中 */
-    width: 120%;    /* 图片宽度充满容器 */
-    max-height: 25vh; /* 保持或调整高度限制 */
-    height: auto;   /* 高度自动，保持比例 */
-    /*object-fit: contain;*/ /* 确保整个 GIF 都可见，可能会留白 */
-    object-fit: cover; /* 另一种选择：填满容器，可能会裁剪 */
-    border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    background-color: #f0f0f0; /* 图片加载时的背景色 */
-    margin: 0 auto 1px auto; /* 上0，左右自动居中，下5px */
-}
+/*  */
 
 
 /* 如果你之前有 image-placeholder 的样式，可以保留或删除 */
