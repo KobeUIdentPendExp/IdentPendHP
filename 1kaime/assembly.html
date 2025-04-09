@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>倒立振子の組み立て・ファームウェアのインストール</title>
+    <style>
+        /* Reusing styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .guide-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .section { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .section h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6fff2; border: 1px solid #b3ffcc; color: #00642e; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Verification green */
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Warning yellow */
+        .step ul, .step ol { margin-top: 5px; margin-bottom: 5px; padding-left: 25px; }
+        .step li { margin-bottom: 5px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; font-size: 0.95em; }
+        .command { font-family: 'Courier New', Courier, monospace; background-color: #212529; color: #f8f9fa; padding: 10px 15px; margin: 10px 0; border-radius: 4px; display: block; white-space: pre; } /* Command style */
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+    <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="guide-container">
+    <h2>倒立振子の組み立て・ファームウェアのインストール</h2>
+    <p class="note">このガイドでは、倒立振子の組み立て手順とファームウェアのインストール方法について説明します。</p>
+
+    <div class="section" id="assemble-balancer">
+        <h3>1. 倒立振子（ビュートバランサー2）の組み立て</h3>
+        <div class="step">
+            <strong>事前準備:</strong>
+            <ul>
+                <li>組み立てキットを開封し、取扱説明書（パーツリスト）記載の部品が全て揃っているか確認してください。</li>
+                <li>不足している部品があれば、教員またはTAに報告してください。</li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>組み立て:</strong>
+            <ul>
+                <li>部品の確認が完了したら、取扱説明書（手順01〜14）に従って、倒立振子を組み立ててください。</li>
+                <li>不明な点があれば、教員またはTAに相談してください。</li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>確認:</strong>
+            <ul>
+                <li>組み立てが完了したら、取扱説明書（組み立て完了）に従って、倒立振子の動作確認を行ってください。</li>
+                <li>動作に異常がある場合は、取扱説明書（トラブルシューティング）を参照し、必要に応じて教員またはTAに相談してください。</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="install-firmware">
+        <h3>2. ファームウェアのインストール</h3>
+        <div class="warning">
+            <strong>注意:</strong>
+            ファームウェアのインストールには、Windows PCが必要です。<br>
+            MacやLinuxを使用している場合は、周囲のPCを借りるか、教員またはTAに相談してください。
+        </div>
+        <div class="step">
+            <strong>ダウンロード:</strong>
+            <ul>
+                <li>ブラウザを立ち上げ、<a href="https://beefplus.center.kobe-u.ac.jp/login" target="_blank" rel="noopener noreferrer">BEEF+</a> にログインしてください。</li>
+                <li>総合実験1(b)のページを開き、教材>1回目から<span class="code">Balancer2_firm_USB.bin</span> をダウンロードしてください。</li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>インストール:</strong>
+            <ul>
+                <li>倒立振子の電源を切り、操作ボタンを押したままUSBケーブルでPCに接続してください。</li>
+                <li>操作ボタンから手を離し、1分ほど待つと、倒立振子が新たなドライブとしてPCに認識されます。</li>
+                <li>PC上で、倒立振子のドライブを開き、既に存在する<span class="code">firmware.bin</span>を削除してください。</li>
+                <li>先ほどダウンロードした<span class="code">Balancer2_firm_USB.bin</span>を倒立振子のドライブにコピーしてください。</li>
+                <li>コピーが完了したら、安全な取り外しをクリックして、USBケーブルを抜いてください。</li>
+            </ul>
+        </div>
+        <div class="step">
+            <strong>確認:</strong>
+            <ul>
+                <li>倒立振子の電源を入れ、キャリブレーションを実行してください。</li>
+                <li>キャリブレーション終了後、オレンジ色のLEDが点灯し、操作ボタンを押してもモーターが回転しないことを確認してください。</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>
