@@ -477,19 +477,6 @@
     margin: 0 auto 1px auto; /* 上0，左右自动居中，下5px */
 }
 
-/* .reveal .slides section.objective-focus-slide .media-item .image-placeholder { ... } */
-.reveal .slides section.objective-focus-slide .media-item img { /* 修改选择器 video -> img */
-    display: block; /* 让图片成为块级元素，方便居中 */
-    width: 120%;    /* 图片宽度充满容器 */
-    max-height: 25vh; /* 保持或调整高度限制 */
-    height: auto;   /* 高度自动，保持比例 */
-    /*object-fit: contain;*/ /* 确保整个 GIF 都可见，可能会留白 */
-    object-fit: cover; /* 另一种选择：填满容器，可能会裁剪 */
-    border-radius: 6px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    background-color: #f0f0f0; /* 图片加载时的背景色 */
-    margin: 0 auto 1px auto; /* 上0，左右自动居中，下5px */
-}
 
 /* 如果你之前有 image-placeholder 的样式，可以保留或删除 */
 /* .reveal .slides section.objective-focus-slide .media-item .image-placeholder { ... } */
