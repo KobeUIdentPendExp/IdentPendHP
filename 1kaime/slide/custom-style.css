@@ -101,7 +101,7 @@
      display: flex;
      justify-content: space-around; /* アイテム間のスペースを均等に */
      align-items: flex-start;    /* アイテムを上端揃え */
-     margin-bottom: 20px;       /* 下部のコンテンツとの間隔 */
+     margin-bottom: auto;       /* 下部のコンテンツとの間隔 */
      width: 95%;               /* 全体の幅 */
      margin-left: auto;
      margin-right: auto;
@@ -110,15 +110,15 @@
  
  /* 各メディア（画像）アイテム */
  .reveal .slides section.objective-focus-slide .media-item {
-     flex-basis: 45%;           /* 各アイテムの基本幅 */
+     flex-basis: auto;           /* 各アイテムの基本幅 */
      text-align: center;        /* キャプションを中央揃え */
-     max-width: 450px;          /* 各アイテムの最大幅 (調整可能) */
+     max-width: auto;          /* 各アイテムの最大幅 (調整可能) */
  }
  
  /* メディアアイテム内の画像 (GIF) */
  .reveal .slides section.objective-focus-slide .media-item img {
      display: block;
-     width: 100%;               /* 親要素(media-item)の幅に合わせる */
+     width: auto;               /* 親要素(media-item)の幅に合わせる */
      height: auto;              /* 高さは自動でアスペクト比を維持 */
      max-height: 30vh;          /* 高くなりすぎないように上限を設定 (調整可能) */
      object-fit: contain;       /* 画像全体が表示されるように調整 */
