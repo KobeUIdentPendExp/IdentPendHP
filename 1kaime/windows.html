@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Windowsの環境構築</title>
+    <style>
+        /* Reusing styles */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+        .guide-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .section { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+        .section h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+        .confirmation { background-color: #e6fff2; border: 1px solid #b3ffcc; color: #00642e; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Verification green */
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Warning yellow */
+        .step ul, .step ol { margin-top: 5px; margin-bottom: 5px; padding-left: 25px; }
+        .step li { margin-bottom: 5px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 10px; }
+        .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; font-size: 0.95em; }
+        .command { font-family: 'Courier New', Courier, monospace; background-color: #212529; color: #f8f9fa; padding: 10px 15px; margin: 10px 0; border-radius: 4px; display: block; white-space: pre; overflow: auto} /* Command style */
+        a { color: #007bff; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+    <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
+    <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+<div class="guide-container">
+    <h2>Windowsの環境構築</h2>
+    <p class="note">このページでは、倒立振子を制御するための環境構築手順（Windows版）を説明します。</p>
+
+    <div class="section" id="install-wsl">
+        <h3>1. Windows Subsystem for Linux (WSL) 環境の構築</h3>
+        <p>Windows上でLinux環境（Ubuntu）を実行するため、<a href="https://learn.microsoft.com/ja-jp/windows/wsl/about" target="_blank" rel="noopener noreferrer">Windows Subsystem for Linux（WSL）</a>を使用します。さらに、USBデバイスをWSLに接続するため、<a href="https://learn.microsoft.com/ja-jp/windows/wsl/connect-usb" target="_blank" rel="noopener noreferrer">usbipd-win</a>を使用します。</p>
+        <div class="step">
+            <strong>PowerShellの起動（管理者モード）:</strong>
+            <ul>
+                <li>スタートメニューを開き、「powershell」と入力してください。</li>
+                <li>「Windows PowerShell」を選択または右クリックし、「管理者として実行」をクリックしてください。</li>
+            </ul>
+            <img src="assets/open-powershell.png" alt="PowerShellを管理者として実行" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="step">
+            <strong>WSLのインストール:</strong>
+            <ul>
+                <li>PowerShellに以下のコマンドを入力し、Enterキーを押して実行してください。<br><span class="command">wsl --install</span></li>
+            </ul>
+            <img src="assets/install-wsl.png" alt="WSLをインストール" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="confirmation">
+            WSLのインストールが完了したら、PCを再起動してください。
+        </div>
+        <div class="step">
+            <strong>Ubuntuのインストール:</strong>
+            <ul>
+                <li>PowerShellを管理者モードで起動し、以下のコマンドを実行してください。<br><span class="command">wsl --install Ubuntu</span></li>
+            </ul>
+            <img src="assets/install-ubuntu.png" alt="Ubuntuをインストール" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="step">
+            <strong>usbipd-winのインストール:</strong>
+            <ul>
+                <li>ブラウザを開き、<a href="https://github.com/dorssel/usbipd-win/releases" target="_blank" rel="noopener noreferrer">GitHubのリリースページ</a>にアクセスしてください。</li>
+                <li>最新版のインストーラー（<span class="code">.msi</span>ファイル）をダウンロードしてください。</li>
+                <li>ダウンロードしたファイルを実行し、インストールを進めてください。</li>
+            </ul>
+            <img src="assets/install-usbipd.png" alt="usbipd-winをインストール" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="confirmation">
+            Ubuntuとusbipd-winのインストールが両方完了したら、もう一度PCを再起動してください。
+        </div>
+        <div class="step">
+            <strong>Ubuntuの起動:</strong>
+            <ul>
+                <li>スタートメニューで「Ubuntu」と検索し、アプリを起動してください。</li>
+                <li>初回起動時にユーザー名とパスワードの設定を求められます。任意のユーザー名とパスワードを設定してください。</li>
+            </ul>
+            <img src="assets/open-ubuntu.png" alt="Ubuntuを起動" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+            <img src="assets/setup-ubuntu.png" alt="Ubuntuのユーザー名・パスワードを設定" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="step">
+            <strong>Ubuntuの初期設定（USBデバイスの既定パーミッション変更）:</strong>
+            <ul>
+                <li>Ubuntuを起動し、ユーザー名とパスワードの設定が完了したら、以下のコマンドを実行してUSBデバイスの既定パーミッションを変更してください。<br><span class="command">echo 'SUBSYSTEM=="usb", ATTR{idVendor}=="1962", ATTR{idProduct}=="2080", MODE="0666"' | sudo tee /etc/udev/rules.d/100-usb.rules<br>sudo udevadm control --reload-rules</span></li>
+            </ul>
+            <img src="assets/setup-rules.png" alt="USBデバイスの既定パーミッションを設定" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+    </div>
+
+    <div class="section" id="install-miniconda">
+        <h3>2. Python環境の構築</h3>
+        <p>Ubuntu上でPython環境を構築するため、<a href="https://www.anaconda.com/docs/getting-started/miniconda/main" target="_blank" rel="noopener noreferrer">Miniconda</a>を使用します。さらに、Pythonを用いたUSB通信を行うために、<a href="https://trezor.github.io/cython-hidapi/index.html" target="_blank" rel="noopener noreferrer">hidapi</a>を使用します。</p>
+        <div class="step">
+            <strong>Minicondaのインストール:</strong>
+            <ul>
+                <li>Ubuntuのターミナル上で以下のコマンドを実行し、Minicondaをインストールしてください。<br><span class="command">wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh<br>bash ./Miniforge3-Linux-x86_64.sh -b -p ~/miniforge3<br>~/miniforge3/bin/conda init<br>source ~/.bashrc</span></li>
+            </ul>
+            <img src="assets/install-miniconda.png" alt="Minicondaをインストール" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="step">
+            <strong>hidapiのインストール:</strong>
+            <ul>
+                <li>Minicondaの仮想環境内で以下のコマンドを実行し、hidapiをインストールしてください。<br><span class="command">conda install hidapi</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section" id="connect-usb">
+        <h3>3. 倒立振子の接続・動作確認</h3>
+        <div class="step">
+            <strong>倒立振子をWSL（Ubuntu）に接続:</strong>
+            <ul>
+                <li>倒立振子をUSBケーブルでPCに接続してください（通常の接続時、本体の操作ボタンは押さないでください）。</li>
+                <li>PowerShellを管理者モードで起動し、以下のコマンドを実行して倒立振子をWSLに接続してください。<br><span class="command">usbipd bind --hardware-id 1962:2080<br>usbipd attach --hardware-id 1962:2080 --auto-attach --wsl</span></li>
+            <ul>
+            <img src="assets/setup-usbipd.png" alt="倒立振子をWSLに接続" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="step">
+            <strong>テストスクリプトのダウンロード:</strong>
+            <ul>
+                <li>ブラウザを立ち上げ、<a href="https://beefplus.center.kobe-u.ac.jp/login" target="_blank" rel="noopener noreferrer">BEEF+</a> にログインしてください。</li>
+                <li>総合実験1(b)のページを開き、教材>1回目から<span class="code">test.py</span> をダウンロードしてください。</li>
+                <li>ダウンロードした<span class="code">test.py</span>を、Ubuntuのホームディレクトリにコピーしてください。</li>
+            </ul>
+            <img src="assets/copy-script.png" alt="test.pyをUbuntuのホームディレクトリにコピー" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="step">
+            <strong>テストスクリプトの実行（動作確認）:</strong>
+            <ul>
+                <li>Ubuntuのターミナル（Minicondaの仮想環境内）で以下のコマンドを実行し、USB通信の動作確認を行ってください。<br><span class="command">python3 test.py</span></li>
+                <li>車輪の角度が表示され、モータが回転すれば成功です。</li>
+            </ul>
+            <img src="assets/run-script.png" alt="USB通信の動作確認" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
+        </div>
+        <div class="note">
+            モーターが回転しない場合は、電源スイッチがオフになっているか、電池残量が不足している可能性があります。
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

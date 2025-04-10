@@ -119,7 +119,7 @@
     display: block;
     width: 100%;               /* 宽度充满容器 */
     height: auto;              /* 高度自动，保持比例 */
-    max-height: 25vh;          /* 限制最大高度 (可调整: 25vh, 20rem ...) */
+    max-height: 20vh;          /* 限制最大高度 (可调整: 25vh, 20rem ...) */
     object-fit: cover;       /* 完整显示图片 */
     border-radius: 6px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -431,7 +431,7 @@
     display: block;
     max-width: 100%;    /* 不超过容器宽度 */
     height: auto;       /* 高度自动，保持比例 */
-    max-height: 15vh;   /* 限制最大高度 (可调整) */
+    max-height: 20vh;   /* 限制最大高度 (可调整) */
     object-fit: contain;/* 完整显示图片 */
     border: 1px solid #eee;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
