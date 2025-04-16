@@ -28,8 +28,10 @@
         <h3>1. 前提条件</h3>
          <div class="step">
              <ul>
-                 <li>macOS に Anaconda がインストール済みであること。（<a href="page1.html">ガイドページ 1</a> 参照）</li>
-                 <li><span class="code">control_lab</span> という名前の Conda 環境が Python 3.9 で作成済みであること。（<a href="page1.html">ガイドページ 1</a> 参照）</li>
+                 <li>macOS に Anaconda がインストール済みであること。（<a href="anacondaInstall.html">ガイドページ 1</a> 参照）</li>
+                 <li><span class="code">control_lab</span> という名前の Conda 環境が Python 3.9 で作成済みであること。（<a href="anacondaInstall.html">ガイドページ 1</a> 参照）</li>
+                <li>test.pyはBEEF＋からダンロード（自分のPCに保存）</li>
+
              </ul>
          </div>
     </div>
@@ -83,7 +85,7 @@
     </div>
 
     <div class="section" id="hardware-test">
-        <h3>4. 実機での動作テスト (<span class="code">wheel.py</span>)</h3>
+        <h3>4. 実機での動作テスト (<span class="code">test.py</span>)</h3>
         <p>最後に、実際に機器を接続し、サンプルスクリプトを実行してモーターが動作するかを確認します。</p>
         <div class="step task">
              <ol>
@@ -91,16 +93,17 @@
                      <strong>ハードウェアの準備:</strong>
                      <ul>
                          <li>実験機器と Mac を USB ケーブルで接続します。</li>
-                         <li>機器本体にある2つの開始ボタンを押して電源を入れます。</li>
-                         <li class="confirmation">機器の**黄色いランプが点滅**していることを確認してください。これが準備完了の状態です。</li>
-                         <li class="warning">【安全注意】モーターが回転します。機器の周りに障害物がないか確認し、安全な場所でテストを行ってください。</li>
+                         <li>機器本体にある電源スイッチをオンにします。</li>
+                         <li>操作ボタンを押して、キャリブレーションを完了させます。</li>
+                         <li class="confirmation">機器の**黄色いランプが点灯**していることを確認してください。これが準備完了の状態です。</li>
+                         <li class="warning">【安全注意】後のステップでモーターが回転します。機器の周りに障害物がないか確認し、安全な場所でテストを行ってください。</li>
                      </ul>
                  </li>
                  <li>
                      <strong>ターミナルの準備:</strong>
                      <ul>
                          <li>ターミナルを開き、<span class="code">control_lab</span> 環境が有効になっていることを確認します (<span class="code">(control_lab)</span> 表示)。(もし有効でなければ <code class="command">conda activate control_lab</code> を実行)</li>
-                         <li><span class="code">wheel.py</span> スクリプトが保存されているフォルダ（ディレクトリ）に <code class="code">cd</code> コマンドで移動します:
+                         <li><span class="code">test.py</span> スクリプトが保存されているフォルダ（ディレクトリ）に <code class="code">cd</code> コマンドで移動します:
                              <code class="command">cd /path/to/your/project/folder</code>
                              <span class="note">(<code class="code">/path/to/your/project/folder</code> は実際のフォルダパスに置き換えてください)</span>
                          </li>
