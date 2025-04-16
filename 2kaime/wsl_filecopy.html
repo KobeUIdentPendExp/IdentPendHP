@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSLへのPythonファイル準備手順 (Windowsユーザー向け)</title>
+    <style>
+        body {
+            font-family: 'Meiryo', 'Hiragino Kaku Gothic ProN', sans-serif;
+            line-height: 1.6;
+            padding: 25px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px 35px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        h2 {
+            color: #2a7ab0;
+            border-bottom: 2px solid #a0d0f0;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h3 {
+            color: #3a8ac0;
+            margin-top: 30px;
+            border-left: 5px solid #a0d0f0;
+            padding-left: 10px;
+        }
+        p, li {
+            font-size: 1rem;
+        }
+        ol {
+            padding-left: 25px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .code {
+            font-family: Consolas, Monaco, 'Courier New', monospace;
+            background-color: #eef2f5;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: #1a1a1a;
+            border: 1px solid #d1dbe3;
+        }
+        .path {
+            color: #006699;
+            font-weight: bold;
+        }
+        .note {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            display: block; /* Ensure note is on its own line */
+        }
+        .alert {
+            color: #d9534f;
+            font-weight: bold;
+        }
+        .method-box {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            background-color: #fdfdfd;
+        }
+        .method-box h4 {
+            margin-top: 0;
+            color: #1a6d9e;
+        }
+        strong { /* Use default strong or slightly different color */
+           color: #111;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>WSLへのPythonファイル準備手順 (Windowsユーザー向け)</h2>
+    <p>この手順では、実験に必要なPythonスクリプト（<span class="code">collect_data.py</span>, <span class="code">identify_motor.py</span> など）を、教育システム (BEEF Plus) からダウンロードしたZIPファイルから展開し、WSL環境内の指定フォルダ <span class="code path">~/Projects</span> にコピーする方法を説明します。</p>
+
+    <h3>ステップ1：ZIPファイルのダウンロードと展開</h3>
+    <ol>
+        <li>教育システム (BEEF Plus) から指定されたZIPファイルをダウンロードします。</li>
+        <li>ダウンロードしたZIPファイルを、<strong>Windowsのデスクトップ</strong>に展開（解凍）してください。
+            <span class="note">デスクトップに、例えば <span class="code">collect_data.py</span> や <span class="code">identify_motor.py</span> といったファイルが表示されるはずです。</span>
+        </li>
+    </ol>
+
+    <h3>ステップ2：WSL内に作業フォルダを作成</h3>
+    <ol>
+        <li>WSLのターミナルを開きます（例: Ubuntu, Debianなど）。</li>
+        <li>以下のコマンドを実行して、ホームディレクトリ (<span class="code path">~</span>) の直下に <span class="code path">Projects</span> という名前のフォルダを作成します。
+            <pre><code class="code">mkdir ~/Projects</code></pre>
+            <span class="note">もし既に <span class="code path">Projects</span> フォルダが存在する場合は、「File exists」といったメッセージが表示されますが、問題ありません。そのまま次のステップに進んでください。</span>
+        </li>
+    </ol>
+
+    <h3>ステップ3：WindowsデスクトップからWSLへファイルをコピー</h3>
+    <p>ファイルをコピーするには、主に2つの方法があります。どちらかやりやすい方を選んでください。</p>
+
+    <div class="method-box">
+        <h4>方法A：Windowsのエクスプローラーを使う（推奨）</h4>
+        <p>マウス操作で直感的にコピーできます。</p>
+        <ol>
+            <li>Windowsのファイルエクスプローラー（フォルダを開くウィンドウ）を起動します。</li>
+            <li>エクスプローラーのアドレスバー（通常、上部にあるパスが表示される場所）に、次のように入力してEnterキーを押します:
+                <br><span class="code path">\\wsl$</span>
+                <span class="note">これにより、WSLのファイルシステムがエクスプローラーで表示されます。</span>
+            </li>
+            <li>表示されたWSLのファイルシステムの中から、<span class="code path">home</span> → <span class="code path">あなたのWSLユーザー名</span> → <span class="code path">Projects</span> の順にフォルダを開きます。これがコピー先のフォルダです。</li>
+            <li><strong>別のエクスプローラーウィンドウ</strong>を開き、先ほどファイルを展開したWindowsの<strong>デスクトップ</strong>を開きます。これがコピー元のフォルダです。</li>
+            <li>デスクトップにある <span class="code">collect_data.py</span> や <span class="code">identify_motor.py</span> などの必要なPythonファイルを、<span class="code path">\\wsl$\...\Projects</span> フォルダのウィンドウへ<strong>ドラッグ＆ドロップ</strong>するか、<strong>コピー（Ctrl+C）して貼り付け（Ctrl+V）</strong>します。</li>
+        </ol>
+    </div>
+
+    <div class="method-box">
+        <h4>方法B：WSLターミナルの `cp` コマンドを使う</h4>
+        <p>ターミナル操作に慣れている方向けです。</p>
+        <ol>
+            <li>WSLターミナルを開きます。</li>
+            <li>まず、<span class="code path">~/Projects</span> フォルダに移動します:
+                <pre><code class="code">cd ~/Projects</code></pre>
+            </li>
+            <li>次に、Windowsのデスクトップにあるファイルをコピーします。Windowsのデスクトップは、WSL内からは通常 <span class="code path">/mnt/c/Users/あなたのWindowsユーザー名/Desktop</span> のように見えます。以下のコマンドを実行してください:
+                <pre><code class="code">cp /mnt/c/Users/あなたのWindowsユーザー名/Desktop/*.py .</code></pre>
+                <span class="note">
+                    <ul>
+                        <li><span class="alert">重要:</span> <span class="code path">あなたのWindowsユーザー名</span> の部分は、ご自身のWindowsのユーザー名に置き換えてください。</li>
+                        <li>上記のコマンドは、デスクトップにある全ての <span class="code">.py</span> ファイルを、現在いる <span class="code path">~/Projects</span> フォルダ（<span class="code">.</span> で表される）にコピーします。</li>
+                        <li>もし特定のファイルだけコピーしたい場合は、ファイル名を指定してください（例: <span class="code">cp /mnt/c/Users/YourName/Desktop/collect_data.py .</span>）。</li>
+                        <li>Windowsユーザー名やパスにスペースが含まれる場合は、パス全体をシングルクォーテーション <span class="code">' '</span> またはダブルクォーテーション <span class="code">" "</span> で囲む必要があります（例: <span class="code">cp '/mnt/c/Users/Your Name/Desktop/*.py' .</span>）。</li>
+                    </ul>
+                </span>
+            </li>
+        </ol>
+    </div>
+
+    <h3>ステップ4：ファイルの確認</h3>
+    <ol>
+        <li>WSLターミナルで、以下のコマンドを実行してファイルが正しくコピーされたか確認します:
+            <pre><code class="code">ls -l ~/Projects</code></pre>
+        </li>
+        <li>実行結果のリストに、<span class="code">collect_data.py</span> や <span class="code">identify_motor.py</span> といったファイル名が表示されていれば成功です。</li>
+    </ol>
+
+    <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+
+    <p>これで、WSL環境の <span class="code path">~/Projects</span> フォルダに実験用Pythonファイルを準備できました。今後の実験では、WSLターミナルでこのフォルダに <span class="code">cd ~/Projects</span> で移動してから、<span class="code">python collect_data.py</span> のようにスクリプトを実行してください。</p>
+
+</div>
+
+</body>
+</html>
