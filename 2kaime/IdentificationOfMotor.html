@@ -157,7 +157,32 @@
                 border: none;
                 color: #2d3748; /* コード文字色 */
             }
-
+            /* --- 発展課題スタイル --- */
+            .advanced-topic {
+                background-color: #f0fff4; /* 薄い緑系の背景 */
+                border: 1px solid #c8e6c9; /* 緑系の枠線 */
+                border-left: 5px solid #66bb6a; /* 左のアクセント */
+                padding: 15px 20px;
+                margin: 25px 0 10px 0; /* 上下のマージン */
+                border-radius: 5px;
+            }
+            .advanced-topic h4 {
+                margin-top: 0;
+                margin-bottom: 12px;
+                color: #1b5e20; /* 濃い緑 */
+                font-size: 1.25em; /* 少し大きく */
+                font-weight: 600;
+                border-bottom: 1px dotted #a5d6a7; /* 下線 */
+                padding-bottom: 5px;
+            }
+            .advanced-topic ul {
+                padding-left: 25px;
+                list-style-type: square; /* 箇条書きマーカー */
+                margin-top: 10px;
+            }
+            .advanced-topic li {
+                margin-bottom: 12px; /* 項目間のスペース */
+            }
             /* --- MathJax Alignment --- */
             mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
         </style>
@@ -320,36 +345,66 @@
                 <ul>
                     <li><strong>ターミナル出力:</strong>
                         <ul>
-                            <li>CSV読み込みは成功したか？</li>
-                            <li><span class="alert">【重要】</span>「パラメータが計算されていません」エラーが出ていないか？</li>
                             <li>推定されたパラメータ $\hat{a}, \hat{b}$ の値と符号は物理的に妥当か？ (<span class="note">$a=k_T/J > 0$, $b=-B/J < 0$ ?)</span></li>
-                            <li>適合度 $R^2$ と RMSE の値はどうか？</li>
+                            <li>適合度 $R^2$ と RMSE の値はいくつか？ <span class="note">（下記グラフ分析の注釈で定義・説明）</span></li>
                         </ul>
                     </li>
                     <li><strong>グラフ分析:</strong>
                         <ul>
                             <li><strong>【最重要】図1 (Raw vs Filtered):</strong> フィルターは適切に機能しているか？ノイズは除去され、信号は歪んでいないか？
-                                <br><span class="note">→ もしフィルター結果が不適切（ノイズが多すぎる、または信号がなまりすぎている）と感じたら、<strong>Step 3-3 に戻り <span class="code">filter_cutoff_hz</span> の値を変更し、Step 3-4 (スクリプト実行) を再度行ってください。</strong> この調整はレポートの重要なポイントです。</span></li>
-                            <li><strong>図3 (Accel Fit):</strong> 推定モデルの加速度（破線）は実測（フィルター後、実線）によく一致しているか？ ($R^2$ と合わせて評価)</li>
-                            <li><strong>図5 (Simulation):</strong> シミュレーション結果は実験データ（フィルター後）とどの程度一致しているか？ (RMSE値を参考に)</li>
-                            <li><strong>図4 (Residuals):</strong> 残差プロットに何か傾向（モデル化されていない要素の示唆）はあるか？</li>
+                                <br><span class="note">→ もしフィルター結果が不適切と感じたら、<strong>Step 3-3 に戻り <span class="code">filter_cutoff_hz</span> の値を変更し、Step 3-4 (スクリプト実行) を再度行ってください。</strong></span></li>
+                            <li><strong>図3 (Accel Fit):</strong> 推定モデルの加速度（破線）は実測（フィルター後、実線）によく一致しているか？ ($R^2$の値と合わせて評価)
+                                <br><span class="note">
+                                    <strong>$R^2$ (決定係数):</strong> モデルがデータの変動をどれだけうまく説明できているかの指標。<br>
+                                    計算式: $R^2 = 1 - \frac{\sum_{i=1}^{N} (y_i - \hat{y}_i)^2}{\sum_{i=1}^{N} (y_i - \bar{y})^2} = 1 - \frac{SS_{res}}{SS_{tot}}$ <br>
+                                    （$y_i$: 実測値, $\hat{y}_i$: モデル予測値, $\bar{y}$: 実測値の平均, $N$: データ数）<br>
+                                    <strong>1に近いほど</strong>当てはまりが良いことを示す。
+                                </span>
+                            </li>
+                            <li><strong>図5 (Simulation):</strong> シミュレーション結果（破線）は実験データ（フィルター後、実線）とどの程度一致しているか？ (RMSE値を参考に)
+                                <br><span class="note">
+                                    <strong>RMSE (二乗平均平方根誤差):</strong> シミュレーション値と実測値の間の「平均的な誤差の大きさ」。<br>
+                                    計算式: $RMSE = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2}$ <br>
+                                    （$y_i$: 実測値, $\hat{y}_i$: シミュレーション値, $N$: データ数）<br>
+                                    <strong>値が小さいほど</strong>両者がよく一致していることを示す。（単位は元のデータと同じ[rad]や[rad/s]など）
+                                </span>
+                            </li>
+                            <li><strong>図4 (Residuals):</strong> 残差（$y_i - \hat{y}_i$）プロットに何か系統的なパターン（偏りや周期性など）はあるか？（全体的に0付近でランダムに分布するのが理想）</li>
                         </ul>
                     </li>
                 </ul>
             </div>
+
+
         </div> <div class="phase" id="exp-report">
             <h3>4. 結果の整理とレポート作成</h3>
             <div class="step">得られた推定パラメータ $\hat{a}, \hat{b}$ の値を記録する。(最適な <span class="code">filter_cutoff_hz</span> を用いた結果)</div>
             <div class="step">実験結果、特にグラフ分析から読み取れることを基に考察をまとめる。
                 <ul>
                     <li>構築したモデルの精度はどの程度と言えるか？ ($R^2$, RMSE, グラフの一致度)</li>
-                    <li>**フィルタリングは適切に行えたか？** 最終的に選択した**カットオフ周波数 $f_c$ とその選択理由は？** (異なる $f_c$ を試した場合は、その比較結果も記述すると良い)</li>
-                    <li>残差分析から、モデルの仮定（例: 線形摩擦のみ）に問題はありそうか？</li>
+                    <li>「フィルタリングは適切に行えたか？」 最終的に選択したカットオフ周波数 $f_c$ とその選択理由は？ (異なる $f_c$ を試した場合は、その比較結果も記述すると良い)</li>
+                    <li>残差分析から、モデルの仮定（例: 粘性摩擦のみ）に問題はありそうか？</li>
                     <li>シミュレーションとの比較から何が言えるか？</li>
                     <li>実験の限界や誤差の要因は何か？</li>
                 </ul>
             </div>
-            <!-- <div class="step">以上の内容を基に、実験レポートを作成する。</div> -->
+            <div class="advanced-topic">
+                <h4>発展課題 (任意 - スキルアップのために)</h4>
+                <p class="note">これらはレポート提出に必須ではないが、より深く理解し、プログラミングスキルを向上させるための任意課題である。自宅等でも取り組むことができる。</p>
+                <ul>
+                    <li>
+                        <strong>1. シミュレーションの数値計算法（ルンゲクッタ法）の理解:</strong>
+                        <br>今回のコード (<span class="code">identify_motor.py</span> 内の <span class="code">simulate_motor_response_rk4_simple</span> 関数) では、モーターの応答をシミュレーションするために4次のルンゲ＝クッタ法 (<span class="code">runge_kutta_4_step</span>) を使用している。
+                        <br>コードを読み解き、この数値積分法がどのようにして微分方程式 $\dot{\boldsymbol{x}} = f(t, \boldsymbol{x})$ の近似解を計算しているのか、アルゴリズムの原理を調べること。（Web検索や数値計算の教科書等が参考になる）
+                    </li>
+                    <li>
+                        <strong>2. カットオフ周波数 ($f_c$) 比較グラフの作成:</strong>
+                        <br>フィルターのカットオフ周波数 <span class="code">filter_cutoff_hz</span> を変えると、同定結果が変わることを体験したと思われる。様々な $f_c$ の値（例: 0.5 Hz, 1 Hz, 2 Hz, 5 Hz など）に対して、フィルター処理後の角加速度 $\alpha(t)$ がどのように変化するか、あるいは最終的に同定されるパラメータ $\hat{a}, \hat{b}$ がどのように変化するかを、**1つの図にまとめてプロット**するPythonコードを作成してみること。
+                        <br>これにより、$f_c$ 選択の影響が一目でわかるようになる。作成したグラフは、例えば中間レポートなどで結果を考察する際に役立つ。
+                    </li>
+                </ul>
+            </div>
+            </div>
         </div>
     
     
