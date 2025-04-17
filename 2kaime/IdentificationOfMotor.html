@@ -183,6 +183,64 @@
             .advanced-topic li {
                 margin-bottom: 12px; /* 項目間のスペース */
             }
+            /* --- HTML/CSS Flow Representation Styles --- */
+            .flow-container {
+                border: 1px solid #e0e0e0;
+                padding: 15px 20px;
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+            .flow-step {
+                padding: 8px 12px;
+                margin: 8px auto;
+                border: 1px solid #ccc;
+                background-color: #fff;
+                border-radius: 4px;
+                max-width: 80%;
+                text-align: center;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            }
+            .flow-task {
+                background-color: #fff3cd; /* Yellowish for task */
+                border-color: #ffeeba;
+                font-weight: bold;
+            }
+            .flow-decision {
+                background-color: #e7f3ff; /* Bluish for decision */
+                border-color: #b8daff;
+            }
+            .flow-error {
+                background-color: #f8d7da; /* Reddish for error */
+                border-color: #f5c6cb;
+            }
+            .flow-arrow {
+                text-align: center;
+                color: #6c757d;
+                font-size: 1.2em;
+                margin: 2px 0;
+                line-height: 1;
+            }
+            .flow-branch-container {
+                display: flex; /* Use flexbox for side-by-side branches */
+                justify-content: space-around; /* Space out branches */
+                align-items: flex-start; /* Align tops */
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px dashed #ccc; /* Separator for branches */
+            }
+            .flow-branch {
+                display: flex;
+                flex-direction: column; /* Steps within a branch flow downwards */
+                align-items: center; /* Center items in the branch */
+                width: 45%; /* Approximate width for two branches */
+            }
+            .flow-branch-label {
+                font-weight: bold;
+                font-size: 0.9em;
+                color: #333;
+                margin-bottom: 5px;
+            }
             /* --- MathJax Alignment --- */
             mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
         </style>
@@ -192,6 +250,34 @@
             MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
         </script>
         <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>DCモーター システム同定 実験手順</title>
+            <style>
+                /* ... (既存のCSS) ... */
+                /* Mermaid用のスタイル（任意） */
+                .mermaid {
+                    text-align: center; /* 中央揃え */
+                    margin-bottom: 20px; /* 下にマージン */
+                    padding: 15px;
+                    border: 1px solid #eee;
+                    border-radius: 5px;
+                    background-color: #fdfdfd;
+                }
+            </style>
+        
+            <script type="module">
+              import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+              mermaid.initialize({ startOnLoad: true });
+            </script>
+            <script>
+                MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }, svg: { fontCache: 'global' } };
+            </script>
+            <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+        </head>
+    
+    
     </head>
 <body>
 
@@ -300,10 +386,29 @@
                     <li>ファイルサイズがゼロでなく、開いてみてデータ（数値の列）が記録されていることを確認する。</li>
                 </ul>
             </div>
-        </div> <div class="arrow">⬇️</div>
+        </div>
+        
+        <div class="arrow">⬇️</div>
+
+
         <div class="phase" id="exp-analysis">
             <h3>3. データ解析とパラメータ同定 (<span class="code">identify_motor.py</span> 実行)</h3>
-    
+            <div class="step">
+                <strong><span class="code">identify_motor.py</span>処理フロー概要:</strong>
+                <div class="flow-container">
+                    <div class="flow-step">データ読込(.csv)とデータ前処理</div>
+                    <div class="flow-arrow">⬇️</div>
+                    <div class="flow-step flow-decision">フィルター設定と応用<br>(【課題】：適切なカットオフ周波数の選択)</div>
+                    <div class="flow-arrow">⬇️</div>
+                    <div class="flow-step">最小二乗法の準備 Prepare LSQ (X, y)（【課題】パラメータ計算）</div>
+                    <div class="flow-arrow">⬇️</div>
+                    <div class="flow-step">実験値と同定結界を利用したシミュレーション結果の比較<br>(誤差確認, 同定結果の妥当性評価)<br></div>
+                    <div class="flow-arrow">⬇️</div>
+                    <div class="flow-step">終了 End</div>
+                </div>
+                <span class="note">これは<span class="code">identify_motor.py</span>処理の主要な流れを構造的に示したものです。</span>
+            </div>
+            <hr style="border-top: 1px solid #eee;">
             <div class="step"><strong>Step 3-1: スクリプトを開く</strong><br>
                 データ解析用スクリプト (<span class="code">identify_motor.py</span>) をコードエディタ (VS Code 等) で開いてください。
             </div>
@@ -369,7 +474,7 @@
                                     <strong>値が小さいほど</strong>両者がよく一致していることを示す。（単位は元のデータと同じ[rad]や[rad/s]など）
                                 </span>
                             </li>
-                            <li><strong>図4 (Residuals):</strong> 残差（$y_i - \hat{y}_i$）プロットに何か系統的なパターン（偏りや周期性など）はあるか？（全体的に0付近でランダムに分布するのが理想）</li>
+                            <!-- <li><strong>図4 (Residuals):</strong> 残差（$y_i - \hat{y}_i$）プロットに何か系統的なパターン（偏りや周期性など）はあるか？（全体的に0付近でランダムに分布するのが理想）</li> -->
                         </ul>
                     </li>
                 </ul>
