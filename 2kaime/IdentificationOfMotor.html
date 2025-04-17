@@ -266,7 +266,7 @@
                     background-color: #fdfdfd;
                 }
             </style>
-        
+
             <script type="module">
               import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
               mermaid.initialize({ startOnLoad: true });
@@ -276,8 +276,8 @@
             </script>
             <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
         </head>
-    
-    
+
+
     </head>
 <body>
 
@@ -299,7 +299,7 @@
             <div class="step"><strong>PCソフトウェア環境チェック:</strong>
                 <ul>
                     <li>指示された方法（WSL, Mac等）でPython環境を起動する。</li>
-                    <li>必要なライブラリ（例: <span class="code">hid</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span>, <span class="code">scipy</span>）が環境にインストールされているか確認する（必要であればインストール）。</li>
+                    <li>必要なライブラリ（例: <span class="code">hidapi</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span>, <span class="code">scipy</span>）が環境にインストールされているか確認する（必要であれば<span class="code">conda install</span>コマンドを使用してインストール）。</li>
                 </ul>
             </div>
 
@@ -387,7 +387,7 @@
                 </ul>
             </div>
         </div>
-        
+
         <div class="arrow">⬇️</div>
 
 
@@ -412,7 +412,7 @@
             <div class="step"><strong>Step 3-1: スクリプトを開く</strong><br>
                 データ解析用スクリプト (<span class="code">identify_motor.py</span>) をコードエディタ (VS Code 等) で開いてください。
             </div>
-    
+
             <div class="step"><strong>Step 3-2: 計算式の実装を確認・有効化する</strong><br>
                 スクリプト内の <span class="code"># --- 【課題】最小二乗法の計算を...</span> というコメントがあるセクションを探してください。
                 <ul>
@@ -420,7 +420,7 @@
                     <li>この行が最小二乗法の解を計算する核心部分です。</li>
                 </ul>
             </div>
-    
+
             <div class="step"><strong>Step 3-3: フィルタのカットオフ周波数を設定する</strong><br>
                 スクリプトの冒頭にある <span class="code"># --- 設定 ---</span> セクション内の以下の行を見つけてください:
                 <pre class="code-block" style="font-size: 0.9em;"><code>filter_cutoff_hz =     # フィルターのカットオフ周波数 (Hz) - !! データに基づいて調整が必要 !!</code></pre>
@@ -436,7 +436,7 @@
                     </li>
                 </ul>
             </div>
-    
+
             <div class="step"><strong>Step 3-4: スクリプトを実行する</strong><br>
                 ターミナル等でデータ解析スクリプトを実行します。
                 <pre class="code-block"><code>python3 identify_motor.py</code></pre>
@@ -444,7 +444,7 @@
                 <br>
                 <span class="alert">【注意】</span>もし実行時に「<span class="code">【エラー】パラメータが計算されていません...</span>」というエラーメッセージが表示された場合は、Step 3-2 の計算式のコメント解除が正しく行われていない可能性があります。コードを確認してください。
             </div>
-    
+
             <div class="confirmation"><strong>Step 3-5: 結果の確認と考察（カットオフ周波数の再調整含む）</strong><br>
                 スクリプトの実行が完了し、複数のグラフが表示されたら、以下の点を確認・考察します。
                 <ul>
@@ -511,8 +511,8 @@
             </div>
             </div>
         </div>
-    
-    
-    
+
+
+
     </body>
 </html>
