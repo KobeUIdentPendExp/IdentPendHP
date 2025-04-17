@@ -299,7 +299,7 @@
             <div class="step"><strong>PCソフトウェア環境チェック:</strong>
                 <ul>
                     <li>指示された方法（WSL, Mac等）でPython環境を起動する。</li>
-                    <li>必要なライブラリ（例: <span class="code">hidapi</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span>, <span class="code">scipy</span>）が環境にインストールされているか確認する（必要であれば<span class="code">conda install</span>コマンドを使用してインストール）。</li>
+                    <li>必要なライブラリ（例: <span class="code">hidapi</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span>, <span class="code">scipy</span>）が環境にインストールされているか確認する（必要であれば<span class="code">conda install <パッケージ名></span>コマンドを使用してインストール）。</li>
                 </ul>
             </div>
 
@@ -346,7 +346,7 @@
                         <li>データ収集用スクリプト（例: <span class="code">collect_data.py</span>）とデータ解析用スクリプト（例: <span class="code">identify_motor.py</span>）をPC上の作業フォルダに用意する。
                             <span class="note">Windows+WSLユーザーは、これらのファイルをWSL内にコピーする必要があります（下記参照）。</span>
                         </li>
-                        <li>ターミナルを開き、Python環境（例: <span class="code">control_lab</span>）が有効になっていることを確認 (<span class="code">(control_lab)</span> 表示)。(もし有効でなければ <span class="code">conda activate control_lab</span> 等を実行)</li>
+                        <li>ターミナルを開き、Python環境（例: <span class="code">control_lab</span>）が有効になっていることを確認 (<span class="code">(control_lab)</span> 表示)。(もし有効でなければ <span class="code">conda create -n control_lab</span> や <span class="code">conda activate control_lab</span> 等を実行)</li>
                         <li><span class="code">cd</span> コマンドでスクリプトが保存されているフォルダ（例: <span class="code path">~/Projects</span>）に移動する:
                             <br><span class="code">cd ~/Projects</span>
                             <span class="note">(<span class="code path">~/Projects</span> は推奨される作業フォルダ名です。)</span>
