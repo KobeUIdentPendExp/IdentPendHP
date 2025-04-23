@@ -21,6 +21,12 @@
         .param { font-weight: bold; color: #c7254e; } /* Changed param color slightly */
         /* MathJax alignment helper */
         mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
+        /* Style for added section */
+        .initial-setup { background-color: #fff8e1; border: 1px solid #ffecb3; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: #616161; font-size: 0.95em; }
+        .initial-setup ul { padding-left: 20px; margin-top: 5px; margin-bottom: 5px; }
+        .initial-setup li { margin-bottom: 5px; }
+        .initial-setup a { color: #007bff; text-decoration: none; }
+        .initial-setup a:hover { text-decoration: underline; }
     </style>
     <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -28,8 +34,20 @@
 <body>
 
 <div class="workflow-container">
+
+    <div class="initial-setup">
+        <strong>実行準備:</strong>
+        <ul>
+            <li>配布ファイルを<span class="code">Projects</span>フォルダにダウンロードしてください。</li>
+            <li>Vscodeなどのエディターでファイルを開いてください。</li>
+            <li>ターミナルで<span class="code">python3 *.py</span> (*はファイル名) または <span class="code">python *.py</span> を実行してください。</li>
+            <li>詳細は<a href="https://kobeuidentpendexp.github.io/IdentPendHP/2kaime/IdentificationOfMotor.html#:~:text=%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82-,%E5%AE%9F%E9%A8%93%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0%E3%81%AE%E6%BA%96%E5%82%99%3A,-%E3%83%87%E3%83%BC%E3%82%BF%E5%8F%8E%E9%9B%86%E7%94%A8" target="_blank" rel="noopener noreferrer">こちら</a>で確認してください。</li>
+        </ul>
+    </div>
+
     <h2>PID制御シミュレーション：実験操作フロー</h2>
     <p class="note">前実験で同定のモーターパラメータ ($\hat{a}, \hat{b}$) を用い、P, PD, PID 制御のシミュレーション実施。</p>
+    <p class="note">Windowsユーザーは</p>
 
     <div class="phase" id="sim-prep">
         <h3>1. シミュレーション準備</h3>
