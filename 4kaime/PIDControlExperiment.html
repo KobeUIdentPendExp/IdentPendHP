@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>実機モーター PID制御 & 電流ループ解析 実験手順</title>
+    <title>実機モーター角度PID制御 + 電流PI制御 実験手順 (改訂版)</title>
     <style>
         /* Reusing styles */
         body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
@@ -13,20 +13,60 @@
         .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
         .confirmation { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px; } /* Confirmation yellow */
         .task { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 15px; margin: 15px 0; border-radius: 4px; } /* Task blue */
-        .confirmation ul, .step ul, .step ol, .task ul { margin-top: 5px; margin-bottom: 5px; padding-left: 20px; }
-        .confirmation li, .step li, .task li { margin-bottom: 3px; }
+        .task h4 { margin-top: 0; margin-bottom: 10px; color: #0c5460; border-bottom: 1px dashed #bee5eb; padding-bottom: 5px;} /* Style for task heading */
+
+        /* === 新しいクラス定義 === */
+        .discussion-points {
+            background-color: #e2e3e5; /* Light gray background */
+            border: 1px solid #d6d8db; /* Gray border */
+            color: #383d41; /* Dark gray text */
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .discussion-points h4 { /* 新しいクラス内のh4スタイル */
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #383d41; /* Dark gray text */
+            border-bottom: 1px dashed #d6d8db; /* Gray dashed border */
+            padding-bottom: 5px;
+        }
+        .discussion-points ul { /* 新しいクラス内のリストスタイル */
+             margin-top: 2px;
+             margin-bottom: 2px;
+             padding-left: 20px;
+        }
+         .discussion-points li {
+             margin-bottom: 3px;
+        }
+        /* === ここまで新しいクラス定義 === */
+
+        /* Style for the MANDATORY RESET PROCEDURE */
+        .reset-procedure {
+            background-color: #f8d7da; /* Light red background */
+            border: 2px solid #f5c6cb; /* Red border */
+            color: #721c24; /* Dark red text */
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .initial-setup { background-color: #fff8e1; border: 1px solid #ffecb3; padding: 15px; margin-bottom: 20px; border-radius: 5px; color: #616161; font-size: 0.95em; }
+        .initial-setup ul { padding-left: 20px; margin-top: 5px; margin-bottom: 5px; }
+        .initial-setup li { margin-bottom: 5px; }
+        .initial-setup a { color: #007bff; text-decoration: none; }
+        .initial-setup a:hover { text-decoration: underline; }
+        .reset-procedure h4 { margin-top: 0; color: #721c24; border-bottom: 1px solid #f5c6cb; padding-bottom: 5px; }
+        .reset-procedure ol { padding-left: 25px; margin-top: 10px; }
+        .reset-procedure li { margin-bottom: 5px; font-weight: bold; }
+        /* ------------ */
+        .confirmation ul, .step ul, .step ol, .task ul, .discussion-points ul { margin-top: 5px; margin-bottom: 5px; padding-left: 20px; } /* discussion-points ul を追加 */
+        .confirmation li, .step li, .task li, .discussion-points li { margin-bottom: 3px; } /* discussion-points li を追加 */
         .arrow { text-align: center; font-size: 1.8em; color: #888; margin: 15px 0; }
         .note { font-size: 0.9em; color: #555; margin-top: 10px; }
         .code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; }
         .param { font-weight: bold; color: #c7254e; }
         /* MathJax alignment helper */
         mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
-        /* Style for nested list in confirmation */
-        .confirmation ul ul { margin-top: 8px; padding-left: 15px; }
-        .confirmation ul ul li { margin-bottom: 5px; }
-        .confirmation ul ul ol { list-style-type: lower-roman; padding-left: 25px; margin-top: 5px;}
-        .confirmation ul ul ol li { margin-bottom: 5px; }
-
     </style>
     <script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
     <script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
@@ -34,27 +74,34 @@
 <body>
 
 <div class="workflow-container">
-    <h2>実機モーター角度 PID制御 と 電流ループ特性解析：実験操作フロー</h2>
-    <p class="note">この実験では、カスケード制御（内側：電流PI＠HW、外側：角度PID＠Python）を用いる。**まず内側の電流ループの性能を設計・確認し、それが良好であることを前提に外側の角度ループのPIDゲインを調整する。**</p>
+    <h2>実機モーター角度PID制御 + 電流PI制御：実験操作フロー</h2>
+    <p class="note">カスケード制御（内側：電流PI＠ハッドウェア、外側：角度PID＠Python）を用います。両ループのゲインを試行錯誤で調整します。</p>
 
-    <div class="phase" id="hw-prep">
+    <div class="initial-setup">
+        <strong>実行準備:</strong>
+        <ul>
+            <li>配布ファイルを<span class="code">Projects</span>フォルダにダウンロードしてください。</li>
+            <li>Vscodeなどのエディターでファイルを開いてください。</li>
+            <li>ターミナルで<span class="code">python3 *.py</span> (*はファイル名) または <span class="code">python *.py</span> を実行してください。</li>
+            <li>詳細は<a href="https://kobeuidentpendexp.github.io/IdentPendHP/2kaime/IdentificationOfMotor.html#:~:text=%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82-,%E5%AE%9F%E9%A8%93%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0%E3%81%AE%E6%BA%96%E5%82%99%3A,-%E3%83%87%E3%83%BC%E3%82%BF%E5%8F%8E%E9%9B%86%E7%94%A8" target="_blank" rel="noopener noreferrer">こちら</a>で確認してください。</li>
+        </ul>
+    </div>
+
+    <div class="phase" id="prep">
         <h3>1. 実験準備と初期設定</h3>
         <div class="step"><strong>目的:</strong>
-            <ol>
-                <li>ハードウェアの電流制御ループを同定し、零点配置法に基づいてPIゲインを設計・確認する。</li>
-                <li>設計された内側ループを前提に、外側の角度PID制御のゲイン (<span class="param">angle_kp</span>, <span class="param">angle_ki</span>, <span class="param">angle_kd</span>) を調整し、目標角度への追従性能を最適化する。</li>
-            </ol>
+            実機を用いて、内側の電流PIゲインと外側の角度PIDゲインを試行錯誤により調整し、目標角度（例: 60度）への良好な追従性能を実現する。
         </div>
         <div class="step"><strong>ハードウェア接続・安全確認:</strong> 接続確認、回転範囲の障害物確認。</div>
-        <div class="step"><strong>PC環境確認:</strong> Python環境、必要ライブラリ確認。</div>
+        <div class="step"><strong>PC環境確認:</strong> Python環境、<span class="code">hid</span>, <span class="code">matplotlib</span> ライブラリ確認。</div>
         <div class="step"><strong>プログラム準備とパラメータ初期設定:</strong>
              <ul>
-                 <li>実機制御用Pythonスクリプト（例: <span class="code">realtime_pid_control_with_current_id.py</span>）を用意し、エディタで開く。</li>
-                 <li class="confirmation">【設定確認・入力】スクリプト内のゲインを確認・設定:
+                 <li>Pythonスクリプト（先生指定のファイル）を用意し、エディタで開く。</li>
+                 <li class="confirmation">【初期値設定】スクリプト冒頭のゲイン初期値を確認・設定する:
                      <ul>
-                         <li>**内側ループ（電流PI）ゲイン(HW設定用):** <span class="param">`desired_current_Kp`</span>, <span class="param">`desired_current_Ki`</span>。**最初は試行錯誤用の初期値**（例：推奨値または小さな値）を使用する。（後のステップで設計値に置き換える）</li>
-                         <li>**外側ループ（角度PID）ゲイン(調整対象):** <span class="param">`angle_kp`</span>, <span class="param">`angle_ki`</span>, <span class="param">`angle_kd`</span>。**初期値**（例: Kp=低～中, Ki=0, Kd=0）を設定する。</li>
-                         <li>制御目標角度: <span class="code">target_angle_rad</span>。（角度制御テスト用）</li>
+                         <li><strong>電流PIゲイン (内):</strong> <span class="param">`desired_current_Kp`</span>, <span class="param">`desired_current_Ki`</span>。(推奨値または小さな値)</li>
+                         <li><strong>角度PIDゲイン (外):</strong> <span class="param">`angle_kp`</span>, <span class="param">`angle_ki`</span>, <span class="param">`angle_kd`</span>。(最初は <span class="param">`angle_ki=0`</span>, <span class="param">`angle_kd=0`</span>, <span class="param">`angle_kp`</span> は小さな値)</li>
+                         <li>目標角度: <span class="code">target_angle_rad</span>。</li>
                          <li>制御周期: <span class="code">dt</span>。</li>
                      </ul>
                  </li>
@@ -64,160 +111,58 @@
 
     <div class="arrow">⬇️</div>
 
-    <div class="phase" id="hw-tuning-current-trial">
-        <h3>2. 内側ループ（電流PI）の試行錯誤調整 と システム同定</h3>
-        <div class="step"><strong>目的:</strong>
+    <div class="phase" id="tuning-simplified">
+        <h3>2. ゲインの反復調整 (Iterative Tuning)</h3>
+        <p class="note">角度PIDゲインと電流PIゲインは相互に影響します。以下の流れを参考に、両者をバランス良く調整します。</p>
+
+        <div class="step"><strong>調整の基本サイクル:</strong>
             <ol>
-                <li>モーターを実際に動かし、電流ループの基本的な動作を確認する。</li>
-                <li>システム同定に必要なデータを取得し、プラントモデルのパラメータ（$\hat{\tau}_m, \hat{K}$）を推定する。</li>
+                <li>【角度PID調整 - まず動かす】<span class="param">`angle_kp`</span> を調整し、モーターが目標角度に向かって**動き出す**ことを目指す（P制御）。</li>
+                <li>【電流PI調整 - 追従性改善】角度制御が動作している状態で、グラフの電流応答 ($I_{ref}$ vs $I_{meas}$) を見て、**電流誤差/遅延が最小**になるように <span class="param">`desired_current_Kp`</span> と <span class="param">`desired_current_Ki`</span> を調整する。</li>
+                <li>【角度PID調整 - 性能向上】 電流ループがある程度良好な状態で、グラフの角度応答 ($\theta_{ref}$ vs $\theta_{meas}$) を見て、**望ましい動作**（速応性、安定性、定常偏差ゼロ）になるように <span class="param">`angle_kp`</span>, <span class="param">`angle_kd`</span>, <span class="param">`angle_ki`</span> を調整する（PD制御、PID制御）。</li>
+                <li>【繰り返し】 ステップ3の調整で $I_{ref}$ の挙動が変わり電流追従が悪化したら、ステップ2に戻って PI ゲインを再調整する。目標性能に達するまで、ステップ2と3を繰り返す。</li>
             </ol>
         </div>
-        <div class="step"><strong>調整・実行手順:</strong>
+
+        <div class="reset-procedure">
+            <h4>【重要！】各制御実験実行前の必須リセット手順</h4>
+            <p><strong>注意：</strong> パラメータを変更して次の制御実験を行う**前には、必ず以下の手順でハードウェアをリセットしてください。</strong></p>
             <ol>
-                <li>Pythonスクリプト内の初期 <span class="param">`desired_current_Kp`</span> と <span class="param">`desired_current_Ki`</span> の値を確認します（試行錯誤用の値）。</li>
-                <li><span class="confirmation">【安全確認】</span> モーター周囲の安全を確認し、スクリプトを実行します（**この段階では外ループゲイン <span class="param">`angle_kp, ki, kd`</span> はゼロまたは非常に小さくしておくこと**）。スクリプト内で電流指令値が生成され、モーターが駆動されます。</li>
-                <li>スクリプトは一定時間動作し、電流指令値 (<span class="code">I_ref</span>) と実測電流値 (<span class="code">I_meas</span>) を記録します。</li>
-                <li>実験終了後、スクリプトは**自動的にシステム同定を実行**し、結果をターミナルに出力します。同時に**電流追従グラフ (<span class="code">final_current_tracking.png</span>)** が生成されます。</li>
-                <li class="confirmation"><strong>【性能観察＆同定結果確認】</strong>
-                    <ul>
-                        <li>グラフで追従性、振動・異音を確認します。</li>
-                        <li>ターミナル出力の「=== System Identification Results ===」セクションを確認し、**推定された <span class="param">$\hat{\tau}_m$ (`Estimated tau_m`)</span> と <span class="param">$\hat{K}$ (`Estimated K`)</span> の値** を見つけます。</li>
-                        <li>
-                            <strong>同定の原理（再掲）:</strong>
-                            <ol>
-                                <li>スクリプトは記録された $I_{ref}(t)$ と $I_{meas}(t)$ を使います。</li>
-                                <li>一次遅れモデル $\tau_m \frac{di_{meas}}{dt} + i_{meas} = K i_{ref}$ を仮定します。</li>
-                                <li>これを線形回帰形式 $\frac{di_{meas}}{dt} = a \cdot i_{meas} + b \cdot i_{ref}$ （ただし $a = -1/\tau_m, b = K/\tau_m$）に変形します。
-                                    <br> $$ \underbrace{\frac{d i_{meas}}{dt}[k]}_{\substack{\boldsymbol{y}[k]\\\text{(計算済・既知)}}} \approx \underbrace{a}_{\text{未知}} \cdot \underbrace{i_{meas}[k]}_{\substack{\boldsymbol{x}_1[k]\\\text{(測定済・既知)}}} + \underbrace{b}_{\text{未知}} \cdot \underbrace{i_{ref}[k]}_{\substack{\boldsymbol{x}_2[k]\\\text{(指令済・既知)}}} $$
-                                </li>
-                                <li>最小二乗法で係数 $\hat{a}, \hat{b}$ を推定し、それらからパラメータ $\boldsymbol{\hat{\tau}_m = -1/\hat{a}}$ と $\boldsymbol{\hat{K} = \hat{b} \hat{\tau}_m}$ を計算します。</li>
-                            </ol>
-                        </li>
-                    </ul>
-                </li>
-                <li>【任意】もし応答が極端に悪い（振動、発散など）場合は、ゲインを下げて再実行し、安定してデータが取れる状態にします。このステップの主目的はゲイン調整ではなく、安定したデータ取得と同定です。</li>
+                <li>モーター基板の**黒色電源スイッチを OFF** にする。</li>
+                <li>PC と基板を繋いでいる **USB ケーブルを抜く**。</li>
+                <li>黒色電源スイッチを **ON** にする。（基板上の<span style="color:red;">赤色</span>と<span style="color:orange;">オレンジ色</span>のLEDが点滅するはずです）</li>
+                <li>USB ケーブルを PC に**接続する**。</li>
+                <li>基板上の**赤色ボタンを押す**。</li>
+                <li><span style="color:red;">赤色</span>LED が点滅し、その後**消灯**するはずです。</li>
+                <li><span style="color:orange;">オレンジ色</span>LED のみが**点灯**している状態（他のLEDは消灯）になれば、リセット完了です。</li>
+                <li>PC 上で、(必要ならパラメータを修正・保存した) Python スクリプトを実行する。</li>
             </ol>
+            <p class="note">この手順を怠ると、制御が不安定になったり、予期せぬ動作をしたりする可能性があります。</p>
         </div>
-        <div class="confirmation"><strong>【記録】</strong> 安定して動作し、システム同定が実行された際の、ターミナルに出力された**推定値 $\boldsymbol{\hat{\tau}_m}$ と $\boldsymbol{\hat{K}}$ を正確に記録します。** これらが次の設計ステップの基礎となります。（この時点での電流追従グラフも参考として保存しておくと良いでしょう）</div>
-    </div>
-
-     <div class="arrow">⬇️</div>
-
-    <div class="phase" id="hw-design-current-zp">
-        <h3>3. 内側ループ（電流PI）ゲインの設計（零点配置法）</h3>
-        <p class="note">ステップ２で同定されたパラメータに基づき、**零点配置（極・零相殺）法**を用いて PI ゲインを設計します。この方法では、PI制御器の零点を、同定されたプラント（一次遅れ系）の極に合わせることで、閉ループ系の特性を単純化し、設計しやすくします。</p>
-
-        <div class="step"><strong>【Step 3.1: 電流ループのシステム同定結果の再確認】</strong>
-            <ul>
-                <li>前のステップ（ステップ２）で記録した**推定された時定数 <span class="param">$\hat{\tau}_m$</span>** と**ゲイン <span class="param">$\hat{K}$</span>** の値を**正確に用意してください。** これらが設計の基礎となります。</li>
-                <li>これにより、電流ループのプラント（モーター＋ドライバ）は一次遅れ系 $G(s) = \frac{\hat{K}}{\hat{\tau}_m s + 1}$ としてモデル化されます。この系の極は $s = -1/\hat{\tau}_m$ にあります。</li>
-            </ul>
-        </div>
-
-        <div class="step"><strong>【Step 3.2: 零点配置による PI ゲインの理論的導出】</strong>
-            <ul>
-                <li>PI 制御器の伝達関数は $C(s) = K_p + \frac{K_i}{s} = \frac{K_p s + K_i}{s}$ です。この制御器は $s = -K_i / K_p$ に零点を持ちます。</li>
-                <li>**零点配置（極・零相殺）戦略:** 制御器の零点 $s = -K_i / K_p$ をプラントの極 $s = -1/\hat{\tau}_m$ に一致させるように選びます。つまり、
-                    $$ \frac{K_i}{K_p} = \frac{1}{\hat{\tau}_m} \quad \implies \quad K_i = \frac{K_p}{\hat{\tau}_m} $$
-                    この条件を設定します。
-                </li>
-                <li>この条件下での開ループ伝達関数 $L(s) = C(s)G(s)$ は、
-                    $$ L(s) = \left( \frac{K_p s + K_p/\hat{\tau}_m}{s} \right) \left( \frac{\hat{K}}{\hat{\tau}_m s + 1} \right) = \frac{K_p(s + 1/\hat{\tau}_m)}{s} \frac{\hat{K}}{\hat{\tau}_m(s + 1/\hat{\tau}_m)} $$
-                    零点と極が相殺され、
-                    $$ L(s) = \frac{K_p \hat{K}}{\hat{\tau}_m s} $$
-                    と単純化されます。
-                </li>
-                <li>この開ループ伝達関数に対する閉ループ伝達関数 $G_{cl}(s) = \frac{L(s)}{1+L(s)}$ は、
-                    $$ G_{cl}(s) = \frac{\frac{K_p \hat{K}}{\hat{\tau}_m s}}{1 + \frac{K_p \hat{K}}{\hat{\tau}_m s}} = \frac{K_p \hat{K}}{\hat{\tau}_m s + K_p \hat{K}} $$
-                    これは、次のような**一次遅れ系**の形をしています。
-                    $$ G_{cl}(s) = \frac{\omega_c}{s + \omega_c}, \quad \text{ただし } \omega_c = \frac{K_p \hat{K}}{\hat{\tau}_m} $$
-                    ここで $\omega_c$ は、この設計された電流閉ループ系の**カットオフ周波数（帯域幅）**を表します。この値が大きいほど、電流ループの応答が速くなります。
-                </li>
-            </ul>
-        </div>
-
-        <div class="task"><strong>【課題：ゲイン計算式の導出】</strong>
-            <ul>
-                <li>上記の導出に基づき、PI ゲイン $\boldsymbol{K_p}$ ( = <span class="param">desired_current_Kp</span>) と $\boldsymbol{K_i}$ ( = <span class="param">desired_current_Ki</span>) を、**ステップ3.1で取得した $\boldsymbol{\hat{\tau}_m, \hat{K}}$** および**これから設定する目標性能（目標カットオフ周波数 $\boldsymbol{\omega_c}$）** を用いて表す式を**導出してください。**
-                    <ul>
-                        <li>**導出すべき式:**
-                           $$ K_p = \dots \quad (\text{式を } \omega_c, \hat{\tau}_m, \hat{K} \text{ で表す}) $$
-                           $$ K_i = \dots \quad (\text{式を } \omega_c, \hat{\tau}_m, \hat{K} \text{ で表す、または } K_p \text{ を使って表す}) $$
-                        </li>
-                        <li>ヒント: 目標とする閉ループ帯域幅 $\omega_c$ を定め、$\omega_c = \frac{K_p \hat{K}}{\hat{\tau}_m}$ の関係式から $K_p$ を求めます。その後、$K_i = K_p / \hat{\tau}_m$ の関係式を用いて $K_i$ を求めます。</li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-
-        <div class="step"><strong>【Step 3.3: 目標性能の設定とゲインの計算・入力】</strong>
-            <ol>
-                <li>ステップ3.1で記録した同定結果 $\hat{\tau}_m$ と $\hat{K}$ の値を使用します。</li>
-                <li>**新しく**目標とする電流ループの**閉ループカットオフ周波数（帯域幅） <span class="param">$\omega_c$</span>** を決定します (例: $\omega_c = 300$ rad/s)。
-                    <span class="note">注意: この $\omega_c$ は、外側の角度制御ループの応答速度よりも十分に高く設定する必要があります（例: 角度ループ帯域幅の目標値の5～10倍以上）。高すぎるとノイズ増幅や系の不安定化、HWリソース（計算時間、PWM周波数）の限界に達する可能性があります。同定された $\hat{\tau}_m$ から応答限界もある程度推測できます（例: $\omega_c < 1/\hat{\tau}_m \times (\text{数倍程度})$）。</span>
-                </li>
-                <li>あなたが導出した計算式（課題の結果）と、$\hat{\tau}_m, \hat{K}, \omega_c$ の値を用いて、新しい <span class="param">K_p</span> と <span class="param">K_i</span> の値を**計算**します。（電卓やPythonスクリプト等で計算）</li>
-                <li class="confirmation">計算した新しい値を、メインのPythonスクリプトの <span class="param">`desired_current_Kp`</span> と <span class="param">`desired_current_Ki`</span> に設定（上書き）します。</li>
-                <li>【推奨・確認実験】設計したゲインを用いて再度ステップ２と同様の実験（電流ループのみの動作確認）を実行し、以下の点を確認します。
-                    <ul>
-                        <li>電流応答が目標の帯域幅（時定数 $1/\omega_c$）を持つ一次系の応答に近くなっているか（グラフで確認）。</li>
-                        <li>振動や不安定性がないか。</li>
-                        <li>（もし再同定した場合）同定結果が大きく変わらないか、またはどのように変化したか。</li>
-                    </ul>
-                    もし問題があれば、目標 $\omega_c$ を少し下げて再設計・再確認します。
-                </li>
-           </ol>
-        </div>
-    </div>
-
-    <div class="arrow">⬇️ (内側ループの設計・確認完了) </div>
-
-    <div class="phase" id="hw-tuning-angle">
-        <h3>4. 外側ループ（角度PID）ゲインの調整</h3>
-        <div class="step"><strong>目的:</strong> 設計・確認済みの内側電流ループ（目標帯域幅 $\omega_c$ で動作）を前提として、Pythonスクリプト内の**角度PIDゲイン** (<span class="param">angle_kp</span>, <span class="param">angle_ki</span>, <span class="param">angle_kd</span>) を調整し、良好な**角度追従性能**を目指す。</div>
-        <div class="step"><strong>調整手順:</strong> (P->PD->PID の順で試すのが基本)
-            <ol>
-                <li>Pythonスクリプト内の <span class="param">`angle_kp`</span>, <span class="param">`angle_ki`</span>, <span class="param">`angle_kd`</span> の値を変更します。（最初は P制御: Ki=0, Kd=0 から始める）</li>
-                <li><span class="confirmation">【安全確認】</span> モーター周囲の安全を確認し、スクリプトを実行します（**今度は角度制御が有効になります**）。スクリプトは指定された目標角度 <span class="code">target_angle_rad</span> に追従しようとします。</li>
-                <li>実験終了後、**角度追従グラフ (<span class="code">final_angle_tracking.png</span> など)** と、必要であれば電流指令値や実測電流値のグラフを確認します。</li>
-                <li><span class="confirmation"><strong>【性能観察】</strong> 目標角度への追従性（速応性、オーバーシュート、整定時間、定常偏差）、振動・異音を確認します。**【危険！】振動発生時や不安定な場合はゲインを下げる！**</span></li>
-                <li>ステップ1に戻り、ゲインを変更して再実験を繰り返します。
-                    <ul>
-                        <li>P制御 (<span class="param">Ki=0, Kd=0</span> で <span class="param">angle_kp</span> を調整)</li>
-                        <li>PD制御 (<span class="param">Ki=0</span> で <span class="param">angle_kp</span> と <span class="param">angle_kd</span> を調整)</li>
-                        <li>PID制御 (<span class="param">angle_kp</span>, <span class="param">angle_ki</span>, <span class="param">angle_kd</span> を調整)</li>
-                    </ul>
-                </li>
-            </ol>
-            <span class="note">調整のヒント：安全に注意し、ゲインは少しずつ変更。シミュレーションでの経験を参考に。内側ループの応答速度 ($\omega_c$) より十分遅い応答を目指すように外側ループのゲインを調整します（例：外側ループの目標帯域幅 < $\omega_c / 5$）。</span>
-        </div>
-        <div class="confirmation"><strong>【記録】</strong> 試した角度PIDゲインの組み合わせと、その時の**角度応答特性**（グラフ形状や、可能であればオーバーシュート量、整定時間などの性能指標）を記録し、比較検討する。最も良いと思われるゲインの組み合わせを選定する。</div>
+        <div class="confirmation"><strong>【記録】</strong> 試したゲインの組み合わせと、その時の応答グラフ（特に `final_summary.png`）をセットで保存・記録しておくこと。</div>
     </div>
 
     <div class="arrow">⬇️</div>
 
-    <div class="phase" id="hw-report">
-        <h3>5. 全体の考察とレポート作成</h3>
+    <div class="phase" id="report-final">
+        <h3>3. 結果の記録と考察</h3>
         <div class="step"><strong>結果の整理:</strong>
-            <ul>
-                <li>設計・確認した内側電流ループの性能：
-                    <ul>
-                        <li>システム同定結果 ($\hat{\tau}_m, \hat{K}$)</li>
-                        <li>設計に用いた目標帯域幅 ($\omega_c$)</li>
-                        <li>計算されたPIゲイン ($K_p, K_i$)</li>
-                        <li>設計後の電流応答の確認結果（グラフ、評価）</li>
-                    </ul>
-                </li>
-                <li>最も良い性能が得られた外側角度PIDゲイン ($angle\_kp, angle\_ki, angle\_kd$) と、その時の応答グラフ（角度、電流指令値、実電流等）、および性能評価（オーバーシュート、整定時間など）。</li>
-            </ul>
+             <ul>
+                 <li>最終的に決定した「最も良い性能が得られた」ゲインの組み合わせ（電流PI と 角度PID）。</li>
+                 <li>その際の応答グラフ (<span class="code">final_summary.png</span>)。</li>
+                 <li>性能評価（目標角度への追従性、安定性など）。</li>
+                 <li>調整過程での気づき（例：どのゲインが特に影響が大きかったか、相互作用など）。</li>
+             </ul>
         </div>
-        <div class="step"><strong>考察:</strong>
-            <ul>
-                <li>角度PID制御のチューニングプロセスとその結果についての評価。</li>
-                <li>**内側電流ループの性能（設計された帯域幅 $\omega_c$ や実際の追従精度）が、外側角度ループのチューニング可能性（設定できるゲインの上限）や最終的な角度制御性能限界にどのように影響したか**を重点的に考察する。（例：$\omega_c$ が低いと、角度ループの応答性を上げようとしても限界がある、など）</li>
-                <li>もしシミュレーションを行っていれば、シミュレーション結果と実機実験結果の比較、および差異の原因考察（モデル化誤差、摩擦、ノイズ、サンプリング影響など）。</li>
-                <li>実験を通じて判明した限界や、考えられる改善点。</li>
-            </ul>
+        
+        <div class="task">
+             <h4>考察のポイント例</h4>
+             <ul>
+                 <li>最終的な角度制御性能の評価。</li>
+                 <li>内外ループのゲイン調整における相互作用についての考察。</li>
+                 <li>P, D, I 各要素の効果の実測結果。</li>
+                 <li>調整の難しさ、限界、改善点など。</li>
+             </ul>
         </div>
         <div class="step">実験結果と考察をレポートにまとめる。</div>
     </div>
