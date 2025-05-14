@@ -82,6 +82,100 @@
             <p class="note" style="margin-top: 1em;"><strong>概念的な注意:</strong> $u_R(t)$ の式中の差分制御項は、$u_L(t)$ の式中の差分項とは実質的に**符号が逆**になり、これが旋回を生み出す差動効果となります。</p>
             <p class="note" style="margin-top: 0.5em;">Pythonスクリプトで調整する<span class="code">DESIRED_GAIN_...</span>が、これらのどの部分に影響を与えるかを意識しましょう。</p>
         </div>
+
+    <div class="phase" id="invp-baseline">
+        <h3>2. ベースライン実験：初期ゲインでの動作確認</h3>
+        <div class="step">提供されたPythonスクリプト (<span class="code">InvertedPendulumControl.py</span>) の冒頭で設定されている<span class="param">初期の<span class="code">DESIRED_GAIN_...</span>値</span>のまま実行します。</div>
+
+        <div class="step" id="experiment-startup-procedure">
+            <h4>実験開始までの操作手順</h4>
+            <ol>
+                <li><strong>ファームウェアの準備と書き込み :</strong>
+                    <ol type="a">
+                        <li>BEEF+ にログインし、「教材」>「5回目」から <span class="code">5kaime.zip</span> (または指示されたファイル名) をダウンロードし、解凍します。</li>
+                        <li>倒立振子の電源が<span class="param">オフ</span>になっていることを確認します。</li>
+                        <li>ロボットの<span class="param">赤い操作ボタン</span>を押したままの状態にし、USBケーブルでPCに接続します。</li>
+                        <li>PCに接続後、<span class="param">赤い操作ボタン</span>から手を離します。約1分待つと、ロボットが新しいドライブとしてPCに認識されます。</li>
+                        <li>PC上でロボットのドライブを開き、もし既存の <span class="code">firmware.bin</span> があれば削除します。</li>
+                        <li>解凍した指定のファームウェアファイル（例: <span class="code">Balancer2_firm_Default_20141118_1511.bin</span>）を、ロボットのドライブにコピーします。</li>
+                        <li>コピーが完了したら、PCのタスクトレイなどから「ハードウェアの安全な取り外し」操作を行い、USBケーブルを抜きます。</li>
+                        <li class="note"><em>（ファームウェア書き込み後の確認手順例：ロボットの電源を入れ、キャリブレーションを実行。完了後、オレンジ色LEDが点灯し、操作ボタンを押してもモーターが回転しない状態になるか確認する。これは特定の確認モードかもしれません。）</em></li>
+                    </ol>
+                </li>
+                <li><strong>ロボットの起動とPC接続：</strong>
+                    <ol type="a">
+                        <li>倒立振子とPCをUSBケーブルで接続します。</li>
+                        <li>ロボット本体の<span class="param">黒い電源スイッチ</span>を入れます。
+                            <ul class="confirmation"><li>確認：左右のLEDが両方点灯します。</li></ul>
+                        </li>
+                    </ol>
+                </li>
+                <li><strong>Pythonスクリプトの準備と実行：</strong>
+                    <ol type="a">
+                        <li><strong>ファイル準備：</strong>
+                            <ul>
+                                <li>配布されたファイル（例: <span class="code">5kaime.zip</span> 内の <span class="code">InvertedPendulumControl.py</span> など）を、PCの作業用フォルダ（例: <span class="code">Projects</span> フォルダ）にダウンロードまたはコピーしてください。</li>
+                                <li>Vscodeなどのエディターで <span class="code">InvertedPendulumControl.py</span> を開いてください。</li>
+                            </ul>
+                        </li>
+                        <li><strong>ゲイン値の確認・調整：</strong>
+                            <ul>
+                                <li>スクリプト冒頭にある<span class="param">「倒立制御ゲイン設定」</span>部分の各種<span class="code">DESIRED_GAIN_...</span>値が、今回の実験の指示通り（ベースライン実験では初期値、調整実験では変更後の値）になっているか確認・編集します。</li>
+                            </ul>
+                        </li>
+                        <li><strong>スクリプトの実行：</strong>
+                            <ul>
+                                <li>ターミナル（またはコマンドプロンプト、PowerShellなど）を開き、スクリプトが保存されているディレクトリに移動します。（例: <code class="language-shell">cd path/to/Projects</code>）</li>
+                                <li>次のコマンドでPythonスクリプトを実行してください: <br>
+                                    <code class="language-shell">python3 InvertedPendulumControl.py</code> <span class="note">（または環境によって <code class="language-shell">python InvertedPendulumControl.py</code>）</span></li>
+                                <li class="note">Pythonの実行環境や詳細な設定については、<a href="https://kobeuidentpendexp.github.io/IdentPendHP/2kaime/IdentificationOfMotor.html#:~:text=%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84%E3%80%82-,%E5%AE%9F%E9%A8%93%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%A0%E3%81%AE%E6%BA%96%E5%82%99%3A,-%E3%83%87%E3%83%BC%E3%82%BF%E5%8F%8E%E9%9B%86%E7%94%A8" target="_blank" rel="noopener noreferrer">こちらの資料</a>も参考にしてください。</li>
+                            </ul>
+                        </li>
+                        <li class="confirmation"><strong>実行開始の確認：</strong>
+                            <ul>
+                                <li>スクリプトが起動し、ターミナルに「HIDデバイスを開いています...」「HIDデバイスのオープンに成功しました。」といったメッセージが表示されます。</li>
+                                <li>その後、ロボットからの信号待ち状態になることを確認します。</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </li>
+                <li><strong>キャリブレーションと倒立実験開始：</strong>
+                    <ol type="a">
+                        <li>ロボットの<span class="param">赤い操作ボタン</span>を1回押して、キャリブレーションを開始します。
+                            <ul class="confirmation"><li>ロボットの状態：キャリブレーション中はLEDが点滅などの動作をします。</li></ul>
+                        </li>
+                        <li>キャリブレーションが完了し、ロボットの準備が整うと、状態が変わります。
+                            <ul class="confirmation"><li>ロボットの状態：<span class="alert">赤色LEDが常時点灯し、オレンジ色LEDが点滅する状態</span>になります。</li><li>PC側スクリプトの状態：この状態を検知し（<span class="code">memmap.MODE == 1</span>）、データの自動記録が開始される旨のメッセージが表示されます。</li></ul>
+                        </li>
+                        <li class="task">ロボットを床面に対して垂直に持ち上げ、再度<span class="param">赤い操作ボタン</span>を1回押してから、そっと手を放します。
+                            <ul>
+                                <li><span style="color: green;">◎ 成功の場合：</span>ロボットが倒立バランスを保ちます。Pythonスクリプトがその間のデータを記録します。</li>
+                                <li><span style="color: red;">× 不安定/失敗の場合（モーターが激しく動くなど）：</span>慌てずに、もう一度<span class="param">赤い操作ボタン</span>を1回押すと、モーターへの出力が停止します。</li>
+                            </ul>
+                        </li>
+                        <li class="note"><strong>ボタン操作のサイクル（基本）：</strong>
+                            <ul>
+                                <li>電源ON後、1回目の赤ボタン：キャリブレーション開始</li>
+                                <li>準備完了後、(N回目の)赤ボタン：倒立制御開始</li>
+                                <li>制御中、(N+1回目の)赤ボタン：制御停止</li>
+                                <li>停止中、(N+2回目の)赤ボタン：センサーデータ等リセット（ゼロ点調整に近い動作）</li>
+                                <li>リセット後、(N+3回目の)赤ボタン：再度、倒立制御開始</li>
+                                <li>...以降、開始→停止→リセット→開始...のサイクルで繰り返されることがあります。詳細は担当者の指示に従ってください。</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+            <p class="note">Pythonスクリプトは、ロボットが<span class="code">MODE=1</span>（モーター電源ON、制御中）の状態を検知してから、<span class="code">DATA_RECORDING_DURATION</span>で設定された時間データを記録し、自動的に終了してCSVファイルとグラフ画像を保存します。</p>
+        </div>
+        <div class="confirmation"><strong>【動作観察】</strong>
+            <ul>
+                <li>ロボットは初期ゲインでうまくバランスを取って自立できますか？</li>
+                <li>その場で静止しますか？ それとも、わずかに動いたり旋回したりしますか？</li>
+            </ul>
+        </div>
+        <div class="step">スクリプトの指示に従い、ロボットの<span class="code">MODE</span>が1になるのを待ち、データ記録を開始します。規定時間（<span class="code">DATA_RECORDING_DURATION</span>）後、スクリプトがデータとグラフ（例: <span class="code">recorded_data_mode1_trigger.csv</span>, <span class="code">recorded_state_variables_plot.png</span>など）を保存し終了することを確認します。</div>
+        </div>
         <div class="confirmation"><strong>【動作観察】</strong>
             <ul>
                 <li>ロボットは初期ゲインでうまくバランスを取って自立できますか？</li>
