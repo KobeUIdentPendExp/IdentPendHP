@@ -56,7 +56,6 @@
 
     <div class="phase" id="invp-baseline">
         <h3>2. ベースライン実験：初期ゲインでの動作確認</h3>
-        <div class="step">提供されたPythonスクリプト (<span class="code">InvertedPendulumControl.py</span>) の冒頭で設定されている<span class="param">初期の<span class="code">DESIRED_GAIN_...</span>値</span>のまま実行します。</div>
         <div class="step confirmation"><strong>【実機側の制御則の概念（再確認）】</strong>
             <p>実機側で実行されていると推測される制御則は、概念的に以下の状態フィードバック形式で表せます。ここで、$\psi$ は胴体角度（目標値 $\psi_d = 0$）、$\dot{\psi}$ は胴体角速度、$\theta_L, \theta_R$ は左右輪角度、$\dot{\theta}_L, \dot{\theta}_R$ は左右輪角速度です。</p>
             <p class="note">以下の式で使われているゲイン $K_1$ から $K_6$ は、Pythonスクリプト冒頭で設定する <span class="code">DESIRED_GAIN_...</span> 変数群に相当します（例: $K_1$ は <span class="code">DESIRED_GAIN_BODY_ANGULAR_SPD</span>, $K_2$ は <span class="code">DESIRED_GAIN_BODY_ANGLE</span> など。具体的な対応はコードのコメントや<span class="code">MemoryMap</span>構造体を参照）。</p>
@@ -83,10 +82,6 @@
             <p class="note" style="margin-top: 0.5em;">Pythonスクリプトで調整する<span class="code">DESIRED_GAIN_...</span>が、これらのどの部分に影響を与えるかを意識しましょう。</p>
         </div>
 
-    <div class="phase" id="invp-baseline">
-        <h3>2. ベースライン実験：初期ゲインでの動作確認</h3>
-        <div class="step">提供されたPythonスクリプト (<span class="code">InvertedPendulumControl.py</span>) の冒頭で設定されている<span class="param">初期の<span class="code">DESIRED_GAIN_...</span>値</span>のまま実行します。</div>
-
         <div class="step" id="experiment-startup-procedure">
             <h4>実験開始までの操作手順</h4>
             <ol>
@@ -99,7 +94,7 @@
                         <li>PC上でロボットのドライブを開き、もし既存の <span class="code">firmware.bin</span> があれば削除します。</li>
                         <li>解凍した指定のファームウェアファイル（例: <span class="code">Balancer2_firm_Default_20141118_1511.bin</span>）を、ロボットのドライブにコピーします。</li>
                         <li>コピーが完了したら、PCのタスクトレイなどから「ハードウェアの安全な取り外し」操作を行い、USBケーブルを抜きます。</li>
-                        <li class="note"><em>（ファームウェア書き込み後の確認手順例：ロボットの電源を入れ、キャリブレーションを実行。完了後、オレンジ色LEDが点灯し、操作ボタンを押してもモーターが回転しない状態になるか確認する。これは特定の確認モードかもしれません。）</em></li>
+                        <li class="note"><em>（ファームウェア書き込み後の確認手順例：ロボットの電源を入れ、キャリブレーションを実行。完了後、`操作ボタンを押してモーターが回転すればファームウェアの書き換えが成功している。）</em></li>
                     </ol>
                 </li>
                 <li><strong>ロボットの起動とPC接続：</strong>
@@ -176,14 +171,6 @@
             </ul>
         </div>
         <div class="step">スクリプトの指示に従い、ロボットの<span class="code">MODE</span>が1になるのを待ち、データ記録を開始します。規定時間（<span class="code">DATA_RECORDING_DURATION</span>）後、スクリプトがデータとグラフ（例: <span class="code">recorded_data_mode1_trigger.csv</span>, <span class="code">recorded_state_variables_plot.png</span>など）を保存し終了することを確認します。</div>
-        </div>
-        <div class="confirmation"><strong>【動作観察】</strong>
-            <ul>
-                <li>ロボットは初期ゲインでうまくバランスを取って自立できますか？</li>
-                <li>その場で静止しますか？ それとも、わずかに動いたり旋回したりしますか？</li>
-            </ul>
-        </div>
-        <div class="step">スクリプトの指示に従い、ロボットの<span class="code">MODE</span>が1になるのを待ち、データ記録を開始します。規定時間（<span class="code">DATA_RECORDING_DURATION</span>）後、スクリプトがデータとグラフ（例: <span class="code">recorded_data_mode1_trigger.csv</span>, <span class="code">recorded_state_variables_plot.png</span>など）を保存し終了することを確認します。</div>
         <div class="confirmation"><strong>【データ分析】</strong>
              <ul>
                 <li>生成されたグラフ（特に<span class="code">recorded_state_variables_plot.png</span>）を開き、各状態変数（特に <span class="code">body_angle</span>）の時間変化を確認します。<span class="code">body_angle</span> は 0 付近で安定していますか？</li>
@@ -194,7 +181,7 @@
     </div>
 
      <div class="arrow">⬇️</div>
-<!-- 
+<!--
     <div class="phase" id="invp-tuning-turn">
         <h3>3. 旋回制御の実験 (左右輪の差分制御ゲイン調整)</h3>
         <p class="note">左右の車輪への指令値に差を与えることで旋回を実現します。ここでは、主に<span class="param">差分制御に関連する<span class="code">DESIRED_GAIN_...</span>値</span>を調整します。</p>
