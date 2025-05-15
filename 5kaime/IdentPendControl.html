@@ -83,10 +83,6 @@
             <p class="note" style="margin-top: 0.5em;">Pythonスクリプトで調整する<span class="code">DESIRED_GAIN_...</span>が、これらのどの部分に影響を与えるかを意識しましょう。</p>
         </div>
 
-    <div class="phase" id="invp-baseline">
-        <h3>2. ベースライン実験：初期ゲインでの動作確認</h3>
-        <div class="step">提供されたPythonスクリプト (<span class="code">InvertedPendulumControl.py</span>) の冒頭で設定されている<span class="param">初期の<span class="code">DESIRED_GAIN_...</span>値</span>のまま実行します。</div>
-
         <div class="step" id="experiment-startup-procedure">
             <h4>実験開始までの操作手順</h4>
             <ol>
@@ -175,14 +171,6 @@
             </ul>
         </div>
         <div class="step">スクリプトの指示に従い、ロボットの<span class="code">MODE</span>が1になるのを待ち、データ記録を開始します。規定時間（<span class="code">DATA_RECORDING_DURATION</span>）後、スクリプトがデータとグラフ（例: <span class="code">recorded_data_mode1_trigger.csv</span>, <span class="code">recorded_state_variables_plot.png</span>など）を保存し終了することを確認します。</div>
-        </div>
-        <div class="confirmation"><strong>【動作観察】</strong>
-            <ul>
-                <li>ロボットは初期ゲインでうまくバランスを取って自立できますか？</li>
-                <li>その場で静止しますか？ それとも、わずかに動いたり旋回したりしますか？</li>
-            </ul>
-        </div>
-        <div class="step">スクリプトの指示に従い、ロボットの<span class="code">MODE</span>が1になるのを待ち、データ記録を開始します。規定時間（<span class="code">DATA_RECORDING_DURATION</span>）後、スクリプトがデータとグラフ（例: <span class="code">recorded_data_mode1_trigger.csv</span>, <span class="code">recorded_state_variables_plot.png</span>など）を保存し終了することを確認します。</div>
         <div class="confirmation"><strong>【データ分析】</strong>
              <ul>
                 <li>生成されたグラフ（特に<span class="code">recorded_state_variables_plot.png</span>）を開き、各状態変数（特に <span class="code">body_angle</span>）の時間変化を確認します。<span class="code">body_angle</span> は 0 付近で安定していますか？</li>
@@ -193,7 +181,7 @@
     </div>
 
      <div class="arrow">⬇️</div>
-<!-- 
+<!--
     <div class="phase" id="invp-tuning-turn">
         <h3>3. 旋回制御の実験 (左右輪の差分制御ゲイン調整)</h3>
         <p class="note">左右の車輪への指令値に差を与えることで旋回を実現します。ここでは、主に<span class="param">差分制御に関連する<span class="code">DESIRED_GAIN_...</span>値</span>を調整します。</p>
