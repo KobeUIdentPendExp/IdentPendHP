@@ -145,11 +145,12 @@
                             <ul class="confirmation"><li>ロボットの状態：キャリブレーション中はLEDが点滅などの動作をします。</li></ul>
                         </li>
                         <li>キャリブレーションが完了し、ロボットの準備が整うと、状態が変わります。
-                            <ul class="confirmation"><li>ロボットの状態：<span class="alert">赤色LEDが常時点灯し、オレンジ色LEDが点滅する状態</span>になります。</li><li>PC側スクリプトの状態：この状態を検知し（<span class="code">memmap.MODE == 1</span>）、データの自動記録が開始される旨のメッセージが表示されます。</li></ul>
+                            <ul class="confirmation"><li>ロボットの状態：<span class="alert">赤色LEDが常時点灯し、オレンジ色LEDが点滅する状態</span>になります。</li></ul>
                         </li>
                         <li class="task">ロボットを床面に対して垂直に持ち上げ、再度<span class="param">赤い操作ボタン</span>を1回押してから、そっと手を放します。
                             <ul>
                                 <li><span style="color: green;">◎ 成功の場合：</span>ロボットが倒立バランスを保ちます。Pythonスクリプトがその間のデータを記録します。</li>
+                                <li>PC側スクリプトの状態：この状態を検知し（<span class="code">memmap.MODE == 1</span>）、データの自動記録が開始される旨のメッセージが表示されます。</li>
                                 <li><span style="color: red;">× 不安定/失敗の場合（モーターが激しく動くなど）：</span>慌てずに、もう一度<span class="param">赤い操作ボタン</span>を1回押すと、モーターへの出力が停止します。</li>
                             </ul>
                         </li>
