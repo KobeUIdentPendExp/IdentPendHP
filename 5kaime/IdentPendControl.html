@@ -56,7 +56,6 @@
 
     <div class="phase" id="invp-baseline">
         <h3>2. ベースライン実験：初期ゲインでの動作確認</h3>
-        <div class="step">提供されたPythonスクリプト (<span class="code">InvertedPendulumControl.py</span>) の冒頭で設定されている<span class="param">初期の<span class="code">DESIRED_GAIN_...</span>値</span>のまま実行します。</div>
         <div class="step confirmation"><strong>【実機側の制御則の概念（再確認）】</strong>
             <p>実機側で実行されていると推測される制御則は、概念的に以下の状態フィードバック形式で表せます。ここで、$\psi$ は胴体角度（目標値 $\psi_d = 0$）、$\dot{\psi}$ は胴体角速度、$\theta_L, \theta_R$ は左右輪角度、$\dot{\theta}_L, \dot{\theta}_R$ は左右輪角速度です。</p>
             <p class="note">以下の式で使われているゲイン $K_1$ から $K_6$ は、Pythonスクリプト冒頭で設定する <span class="code">DESIRED_GAIN_...</span> 変数群に相当します（例: $K_1$ は <span class="code">DESIRED_GAIN_BODY_ANGULAR_SPD</span>, $K_2$ は <span class="code">DESIRED_GAIN_BODY_ANGLE</span> など。具体的な対応はコードのコメントや<span class="code">MemoryMap</span>構造体を参照）。</p>
