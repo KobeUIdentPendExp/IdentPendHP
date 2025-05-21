@@ -36,12 +36,46 @@
         <h3>1. 準備と Webots 環境設定</h3>
         <div class="step"><strong>目的:</strong> 強化学習の基本概念（エージェント、環境、状態、行動、報酬）を理解し、シミュレーション環境で RL エージェントの学習プロセスを観察・実行する。SAC アルゴリズムの特徴を把握する。</div>
         <div class="step"><strong>ソフトウェア・ファイルの準備:</strong>
-            <ul>
-                <li>Webots シミュレータがインストールされていることを確認。</li>
-                <li>強化学習用の Python 環境（<span class="code">gymnasium</span>, <span class="code">stable-baselines3</span>, <span class="code">numpy</span>, <span class="code">matplotlib</span> 等）がセットアップされていることを確認。</li>
-                <li>提供された Webots プロジェクトファイル（<span class="code">your_project.wbt</span> 等）、コントローラスクリプト (<span class="code">rl_controller.py</span>, <span class="code">rl_retrain.py</span>)、および事前学習済みモデル (<span class="code">checkpoint_episode_150.zip</span> 等) を含むフォルダをダウンロードし、解凍する。</li>
-            </ul>
+
+
         </div>
+
+            </div>
+
+                <div class="phase" id="initial-setup">
+        <h3>0. 初期セットアップと環境準備</h3>
+        <div class="warning"><strong>【重要】実験前の準備</strong><br>
+            実験を始める前に、以下の手順に従って必要なファイルとソフトウェア環境を準備してください。
+        </div>
+        
+        <div class="task"><strong>ファイルのダウンロードと配置:</strong>
+            <ol>
+                <li>提供されたZIPファイルをダウンロードします（今回はWSLとは無関係です）。</li>
+                <li><strong>Windows/macOS両ユーザー:</strong> ダウンロードしたZIPファイルを適切な場所（例：デスクトップ）に解凍してください。</li>
+                <li>解凍されたフォルダを確認し、内部に必要なすべてのファイル（Webotsプロジェクトファイル、Pythonスクリプト、事前学習済みモデル）が含まれていることを確認します。提供された Webots プロジェクトファイル（<span class="code">rl_identpend/world/identpend.wbt</span> 等）、コントローラスクリプト (<span class="code">rl_identpend/controllers/rl_controller/rl_controller.py</span>, <span class="code">rl_identpend/controllers/rl_retrain/rl_retrain.py</span>, <span class="code">rl_identpend/controllers/rl_test/rl_test.py</span>)、および事前学習済みモデル (<span class="code">rl_identpend/controllers/rl_controllercheckpoint_episode_150.zip</span> 等) </li>
+            </ol>
+
+        </div>
+        
+        <div class="task"><strong>環境のセットアップ:</strong>
+            <ol>
+                    <li>直接Webotsを起動して、以前の授業でセットアップした強化学習用のPython環境が正常に動作することを確認します（必要なPythonパッケージ（gymnasium, stable-baselines3, numpy, matplotlib）がインストールされていること）。詳細は第一回の「Webotsインストール手順」の「7. 最終動作確認: Webots と Python 環境の連携テスト」を参照してください：<a href="https://kobeuidentpendexp.github.io/IdentPendHP/1kaime/SimEnv_install.html#:~:text=7.%20%E6%9C%80%E7%B5%82%E5%8B%95%E4%BD%9C%E7%A2%BA%E8%AA%8D%3A%20Webots%20%E3%81%A8%20Python%20%E7%92%B0%E5%A2%83%E3%81%AE%E9%80%A3%E6%90%BA%E3%83%86%E3%82%B9%E3%83%88" target="_blank">Webots インストール手順 - 最終動作確認</a></li>
+
+                <li>エラーが発生した場合は、第1回の授業で説明した「Webotsインストール手順」を参照してください。</li>
+            </ol>
+        </div>
+        
+        <div class="confirmation"><strong>【準備完了の確認】</strong>
+            <ul>
+                <li>Webotsが正常に起動できること</li>
+                <li>解凍したフォルダ内のファイルが確認できること</li>
+                <li>必要なPythonパッケージ（gymnasium, stable-baselines3, numpy, matplotlib）がインストールされていること</li>
+            </ul>
+            これらすべての条件が満たされたら、次のステップに進んでください。
+        </div>
+    </div>
+
+
         <div class="step task"><strong>【Webots コントローラ設定】</strong> このステップは Webots でシミュレーションを実行するために不可欠です。
             <ol>
                 <li>Webots を起動し、「ファイル」メニューから「ワールドファイルを開く...」を選択し、ダウンロードしたプロジェクトフォルダ内の <span class="code">.wbt</span> ファイルを開きます。</li>
@@ -61,7 +95,7 @@
             </ol>
             <span class="note">参考: Webots ドキュメントの <a href="https://cyberbotics.com/doc/guide/controller-programming#controller-selection" target="_blank" rel="noopener noreferrer">Controller Selection</a> セクションも参照してください。</span>
         </div>
-    </div>
+
     <div class="phase reward-focus" id="rl-reward">
         <h3>2. 報酬設計の理解</h3>
         <div class="step"><strong>目的:</strong> 強化学習において、エージェント（ロボット）が良い行動（バランスを取る）を学習するように導く「報酬信号」がどのように設計されているかを理解する。</div>
