@@ -1,0 +1,319 @@
+﻿<!DOCTYPE html>
+
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>強化学習入門：Actor-Critic から Soft Actor-Critic へ</title>
+
+<style>
+
+/* Reusing styles */
+
+body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; }
+
+.workflow-container { max-width: 900px; margin: auto; background-color: #fff; padding: 30px 40px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+.phase { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 20px; margin-bottom: 25px; border-radius: 5px; }
+
+.phase h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 8px; color: #0056b3; }
+
+.step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+
+.confirmation { background-color: #e6f7ff; border: 1px solid #b3e0ff; color: #004085; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+
+.task { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px;}
+
+.confirmation ul, .step ul, .step ol, .task ul, .task ol { margin-top: 5px; margin-bottom: 5px; padding-left: 20px; }
+
+.confirmation li, .step li, .task li { margin-bottom: 3px; }
+
+.warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; font-weight: bold; padding: 10px 15px; margin: 10px 0; border-radius: 4px; }
+
+.note { font-size: 0.9em; color: #555; margin-top: 10px; }
+
+.code { font-family: 'Courier New', Courier, monospace; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; color: #c7254e; }
+
+.param { font-weight: bold; color: #c7254e; }
+
+.figure { text-align: center; margin: 20px 0; }
+
+.figure img { max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 4px; }
+
+.figure-caption { font-size: 0.9em; color: #555; margin-top: 5px; }
+
+mjx-container[display="inline"] { vertical-align: baseline; margin: 0 0.15em; }
+
+</style>
+
+<!-- Include MathJax if needed -->
+
+<script> MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }, svg: { fontCache: 'global' } }; </script>
+
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+</head>
+
+<body>
+
+<div class="workflow-container">
+
+<h2>強化学習アルゴリズム入門：Actor-Critic から Soft Actor-Critic (SAC) へ</h2>
+
+<p class="note">このページでは、強化学習の重要なアルゴリズムである Actor-Critic の基本から発展形の Soft Actor-Critic (SAC) まで、初学者向けにわかりやすく解説します。</p>
+
+<!-- Phase 1: RL Basics -->
+<div class="phase" id="rl-basics">
+<h3>1. 強化学習の基本概念</h3>
+
+<div class="step"><strong>強化学習とは何か？</strong><br>
+強化学習（Reinforcement Learning）は、エージェントが環境と相互作用しながら、報酬シグナルを最大化するような行動方策を学習する機械学習の一分野です。エージェントは試行錯誤を通じて、どの状態でどのような行動を取るべきかを学びます。
+</div>
+
+<div class="step"><strong>強化学習の主要な要素:</strong>
+<ul>
+<li><strong>エージェント (Agent):</strong> 学習し、行動を選択する主体（例：ロボット、AI）</li>
+<li><strong>環境 (Environment):</strong> エージェントが相互作用する世界（例：シミュレーター、ゲーム）</li>
+<li><strong>状態 (State) $s$:</strong> 環境とエージェントの現在の状況を表す情報</li>
+<li><strong>行動 (Action) $a$:</strong> エージェントが選択できる操作</li>
+<li><strong>報酬 (Reward) $r$:</strong> 行動の良さを評価する信号（即時報酬）</li>
+<li><strong>方策 (Policy) $\pi$:</strong> 状態から行動への対応付け（$\pi(a|s)$ で表す）</li>
+<li><strong>価値関数 (Value Function) $V(s)$ または $Q(s,a)$:</strong> 将来の累積報酬の期待値</li>
+</ul>
+</div>
+
+<div class="task"><strong>目標: 累積報酬を最大化する</strong><br>
+強化学習の目標は、期待累積報酬 $E[\sum_{t=0}^{\infty} \gamma^t r_t]$ を最大化することです。ここで $\gamma$ は割引率（未来の報酬をどれだけ重視するか）を表します。
+</div>
+
+<div class="confirmation"><strong>【強化学習の循環】</strong><br>
+強化学習のプロセスは以下の循環で進みます：
+<ol>
+<li>エージェントが状態 $s$ を観測</li>
+<li>方策 $\pi$ に従って行動 $a$ を選択</li>
+<li>環境が状態を $s'$ に変化させ、報酬 $r$ を返す</li>
+<li>この経験（$s, a, r, s'$）を元に学習し、方策を改善</li>
+<li>繰り返し</li>
+</ol>
+</div>
+</div>
+
+<!-- Phase 2: Actor-Critic Methods -->
+<div class="phase" id="actor-critic">
+<h3>2. Actor-Critic 法の基本</h3>
+
+<div class="step"><strong>価値ベース vs 方策ベースの手法</strong><br>
+強化学習アルゴリズムは大きく分けて：
+<ul>
+<li><strong>価値ベース (Value-Based):</strong> 状態や行動の価値を学習し、最大価値の行動を選択（例：Q学習）</li>
+<li><strong>方策ベース (Policy-Based):</strong> 行動方策を直接学習し、パラメータを調整（例：方策勾配法）</li>
+<li><strong>Actor-Critic:</strong> 上記2つを組み合わせたハイブリッド手法</li>
+</ul>
+</div>
+
+<div class="step"><strong>Actor-Critic の構造:</strong>
+<ul>
+<li><strong>Actor（役者）:</strong> 方策 $\pi_\theta(a|s)$ を学習するネットワーク。どの行動を選ぶべきかを決定。</li>
+<li><strong>Critic（評論家）:</strong> 状態や行動の価値 $V(s)$ または $Q(s,a)$ を評価するネットワーク。Actorの方策を評価。</li>
+</ul>
+
+
+<div class="figure">
+<svg width="600" height="320" viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg">
+    <!-- 背景と枠 -->
+    <rect x="0" y="0" width="600" height="320" fill="#f8f9fa" rx="8" stroke="#ced4da" stroke-width="2"/>
+    
+    <!-- Actor部分 -->
+    <rect x="50" y="100" width="150" height="80" rx="10" fill="#d4edda" stroke="#28a745" stroke-width="2"/>
+    <text x="125" y="145" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Actor</text>
+    <text x="125" y="170" font-family="Arial" font-size="12" text-anchor="middle">方策 π(a|s)</text>
+    
+    <!-- Critic部分 -->
+    <rect x="400" y="100" width="150" height="80" rx="10" fill="#e6f7ff" stroke="#0056b3" stroke-width="2"/>
+    <text x="475" y="145" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Critic</text>
+    <text x="475" y="170" font-family="Arial" font-size="12" text-anchor="middle">価値関数 Q(s,a) / V(s)</text>
+    
+    <!-- 環境 -->
+    <rect x="225" y="220" width="150" height="60" rx="10" fill="#fff3cd" stroke="#856404" stroke-width="2"/>
+    <text x="300" y="255" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">環境</text>
+    
+    <!-- 矢印：Actor→環境（行動） -->
+    <path d="M 125 180 L 125 240 L 225 240" fill="none" stroke="#28a745" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="150" y="230" font-family="Arial" font-size="12" text-anchor="middle">行動 a</text>
+    
+    <!-- 矢印：環境→Actor（状態） -->
+    <path d="M 300 220 L 300 50 L 125 50 L 125 100" fill="none" stroke="#0056b3" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="200" y="40" font-family="Arial" font-size="12" text-anchor="middle">状態 s</text>
+    
+    <!-- 矢印：環境→Critic（状態） -->
+    <path d="M 300 50 L 475 50 L 475 100" fill="none" stroke="#0056b3" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- 矢印：環境→Critic（報酬） -->
+    <path d="M 375 240 L 475 240 L 475 180" fill="none" stroke="#856404" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="440" y="230" font-family="Arial" font-size="12" text-anchor="middle">報酬 r</text>
+    
+    <!-- 矢印：Critic→Actor（評価・更新） -->
+    <path d="M 400 140 L 200 140" fill="none" stroke="#c7254e" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,3"/>
+    <text x="300" y="130" font-family="Arial" font-size="12" text-anchor="middle">方策の評価・更新</text>
+    
+    <!-- 矢印定義 -->
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" />
+        </marker>
+    </defs>
+</svg>
+<p class="figure-caption">図1: Actor-Critic アーキテクチャの概念図。Actorは方策を学習・実行し、Criticはその評価を行う。Actorは状態から行動を選択し、Criticは状態・行動の価値を評価してActorを改善する。</p>
+</div>
+</div>
+<div class="step"><strong>Actor-Critic の学習プロセス:</strong>
+<ol>
+<li><strong>Criticの学習:</strong> 実際に得られた報酬と予測値の差（TD誤差）を最小化するよう価値関数を更新
+<br>TD誤差 = $r + \gamma V(s') - V(s)$</li>
+<li><strong>Actorの学習:</strong> Criticから得た評価（TD誤差）を用いて方策を改善
+<br>方策勾配 ∝ $\nabla_\theta \log \pi_\theta(a|s) \cdot \text{TD誤差}$</li>
+</ol>
+</div>
+
+<div class="confirmation"><strong>【Actor-Critic の特徴】</strong>
+<ul>
+<li><strong>安定性と効率性:</strong> 価値ベース手法の効率と、方策ベース手法の安定性を兼ね備える</li>
+<li><strong>バイアスと分散のトレードオフ:</strong> Criticによる価値推定により分散を減らし、安定した学習が可能</li>
+<li><strong>連続行動空間への対応:</strong> 連続的な行動（例：モーターの出力値）を直接選択できる</li>
+</ul>
+</div>
+</div>
+
+<!-- Phase 3: Soft Actor-Critic -->
+<div class="phase" id="sac">
+<h3>3. Soft Actor-Critic (SAC) の解説</h3>
+
+<div class="step"><strong>SAC の特徴と新規性</strong><br>
+SAC (Soft Actor-Critic) は、2018年にバークレー大学の研究チームによって提案された強化学習アルゴリズムです。従来のActor-Criticに以下の要素を追加しています：
+<ul>
+<li><strong>エントロピー最大化:</strong> 方策のランダム性（探索性）を明示的に報酬に組み込む</li>
+<li><strong>Off-Policy学習:</strong> 過去の経験を再利用し、サンプル効率を向上</li>
+<li><strong>確率的方策:</strong> 各状態で行動の確率分布を学習（例：ガウス分布）</li>
+<li><strong>二つのQ関数:</strong> 過大評価バイアスを減らすためにQ値の最小値を使用</li>
+</ul>
+</div>
+
+<div class="step"><strong>SAC の目的関数:</strong>
+<p>SACは、通常の累積報酬に加えて、方策のエントロピーも最大化します：</p>
+<p>$J(\pi) = E_{\pi} \left[ \sum_{t=0}^{\infty} \gamma^t \left( r_t + \alpha \cdot H(\pi(\cdot|s_t)) \right) \right]$</p>
+
+<p>ここで：</p>
+<ul>
+<li>$H(\pi(\cdot|s_t))$ は方策のエントロピー（ランダム性の度合い）</li>
+<li>$\alpha$ は温度パラメータ（エントロピーの重要度を調整）</li>
+</ul>
+</div>
+
+<div class="step"><strong>「ソフト」とは何を意味するか？</strong>
+<p>「ソフト」という名前の由来は、最適化における「ソフトマックス」演算子に関連しています。従来の強化学習では「ハード」な最大化（最良の行動のみを選ぶ）を行うのに対し、SACでは行動の選択に「柔らかさ」を持たせています。</p>
+
+<p>これにより：</p>
+<ul>
+<li>多様な行動を試す（探索）と同時に、良い行動を活用（活用）するバランスを自動的に取れる</li>
+<li>複数の良い解がある場合に、特定の解に過剰適合せず柔軟性を保てる</li>
+<li>複雑な環境や局所最適解に陥りにくい</li>
+</ul>
+</div>
+
+<div class="task"><strong>SAC のアルゴリズム概要</strong>
+<ol>
+<li><strong>初期化</strong>: Actor（方策）ネットワーク $\pi_\phi$、Critic（Q関数）ネットワーク $Q_{\theta_1}$, $Q_{\theta_2}$、ターゲットネットワーク、温度 $\alpha$ を初期化</li>
+<li><strong>データ収集</strong>: 現在の方策で環境と相互作用し、経験を収集して経験バッファに保存</li>
+<li><strong>Criticの更新</strong>: Q関数の予測誤差を最小化（ベルマン方程式を使用）</li>
+<li><strong>Actorの更新</strong>: エントロピー付きの期待Q値を最大化するよう方策を調整</li>
+<li><strong>温度の調整</strong>: 自動的に $\alpha$ を調整して目標エントロピーを達成</li>
+<li><strong>ターゲットの更新</strong>: ターゲットネットワークをソフトアップデート</li>
+</ol>
+</div>
+
+<div class="confirmation"><strong>【SAC の利点】</strong>
+<ul>
+<li><strong>サンプル効率の向上:</strong> Off-Policy学習により、少ないサンプル数で効率的に学習</li>
+<li><strong>安定性の向上:</strong> エントロピー正則化と二重Q学習により、学習が安定</li>
+<li><strong>探索と活用のバランス:</strong> エントロピー項により、適切な探索バランスを自動調整</li>
+<li><strong>ロバスト性:</strong> 複数の良い解がある問題や、ノイズのある環境に強い</li>
+<li><strong>実世界での適用性:</strong> リアルロボティクスなど、実世界のタスクで高い性能を発揮(未対応)</li>
+</ul>
+</div>
+</div>
+
+<!-- Phase 4: Practical Applications -->
+<div class="phase" id="applications">
+<h3>4. SAC の応用例</h3>
+
+<div class="step"><strong>倒立振子制御（本実験）</strong><br>
+倒立振子は強化学習アルゴリズムのベンチマークとして広く使用されています。SACは以下の特性で優れた性能を発揮します：
+<ul>
+<li>連続的なモーター出力制御が必要</li>
+<li>探索（新しい動き）と活用（安定化）のバランスが重要</li>
+<li>実世界のノイズや外乱への対応が必要</li>
+</ul>
+</div>
+
+<div class="step"><strong>その他の実世界応用例</strong>
+<ul>
+<li><strong>ロボティクス:</strong> 歩行ロボット制御、マニピュレーション、ドローン飛行</li>
+<li><strong>自動運転:</strong> 車両制御、経路計画、交通環境での意思決定</li>
+<li><strong>エネルギー管理:</strong> スマートグリッド、HVAC最適化</li>
+<li><strong>ゲームAI:</strong> 高度なゲームエージェント（Dota 2など）</li>
+</ul>
+</div>
+
+<div class="warning"><strong>注意点と実装の課題</strong>
+<ul>
+<li><strong>ハイパーパラメータ調整:</strong> 学習率、ネットワーク構造、温度パラメータなどの最適化が必要</li>
+<li><strong>計算コスト:</strong> 深層ネットワークを使う場合は計算リソースが必要</li>
+<li><strong>報酬設計:</strong> 依然として適切な報酬関数の設計は重要（SACが自動的に解決するわけではない）</li>
+<li><strong>Sim-to-Realギャップ:</strong> シミュレーションで学習したポリシーを実機に転移する際のギャップ</li>
+</ul>
+</div>
+</div>
+
+<!-- Phase 5: Summary and Further Reading -->
+<div class="phase" id="summary">
+<h3>5. まとめと発展学習</h3>
+
+<div class="step"><strong>Actor-Critic から SAC への発展まとめ</strong>
+<ul>
+<li><strong>Actor-Critic:</strong> 方策（Actor）と価値関数（Critic）を同時に学習するハイブリッドアプローチ</li>
+<li><strong>SAC の革新点:</strong> エントロピー最大化、Off-Policy学習、二重Q学習、確率的方策</li>
+<li><strong>SAC の優位性:</strong> サンプル効率、安定性、探索-活用バランスの自動調整、実世界タスクでの高性能</li>
+</ul>
+</div>
+
+<div class="confirmation"><strong>【次に学ぶべきトピック】</strong>
+<ul>
+<li><strong>他のActor-Critic変種:</strong> A2C, A3C, PPO, DDPG, TD3</li>
+<li><strong>モデルベースRL:</strong> 環境のモデルを学習し活用するアプローチ</li>
+<li><strong>マルチエージェントRL:</strong> 複数のエージェントが学習する状況</li>
+<li><strong>階層的RL:</strong> 複雑なタスクを階層的に分解して学習</li>
+<li><strong>メタRL:</strong> 新しいタスクへの素早い適応</li>
+</ul>
+</div>
+
+<div class="step"><strong>参考文献とリソース</strong>
+<ul>
+<li>Haarnoja, T., Zhou, A., Abbeel, P., & Levine, S. (2018). <a href="https://arxiv.org/abs/1801.01290" target="_blank"">Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor</a>. ICML 2018.</li>
+<li>Sutton, R. S., & Barto, A. G. (2018). <a href="https://web.stanford.edu/class/psych209/Readings/SuttonBartoIPRLBook2ndEd.pdf" target="_blank">Reinforcement Learning: An Introduction</a>. MIT Press.</li>
+<li>OpenAI Spinning Up: <a href="https://spinningup.openai.com/en/latest/" target="_blank">SAC Documentation</a></li>
+<li>Stable Baselines3: <a href="https://stable-baselines3.readthedocs.io/en/master/" target="_blank">SAC Implementation</a></li>
+<li>[論文解説] Soft Actor-Critic <a href="https://qiita.com/ku2482/items/fb79d8209f1162d9f141" target="_blank">Qiita 論文解説</a></li>
+</ul>
+</div>
+
+</div>
+
+</div> <!-- Closing tag for workflow-container -->
+
+</body>
+
+</html>
