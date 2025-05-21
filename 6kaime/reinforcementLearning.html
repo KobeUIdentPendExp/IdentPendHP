@@ -82,7 +82,7 @@
                     <br> 左右のモーターへの指令値（速度、`action[0]` と `action[1]`）の差の二乗に比例したペナルティを報酬から引きます。$C_{wheel}$ (<span class="param">`self.wheel_penalty_coeff`</span>) はペナルティの重みです。
                     <br><span class="note">→ ロボットに「無駄に左右の動きをばたつかせるな」（直進または滑らかな旋回を促す）と教えています。</span>
                 </li>
-                 <li><strong>転倒ペナルティ (現状ほぼ無効):</strong>
+                 <li><strong>転倒ペナルティ:</strong>
                     <br> もし $|\psi|$ が大きな閾値 (<span class="param">`self.fall_threshold`</span>) を超えたら転倒とみなし、エピソードを終了させます。ペナルティ (<span class="param">`self.fall_penalty`</span>) を与えることもできますが、現在のコードでは 0 に設定されています。
                 </li>
             </ul>
