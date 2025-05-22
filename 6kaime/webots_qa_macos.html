@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webots ???? Q&A (macOS?)</title>
+    <title>Webots 環境設定 Q&A (macOS版)</title>
     <style>
-        /* ?????? (Windows???????????) */
+        /* 共通スタイル (Windows版と同じで良いでしょう) */
         body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; color: #333; }
         .workflow-container { max-width: 900px; margin: 40px auto; background-color: #fff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .phase { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 25px; margin-bottom: 30px; border-radius: 8px; }
         .phase h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #0056b3; font-size: 1.6em; margin-bottom:20px; }
-        .phase h4 { margin-top: 20px; color: #004085; border-left: 5px solid #007bff; padding-left: 12px; font-size: 1.3em; margin-bottom:15px;} /* Q&A??????? */
+        .phase h4 { margin-top: 20px; color: #004085; border-left: 5px solid #007bff; padding-left: 12px; font-size: 1.3em; margin-bottom:15px;} /* Q&Aの質問スタイル */
         .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 12px 18px; margin: 12px 0; border-radius: 5px; }
         .confirmation { background-color: #e6f7ff; border: 1px solid #b3e0ff; color: #004085; padding: 12px 18px; margin: 12px 0; border-radius: 5px; }
         .task { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 12px 18px; margin: 12px 0; border-radius: 5px;}
@@ -23,40 +23,40 @@
         .back-link { display: inline-block; margin-bottom: 25px; color: #007bff; text-decoration: none; font-weight: bold; }
         .back-link:hover { text-decoration: underline; }
         .page-title { text-align: center; color: #333; font-size: 2.0em; margin-bottom:10px; }
-        pre code.python { display: block; padding: 10px; background-color: #272822; color: #f8f8f2; border-radius: 5px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 0.9em; } /* Python???????????? */
+        pre code.python { display: block; padding: 10px; background-color: #272822; color: #f8f8f2; border-radius: 5px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 0.9em; } /* Pythonコードブロック用スタイル */
     </style>
 </head>
 <body>
 
 <div class="workflow-container">
-    <a href="webots_qa_index.html" class="back-link">&laquo; OS?????</a>
-    <h2 class="page-title">Webots ???? Q&A (macOS?)</h2>
-    <p class="note" style="text-align: center; margin-bottom:30px;">macOS????Webots????????????????????????????</p>       
+    <a href="webots_qa_index.html" class="back-link">&laquo; OS選択に戻る</a>
+    <h2 class="page-title">Webots 環境設定 Q&A (macOS版)</h2>
+    <p class="note" style="text-align: center; margin-bottom:30px;">macOS環境でのWebots利用時に発生しやすい問題と、その解決策をまとめています。</p>       
     <div class="phase" id="qa-mac-openmp-crash">
-        <h3>OpenMP / Python????????</h3>
-        <h4>Q4: Webots???? "OMP: Error #15: Initializing libiomp5.dylib, but found libiomp5.dylib already initialized." ????????</h4>
+        <h3>OpenMP / Pythonコントローラ関連</h3>
+        <h4>Q4: Webots実行時に "OMP: Error #15: Initializing libiomp5.dylib, but found libiomp5.dylib already initialized." と表示されます。</h4>
         <div class="step">
-            <strong>???????????????????</strong>
+            <strong>以下のステップで対処を試みてください。</strong>
             <ol>
                 
                  
                 <li>
-                    <strong>Python??????????????? (??????????????):</strong>
-                    <br>OpenMP??????????????????????????????????1??????????????????????????????????????????????????????????????
-                    <br>Python????????????????????????????????import???????????:
+                    <strong>Pythonスクリプト内でのスレッド数制御 (診断的措置、根本解決ではない):</strong>
+                    <br>OpenMPの衝突が並列処理に起因する場合、関連ライブラリが使用するスレッド数を1に制限することで、クラッシュが一時的に回避できるか確認できます。これは問題の切り分けに役立ちますが、根本解決ではありません。
+                    <br>Pythonスクリプトの冒頭（主要な数値計算ライブラリや強化学習ライブラリのimport前）に以下を追加します:
 <pre><code class="python">
 import os
 os.environ['OMP_NUM_THREADS'] = '1'
-os.environ['MKL_NUM_THREADS'] = '1'         # Intel MKL (NumPy????)
-os.environ['OPENBLAS_NUM_THREADS'] = '1'  # OpenBLAS (NumPy????)
+os.environ['MKL_NUM_THREADS'] = '1'         # Intel MKL (NumPy等で使用)
+os.environ['OPENBLAS_NUM_THREADS'] = '1'  # OpenBLAS (NumPy等で使用)
 os.environ['VECLIB_MAXIMUM_THREADS'] = '1'  # macOS Accelerate framework
 os.environ['NUMEXPR_NUM_THREADS'] = '1'     # Numexpr
 
-# PyTorch (stable-baselines3??????) ?????????
-# import torch # stable-baselines3???????????????????
-# torch.set_num_threads(1) # ???????????????
+# PyTorch (stable-baselines3が内部で使用) のスレッド数も制御
+# import torch # stable-baselines3がインポートする際に設定されるのが理想
+# torch.set_num_threads(1) # スクリプト内で明示的に呼ぶ場合
 </code></pre>
-                    ??????????????????????OpenMP???????????????????????????
+                    もしこれでクラッシュしなくなった場合、やはりOpenMPの並列処理部分での衝突が強い要因であると推測できます。
                 </li>
             </ol>
         </div>
