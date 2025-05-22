@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webots ???? Q&A (macOS?)</title>
+    <style>
+        /* ?????? (Windows???????????) */
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; line-height: 1.7; padding: 20px; background-color: #f9f9f9; color: #333; }
+        .workflow-container { max-width: 900px; margin: 40px auto; background-color: #fff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .phase { border: 1px solid #e0e0e0; background-color: #ffffff; padding: 25px; margin-bottom: 30px; border-radius: 8px; }
+        .phase h3 { margin-top: 0; border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #0056b3; font-size: 1.6em; margin-bottom:20px; }
+        .phase h4 { margin-top: 20px; color: #004085; border-left: 5px solid #007bff; padding-left: 12px; font-size: 1.3em; margin-bottom:15px;} /* Q&A??????? */
+        .step { background-color: #f8f9fa; border: 1px solid #ced4da; padding: 12px 18px; margin: 12px 0; border-radius: 5px; }
+        .confirmation { background-color: #e6f7ff; border: 1px solid #b3e0ff; color: #004085; padding: 12px 18px; margin: 12px 0; border-radius: 5px; }
+        .task { background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 12px 18px; margin: 12px 0; border-radius: 5px;}
+        .confirmation ul, .step ul, .step ol, .task ul, .task ol { margin-top: 8px; margin-bottom: 8px; padding-left: 25px; }
+        .confirmation li, .step li, .task li { margin-bottom: 5px; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; font-weight: bold; padding: 12px 18px; margin: 12px 0; border-radius: 5px; }
+        .note { font-size: 0.9em; color: #555; margin-top: 12px; }
+        .code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; background-color: #e9ecef; padding: 3px 6px; border-radius: 4px; color: #c7254e; font-size: 0.95em;}
+        .param { font-weight: bold; color: #c7254e; }
+        .back-link { display: inline-block; margin-bottom: 25px; color: #007bff; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+        .page-title { text-align: center; color: #333; font-size: 2.0em; margin-bottom:10px; }
+        pre code.python { display: block; padding: 10px; background-color: #272822; color: #f8f8f2; border-radius: 5px; overflow-x: auto; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace; font-size: 0.9em; } /* Python???????????? */
+    </style>
+</head>
+<body>
+
+<div class="workflow-container">
+    <a href="webots_qa_index.html" class="back-link">&laquo; OS?????</a>
+    <h2 class="page-title">Webots ???? Q&A (macOS?)</h2>
+    <p class="note" style="text-align: center; margin-bottom:30px;">macOS????Webots????????????????????????????</p>       
+    <div class="phase" id="qa-mac-openmp-crash">
+        <h3>OpenMP / Python????????</h3>
+        <h4>Q4: Webots???? "OMP: Error #15: Initializing libiomp5.dylib, but found libiomp5.dylib already initialized." ????????</h4>
+        <div class="step">
+            <strong>???????????????????</strong>
+            <ol>
+                
+                 
+                <li>
+                    <strong>Python??????????????? (??????????????):</strong>
+                    <br>OpenMP??????????????????????????????????1??????????????????????????????????????????????????????????????
+                    <br>Python????????????????????????????????import???????????:
+<pre><code class="python">
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'         # Intel MKL (NumPy????)
+os.environ['OPENBLAS_NUM_THREADS'] = '1'  # OpenBLAS (NumPy????)
+os.environ['VECLIB_MAXIMUM_THREADS'] = '1'  # macOS Accelerate framework
+os.environ['NUMEXPR_NUM_THREADS'] = '1'     # Numexpr
+
+# PyTorch (stable-baselines3??????) ?????????
+# import torch # stable-baselines3???????????????????
+# torch.set_num_threads(1) # ???????????????
+</code></pre>
+                    ??????????????????????OpenMP???????????????????????????
+                </li>
+            </ol>
+        </div>
+
+    </div>
+    </div>
+</body>
+</html>
