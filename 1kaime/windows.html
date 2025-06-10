@@ -32,6 +32,11 @@
     <div class="section" id="install-wsl">
         <h3>1. Windows Subsystem for Linux (WSL) 環境の構築</h3>
         <p>Windows上でLinux環境（Ubuntu）を実行するため、<a href="https://learn.microsoft.com/ja-jp/windows/wsl/about" target="_blank" rel="noopener noreferrer">Windows Subsystem for Linux（WSL）</a>を使用します。さらに、USBデバイスをWSLに接続するため、<a href="https://learn.microsoft.com/ja-jp/windows/wsl/connect-usb" target="_blank" rel="noopener noreferrer">usbipd-win</a>を使用します。</p>
+        <div class="warning">
+            <strong>注意:</strong>
+            KUWiFi-xではなく、実験室のWi-Fiに接続してください。<br>
+            通信が安定せず、ダウンロードに時間がかかったり、失敗する可能性があります。
+        </div>
         <div class="step">
             <strong>PowerShellの起動（管理者モード）:</strong>
             <ul>
@@ -109,8 +114,12 @@
         <h3>3. 倒立振子の接続・動作確認</h3>
         <div class="step">
             <strong>倒立振子をWSL（Ubuntu）に接続:</strong>
+            <div class="warning">
+                <strong>注意:</strong>
+                Ubuntuのターミナルを起動した状態で実行してください。
+            </div>
             <ul>
-                <li>倒立振子をUSBケーブルでPCに接続してください（通常の接続時、本体の操作ボタンは押さないでください）。</li>
+                <li>倒立振子をUSBケーブルでPCに接続してください（本体の操作ボタンは押さない）。</li>
                 <li>PowerShellを管理者モードで起動し、以下のコマンドを実行して倒立振子をWSLに接続してください。<br><span class="command">usbipd bind --hardware-id 1962:2080<br>usbipd attach --hardware-id 1962:2080 --auto-attach --wsl</span></li>
             <ul>
             <img src="assets/setup-usbipd.png" alt="倒立振子をWSLに接続" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
@@ -131,9 +140,13 @@
                 <li>車輪の角度が表示され、モータが回転すれば成功です。</li>
             </ul>
             <img src="assets/run-script.png" alt="USB通信の動作確認" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
-        </div>
-        <div class="note">
-            モーターが回転しない場合は、電源スイッチがオフになっているか、電池残量が不足している可能性があります。
+            <div class="warning">
+                <strong>注意:</strong>
+                モーターが回転しない場合、以下の可能性があります。
+                <li>キャリブレーションが完了していない。</li>
+                <li>電源スイッチがオフになっている。</li>
+                <li>電池残量が不足している。</li>
+            </div>
         </div>
     </div>
 
