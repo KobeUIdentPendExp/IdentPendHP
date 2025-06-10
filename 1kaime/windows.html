@@ -103,9 +103,26 @@
             <img src="assets/install-miniconda.png" alt="Minicondaをインストール" style="max-width: 80%; height: auto; border: 1px solid #ccc; display: block; margin-left: auto; margin-right: auto;">
         </div>
         <div class="step">
+            <strong>仮想環境の作成（<span class="code">control_lab</span>）:</strong>
+            <p>実験に必要なライブラリを他のPythonプロジェクトと分離し、バージョンの衝突を防ぐために、専用の環境を作成します。</p>
+            <ol>
+                <li>ターミナルを開き、以下のコマンドを実行して、<span class="code">control_lab</span> という名前で Python 3.9 の環境を作成します:
+                    <code class="command">conda create --name control_lab python=3.9</code>
+                    (作成を確認するプロンプト <code class="code">Proceed ([y]/n)?</code> が出たら <code class="code">y</code> を入力して Enter キーを押します)
+                </li>
+                <li>作成した環境を有効化（アクティベート）します:
+                    <code class="command">conda activate control_lab</code>
+                </li>
+            </ol>
+            <div class="warning">
+                <strong>注意:</strong>
+                Pythonパッケージのインストールは、必ずこの<span class="code">control_lab</span>環境内で行ってください。
+            </div>
+        </div>
+        <div class="step">
             <strong>hidapiのインストール:</strong>
             <ul>
-                <li>Minicondaの仮想環境内で以下のコマンドを実行し、hidapiをインストールしてください。<br><span class="command">conda install hidapi</span></li>
+                <li><span class="code">control_lab</span>環境内で以下のコマンドを実行し、hidapiをインストールしてください。<br><span class="command">conda install hidapi</span></li>
             </ul>
         </div>
     </div>
